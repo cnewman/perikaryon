@@ -27,22 +27,21 @@ class App extends Component {
   */
   GenerateAreaGraph(ranvierAPIResponse, selectedArea, currentFloor) {
     let divList = []
-    Object.keys(ranvierAPIResponse)
-      .filter(apiKey => ranvierAPIResponse[apiKey].name == selectedArea)
-      .map(function (apiKey) {
-        ranvierAPIResponse[apiKey].roomList.map((room, index) => {
+    for(let [_,area] of Object.entries(ranvierAPIResponse)){
+      if(area.name == selectedArea){
+        for(let [roomKey, room] of Object.entries(area.roomList)){
           if (room.coordinates != null) {
             if (currentFloor == room.coordinates.z) {
-              divList.push(<div style={{ background: "#000FFF" }} key={index} data-grid={{ x: (room.coordinates.x), y: (room.coordinates.y) + 2, w: 1, h: 1 }}>{room.title}({(room.coordinates.x * 2) + 3},{(room.coordinates.y * 2) + 3},{room.coordinates.z})</div>)
+              divList.push(<div style={{ background: "#000FFF" }} key={roomKey} data-grid={{ x: (room.coordinates.x), y: (room.coordinates.y) + 2, w: 1, h: 1 }}>{room.title}({(room.coordinates.x * 2) + 3},{(room.coordinates.y * 2) + 3},{room.coordinates.z})</div>)
             }
           } else {
             console.log("Coordinates is null. Areabuilder currently requires coordinates to work.");
           }
-        })
-      })
+        }
+      }
+    }
     return (divList);
   }
-
   /*
   * Take Area data from Ranvier API response and make a dropdown.
   * User can select an area from the dropdown and the area's rooms will be displayed.
@@ -53,7 +52,7 @@ class App extends Component {
       Object.keys(ranvierAPIResponse)
         .map(function (key) {
           return (
-            <option value={ranvierAPIResponse[key].name}>{ranvierAPIResponse[key].name}</option>
+            <option key={ranvierAPIResponse[key].name} value={ranvierAPIResponse[key].name}>{ranvierAPIResponse[key].name}</option>
           );
         })
     );
