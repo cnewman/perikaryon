@@ -3,6 +3,7 @@ import "./App.css";
 import "../node_modules/react-grid-layout/css/styles.css"
 import "../node_modules/react-resizable/css/styles.css"
 import RGL, {WidthProvider} from "react-grid-layout";
+import axios from 'axios';
 
 const ReactGridLayout = WidthProvider(RGL);
 
@@ -97,7 +98,10 @@ class App extends Component {
   HandleFloorDropdownChange = (e) => {
     this.setState({currentFloor: e.target.value});
   }
-
+  SubmitArea = (e) => {
+    console.log(this.state.ranvierAPIResponse)
+    axios.put("http://localhost:3004/savearea", this.state.ranvierAPIResponse).then(res => console.log(res.data));
+  }
   /*
   * Once the component mounts, call Ranvier's API (only locally, currently) so that we can
   * populate area grid and dropdown.
@@ -128,6 +132,7 @@ class App extends Component {
         <select onChange={this.HandleFloorDropdownChange}>
           {this.GenerateFloorDropdown(this.state.ranvierAPIResponse, this.state.selectValue)}
         </select>
+        <button onClick={this.SubmitArea}>Save Area</button>
         </div>
         <div>
         <ReactGridLayout className="layout" cols={12} rowHeight={30} width={1200} {...this.props}>

@@ -5,8 +5,10 @@ const {Data} = require('ranvier');
 const app = express();
 const port = 3004;
 
+const bodyParser = require ('body-parser')
 var cors = require("cors");
 app.use(cors());
+app.use(bodyParser.json())
 
 module.exports = {
   listeners: {
@@ -38,7 +40,9 @@ module.exports = {
       app.get('/areas', (req, res) => {
         res.json(getAreasInfo(state));
       });
-
+      app.put('/savearea', (req, res) => {
+        console.log(req.body);
+      });
       app.listen(port, () => console.log(`Express listening on port ${port}!`))
     },
 
