@@ -48,7 +48,7 @@ class App extends Component {
   * User can select an area from the dropdown and the area's rooms will be displayed.
   * This function maps over the API response object from Ranvier and just pulls each area name.
   */
-  GenerateDropdown(ranvierAPIResponse) {
+  GenerateAreaDropdown(ranvierAPIResponse) {
     return (
       Object.keys(ranvierAPIResponse)
         .map(function (key) {
@@ -65,7 +65,7 @@ class App extends Component {
   * be displayed. This function maps over the API response object from Ranvier and just pulls 
   * unique floor numbers to populate the dropdown.
   */
-  GenerateFloorDropdown(ranvierAPIResponse, selectedArea) {
+ GenerateFloorDropdown(ranvierAPIResponse, selectedArea) {
     let uniqueFloorNumbers = new Set();
     for(let apikey of Object.keys(ranvierAPIResponse)){
       if(ranvierAPIResponse[apikey].name == selectedArea){
@@ -98,7 +98,7 @@ class App extends Component {
   HandleFloorDropdownChange = (e) => {
     this.setState({currentFloor: e.target.value});
   }
-  SubmitArea = (e) => {
+  SaveArea = (e) => {
     console.log(this.state.ranvierAPIResponse)
     axios.put("http://localhost:3004/savearea", this.state.ranvierAPIResponse).then(res => console.log(res.data));
   }
@@ -124,21 +124,17 @@ class App extends Component {
   render() {
     return(
       <div>
-        <div>
         <select onChange={this.HandleAreaDropdownChange}>
           <option value=""></option>
-          {this.GenerateDropdown(this.state.ranvierAPIResponse)}
+          {this.GenerateAreaDropdown(this.state.ranvierAPIResponse)}
         </select>
         <select onChange={this.HandleFloorDropdownChange}>
           {this.GenerateFloorDropdown(this.state.ranvierAPIResponse, this.state.selectValue)}
         </select>
-        <button onClick={this.SubmitArea}>Save Area</button>
-        </div>
-        <div>
+        <button onClick={this.SaveArea}>Save Area</button>
         <ReactGridLayout className="layout" cols={12} rowHeight={30} width={1200} {...this.props}>
           {this.GenerateAreaGraph(this.state.ranvierAPIResponse, this.state.selectValue, this.state.currentFloor)}
         </ReactGridLayout>
-        </div>
       </div>
     );
   }
