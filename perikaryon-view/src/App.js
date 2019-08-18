@@ -5,6 +5,7 @@ import "../node_modules/react-resizable/css/styles.css"
 import RGL, {WidthProvider} from "react-grid-layout";
 import axios from 'axios';
 
+const {List, Set} = require('immutable');
 const ReactGridLayout = WidthProvider(RGL);
 
 class App extends Component {
@@ -27,13 +28,13 @@ class App extends Component {
   * are part of the currently selected (via dropdown) area and then create a graph node for each.
   */
   GenerateAreaGraph(ranvierAPIResponse, selectedArea, currentFloor) {
-    let divList = []
+    let divList = List()
     for(let [_,area] of Object.entries(ranvierAPIResponse)){
       if(area.name == selectedArea){
         for(let [roomKey, room] of Object.entries(area.roomList)){
           if (room.coordinates != null) {
             if (currentFloor == room.coordinates.z) {
-              divList.push(<div style={{ background: "#000FFF" }} key={roomKey} data-grid={{ x: (room.coordinates.x), y: (room.coordinates.y) + 2, w: 1, h: 1 }}>{room.title}({(room.coordinates.x * 2) + 3},{(room.coordinates.y * 2) + 3},{room.coordinates.z})</div>)
+              divList = divList.push(<div style={{ background: "#000FFF" }} key={roomKey} data-grid={{ x: (room.coordinates.x), y: (room.coordinates.y) + 2, w: 1, h: 1 }}>{room.title}({(room.coordinates.x * 2) + 3},{(room.coordinates.y * 2) + 3},{room.coordinates.z})</div>)
             }
           } else {
             console.log("Coordinates is null. Areabuilder currently requires coordinates to work.");
@@ -66,21 +67,21 @@ class App extends Component {
   * unique floor numbers to populate the dropdown.
   */
  GenerateFloorDropdown(ranvierAPIResponse, selectedArea) {
-    let uniqueFloorNumbers = new Set();
+    let uniqueFloorNumbers = Set();
     for(let apikey of Object.keys(ranvierAPIResponse)){
       if(ranvierAPIResponse[apikey].name == selectedArea){
         for(let room of ranvierAPIResponse[apikey].roomList){
           if(room.coordinates != null){
-            uniqueFloorNumbers.add(room.coordinates.z);
+            uniqueFloorNumbers = uniqueFloorNumbers.add(room.coordinates.z);
           } else{
             console.log("Coordinates is null. Areabuilder currently requires coordinates to work.");
           }
         }
       }
     }
-    let floorNumberElementList = [];
+    let floorNumberElementList = List();
     for (let floorNumber of uniqueFloorNumbers){
-      floorNumberElementList.push(<option value={floorNumber}>{floorNumber}</option>)
+      floorNumberElementList = floorNumberElementList.push(<option value={floorNumber}>{floorNumber}</option>)
     }
     return (floorNumberElementList);
   }
@@ -99,7 +100,6 @@ class App extends Component {
     this.setState({currentFloor: e.target.value});
   }
   SaveArea = (e) => {
-    console.log(this.state.ranvierAPIResponse)
     axios.put("http://localhost:3004/savearea", this.state.ranvierAPIResponse).then(res => console.log(res.data));
   }
   /*

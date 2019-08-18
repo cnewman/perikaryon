@@ -3,6 +3,7 @@ import Renderer from 'react-test-renderer';
 import {shallow, configure} from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16'
 import App from "./App"
+const {List, Set} = require('immutable');
 
 var json = require('./TestData.json')
 
@@ -21,7 +22,7 @@ describe('Generation Functions', () => {
         const component = shallow(<App />);
         const instance = component.instance();
         const NUMBER_OF_FLOORS_IN_TEST_DATA = 3;
-        expect(instance.GenerateFloorDropdown(json, 'mapped').length)
+        expect(instance.GenerateFloorDropdown(json, 'mapped').count())
             .toBe(NUMBER_OF_FLOORS_IN_TEST_DATA)
     });
     it('Should contain floors -1, 0, and 1', () => {
@@ -51,7 +52,7 @@ describe('Generation Functions', () => {
         const component = shallow(<App />);
         const instance = component.instance();
         const NUMBER_OF_ROOMS_IN_TEST_DATA = 8;
-        expect(instance.GenerateAreaGraph(json, 'mapped', 0).length)
+        expect(instance.GenerateAreaGraph(json, 'mapped', 0).count())
             .toBe(NUMBER_OF_ROOMS_IN_TEST_DATA);
     });
     it('Should have these specific room keys', () => {
