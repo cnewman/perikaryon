@@ -47,8 +47,6 @@ describe('After loading the test data, the component', () => {
 
         instance.setState({ranvierAPIResponse:json})
         instance.GenerateAreaDropdown()
-
-        console.log("List: " + instance.state.areaList)
         expect(instance.state.areaList.count())
             .toBe(NUMBER_OF_AREAS_IN_TEST_DATA);
     });

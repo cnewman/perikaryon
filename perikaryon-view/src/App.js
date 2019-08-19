@@ -21,7 +21,8 @@ class App extends Component {
       areaList: List(),
       floorList: List(),
       visibleRoomList: List(),
-      selectedFloor: 0
+      selectedFloor: 0,
+      addRoomField: ""
     };
   }
 
@@ -93,7 +94,12 @@ class App extends Component {
     
   }
 
-  AddRoom(){}
+  AddRoom(title){
+    this.setState((prevState) => ({
+      visibleRoomList: prevState.visibleRoomList.push(<div style={{ background: "#000FFF" }} key={title} data-grid={{ x: 0, y: 0, w: 1, h: 1 }}>{title}(0,0,0)</div>)
+    }))
+  }
+  
   /*
   * When a new area is selected in the dropdown, change the value so React can re-render.
   */
@@ -117,6 +123,15 @@ class App extends Component {
     axios.put("http://localhost:3004/savearea", this.state.ranvierAPIResponse).then(res => console.log(res.data));
   }
 
+  AddRoomEvent = (e) => {
+    if(this.state.addRoomField != "")
+      this.AddRoom(this.state.addRoomField)
+  }
+  ChangeFieldEvent = (e) => {
+    this.setState({
+      addRoomField: e.target.value
+    })
+  }
   /*
   * Once the component mounts, call Ranvier's API (only locally, currently) so that we can
   * populate area grid and dropdown.
@@ -141,14 +156,16 @@ class App extends Component {
   render() {
     return(
       <div>
-        <select id={"areaDropdown"} onChange={(evt) => this.HandleAreaDropdownChange(evt)}>
+        <select id={"areaDropdown"} onChange={(areaDropdownEvent) => this.HandleAreaDropdownChange(areaDropdownEvent)}>
           <option value=""></option>
           {this.state.areaList}
         </select>
-        <select id={"floorDropDown"} onChange={this.HandleFloorDropdownChange}>
+        <select id={"floorDropDown"} onChange={(floorDropdownEvent) => this.HandleFloorDropdownChange(floorDropdownEvent)}>
          {this.state.floorList}
         </select>
-        <button id={"saveButton"} onClick={this.SaveArea}>Save Area</button>
+        <button id={"saveButton"} onClick={(clickEvent) => this.SaveArea(clickEvent)}>Save Area</button>
+        <button id={"addAreaButton"} onClick={(clickEvent) => this.AddRoomEvent(clickEvent)}>Add Room</button>
+        <input type="text" onChange={(typingEvent) => this.ChangeFieldEvent(typingEvent)}/>
         <ReactGridLayout id="areaGrid" className="layout" cols={12} rowHeight={30} width={1200} {...this.props}>
           {this.state.visibleRoomList}
         </ReactGridLayout>
