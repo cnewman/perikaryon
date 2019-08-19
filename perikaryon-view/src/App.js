@@ -17,8 +17,11 @@ class App extends Component {
     super(props);
     this.state = { 
       ranvierAPIResponse: "",
-      selectValue: "",
-      currentFloor: 0
+      selectedArea: "",
+      areaList: List(),
+      floorList: List(),
+      visibleRoomList: List(),
+      selectedFloor: 0
     };
   }
 
@@ -27,14 +30,18 @@ class App extends Component {
   * This function maps over the API response object from Ranvier and checks to figure out which rooms
   * are part of the currently selected (via dropdown) area and then create a graph node for each.
   */
-  GenerateAreaGraph(ranvierAPIResponse, selectedArea, currentFloor) {
-    let divList = List()
-    for(let [_,area] of Object.entries(ranvierAPIResponse)){
-      if(area.name == selectedArea){
+  GenerateAreaGraph() {
+    this.setState((prevState) => ({
+      visibleRoomList: prevState.visibleRoomList.clear()
+    }))
+    for(let [_,area] of Object.entries(this.state.ranvierAPIResponse)){
+      if(area.name == this.state.selectedArea){
         for(let [roomKey, room] of Object.entries(area.roomList)){
           if (room.coordinates != null) {
-            if (currentFloor == room.coordinates.z) {
-              divList = divList.push(<div style={{ background: "#000FFF" }} key={roomKey} data-grid={{ x: (room.coordinates.x), y: (room.coordinates.y) + 2, w: 1, h: 1 }}>{room.title}({(room.coordinates.x * 2) + 3},{(room.coordinates.y * 2) + 3},{room.coordinates.z})</div>)
+            if (this.state.selectedFloor == room.coordinates.z) {
+              this.setState((prevState) => ({
+                visibleRoomList: prevState.visibleRoomList.push(<div style={{ background: "#000FFF" }} key={roomKey} data-grid={{ x: (room.coordinates.x), y: (room.coordinates.y) + 2, w: 1, h: 1 }}>{room.title}({(room.coordinates.x * 2) + 3},{(room.coordinates.y * 2) + 3},{room.coordinates.z})</div>)
+              }))
             }
           } else {
             console.log("Coordinates is null. Areabuilder currently requires coordinates to work.");
@@ -42,22 +49,19 @@ class App extends Component {
         }
       }
     }
-    return (divList);
   }
   /*
   * Take Area data from Ranvier API response and make a dropdown.
   * User can select an area from the dropdown and the area's rooms will be displayed.
   * This function maps over the API response object from Ranvier and just pulls each area name.
   */
-  GenerateAreaDropdown(ranvierAPIResponse) {
-    return (
-      Object.keys(ranvierAPIResponse)
-        .map(function (key) {
-          return (
-            <option key={ranvierAPIResponse[key].name} value={ranvierAPIResponse[key].name}>{ranvierAPIResponse[key].name}</option>
-          );
-        })
-    );
+  GenerateAreaDropdown() {
+    Object.keys(this.state.ranvierAPIResponse)
+      .map((key) => {
+        this.setState((prevState) => ({
+          areaList: prevState.areaList.push(<option key={this.state.ranvierAPIResponse[key].name} value={this.state.ranvierAPIResponse[key].name}>{this.state.ranvierAPIResponse[key].name}</option>),
+        }), this.GenerateAreaGraph)
+      })
   }
   
   /*
@@ -66,42 +70,53 @@ class App extends Component {
   * be displayed. This function maps over the API response object from Ranvier and just pulls 
   * unique floor numbers to populate the dropdown.
   */
- GenerateFloorDropdown(ranvierAPIResponse, selectedArea) {
-    let uniqueFloorNumbers = Set();
-    for(let apikey of Object.keys(ranvierAPIResponse)){
-      if(ranvierAPIResponse[apikey].name == selectedArea){
-        for(let room of ranvierAPIResponse[apikey].roomList){
+ GenerateFloorDropdown() {
+   let uniqueFloorList = Set()
+    for(let apikey of Object.keys(this.state.ranvierAPIResponse)){
+      if(this.state.ranvierAPIResponse[apikey].name == this.state.selectedArea){
+        for(let room of this.state.ranvierAPIResponse[apikey].roomList){
           if(room.coordinates != null){
-            uniqueFloorNumbers = uniqueFloorNumbers.add(room.coordinates.z);
+            uniqueFloorList = uniqueFloorList.add(room.coordinates.z)
           } else{
-            console.log("Coordinates is null. Areabuilder currently requires coordinates to work.");
+            console.log("Coordinates property is null. Areabuilder currently requires coordinates to work.");
           }
         }
       }
     }
-    let floorNumberElementList = List();
-    for (let floorNumber of uniqueFloorNumbers){
-      floorNumberElementList = floorNumberElementList.push(<option value={floorNumber}>{floorNumber}</option>)
+    let uniqueFloorDropdownElements = List()
+    for(let floor of uniqueFloorList){
+      uniqueFloorDropdownElements = uniqueFloorDropdownElements.push(<option key={floor} value={floor}>{floor}</option>)
     }
-    return (floorNumberElementList);
+    this.setState({
+      floorList: uniqueFloorDropdownElements
+    }, this.GenerateAreaGraph);
+    
   }
 
+  AddRoom(){}
   /*
   * When a new area is selected in the dropdown, change the value so React can re-render.
   */
   HandleAreaDropdownChange = (e) => {
-    this.setState({selectValue: e.target.value});
+    this.setState({
+      selectedArea: e.target.value,
+    }, this.GenerateFloorDropdown);
   }
-
   /*
   * When a new floor is selected in the dropdown, change the value so React can re-render.
   */
   HandleFloorDropdownChange = (e) => {
-    this.setState({currentFloor: e.target.value});
+    this.setState({
+      selectedFloor: e.target.value
+    }, this.GenerateAreaGraph);
   }
+  /*
+  * Once changes have been made, upload the new area back to Ranvier for saving.
+  */
   SaveArea = (e) => {
     axios.put("http://localhost:3004/savearea", this.state.ranvierAPIResponse).then(res => console.log(res.data));
   }
+
   /*
   * Once the component mounts, call Ranvier's API (only locally, currently) so that we can
   * populate area grid and dropdown.
@@ -111,8 +126,10 @@ class App extends Component {
       .then(res => res.json())
       .then(res => {
         this.setState({ ranvierAPIResponse: res });
+        this.GenerateAreaDropdown();
       })
       .catch(err => err);
+
   }
   componentDidMount() {
     this.callAPI();
@@ -124,16 +141,16 @@ class App extends Component {
   render() {
     return(
       <div>
-        <select onChange={this.HandleAreaDropdownChange}>
+        <select id={"areaDropdown"} onChange={(evt) => this.HandleAreaDropdownChange(evt)}>
           <option value=""></option>
-          {this.GenerateAreaDropdown(this.state.ranvierAPIResponse)}
+          {this.state.areaList}
         </select>
-        <select onChange={this.HandleFloorDropdownChange}>
-          {this.GenerateFloorDropdown(this.state.ranvierAPIResponse, this.state.selectValue)}
+        <select id={"floorDropDown"} onChange={this.HandleFloorDropdownChange}>
+         {this.state.floorList}
         </select>
-        <button onClick={this.SaveArea}>Save Area</button>
-        <ReactGridLayout className="layout" cols={12} rowHeight={30} width={1200} {...this.props}>
-          {this.GenerateAreaGraph(this.state.ranvierAPIResponse, this.state.selectValue, this.state.currentFloor)}
+        <button id={"saveButton"} onClick={this.SaveArea}>Save Area</button>
+        <ReactGridLayout id="areaGrid" className="layout" cols={12} rowHeight={30} width={1200} {...this.props}>
+          {this.state.visibleRoomList}
         </ReactGridLayout>
       </div>
     );
