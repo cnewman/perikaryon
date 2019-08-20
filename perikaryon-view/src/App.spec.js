@@ -70,6 +70,7 @@ describe('After loading the test data, the component', () => {
         instance.setState({ranvierAPIResponse:json})
         instance.setState({selectedArea:'mapped'})
         instance.setState({selectedFloor:0})
+        instance.InitializeRoomMap()
         instance.GenerateAreaGraph()
 
         expect(instance.state.visibleRoomList.count())
