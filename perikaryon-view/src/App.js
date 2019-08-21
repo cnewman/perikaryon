@@ -13,6 +13,7 @@ class Room {
     this.title = title;
     this.coordinates = coordinates;
     this.elementContainer = elementContainer;
+    this.exits = List()
   }
 }
 class App extends Component {
@@ -28,7 +29,7 @@ class App extends Component {
       floorList: List(),
       selectedFloor: 0,
       addRoomField: "",
-      roomData: Map(),
+      roomData: Map()
     };
   }
   CreateElementContainer(area, title, coordinates) {
@@ -46,7 +47,6 @@ class App extends Component {
    */
   LayoutChange = (roomLayoutList) => {
     roomLayoutList.forEach((roomLayout) => {
-      console.log(this.state.roomData)
       this.setState((prevState) => ({
         roomData: prevState.roomData.set(roomLayout.i,
           new Room(this.state.roomData.get(roomLayout.i).area,
@@ -81,8 +81,9 @@ class App extends Component {
     })
   }
   HandleAddRoomEvent = (e) => {
-    if (this.state.addRoomField !== "")
+    if (this.state.addRoomField !== "") {
       this.AddRoom(this.state.addRoomField)
+    }
   }
   HandleChangeFieldEvent = (e) => {
     this.setState({
@@ -96,8 +97,7 @@ class App extends Component {
   }
   AddRoom(title) {
     this.UpdateRoomMap(new Room(this.state.selectedArea, title, { x: 0, y: 0, z: this.state.selectedFloor },
-      this.CreateElementContainer(this.state.selectedArea, title, { x: 0, y: 0, z: this.state.selectedFloor })
-    ))
+      this.CreateElementContainer(this.state.selectedArea, title, { x: 0, y: 0, z: this.state.selectedFloor })))
   }
   /*
    * Take Area data from Ranvier API response and make the graph using react-grid-layout API
@@ -181,6 +181,42 @@ class App extends Component {
   * Once changes have been made, upload the new area back to Ranvier for saving.
   */
   HandleSaveArea = (e) => {
+    let resultList = Map()
+    for (let [, newRoom] of this.state.roomData) {
+      for (let [, room] of this.state.roomData) {
+        let x = room.coordinates.x - newRoom.coordinates.x
+        let y = room.coordinates.y - newRoom.coordinates.y
+        let z = room.coordinates.z - newRoom.coordinates.z
+        if (x == -1 && y == 0 && z == 0) {
+          let currentRoom = this.state.roomData.get(newRoom.area + newRoom.title)
+          currentRoom.exits = currentRoom.exits.push(room.title + ":" + "west")
+          resultList = resultList.set(newRoom.area + newRoom.title, currentRoom)
+        }
+        else if (x == 1 && y == 0 && z == 0) {
+          let currentRoom = this.state.roomData.get(newRoom.area + newRoom.title)
+          currentRoom.exits = currentRoom.exits.push(room.title + ":" + "east")
+          resultList = resultList.set(newRoom.area + newRoom.title, currentRoom)
+        }
+        else if (x == 0 && y == -1 && z == 0) {
+          let currentRoom = this.state.roomData.get(newRoom.area + newRoom.title)
+          currentRoom.exits = currentRoom.exits.push(room.title + ":" + "north")
+          resultList = resultList.set(newRoom.area + newRoom.title, currentRoom)
+        }
+        else if (x == 0 && y == 1 && z == 0) {
+          let currentRoom = this.state.roomData.get(newRoom.area + newRoom.title)
+          currentRoom.exits = currentRoom.exits.push(room.title + ":" + "south")
+          resultList = resultList.set(newRoom.area + newRoom.title, currentRoom)
+        }
+        else {
+          resultList = resultList.set(newRoom.area + newRoom.title, newRoom)
+        }
+        //console.log((room.coordinates.x - newRoom.coordinates.x) + newRoom.title + " " + room.title)
+
+      }
+    }
+    this.setState({
+      roomData: resultList
+    })
     axios.put("http://localhost:3004/savearea", this.state.ranvierAPIResponse).then(res => console.log(res.data));
   }
 
