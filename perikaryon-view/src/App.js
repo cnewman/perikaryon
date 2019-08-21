@@ -182,36 +182,34 @@ class App extends Component {
   */
   HandleSaveArea = (e) => {
     let resultList = Map()
-    for (let [, newRoom] of this.state.roomData) {
-      for (let [, room] of this.state.roomData) {
-        let x = room.coordinates.x - newRoom.coordinates.x
-        let y = room.coordinates.y - newRoom.coordinates.y
-        let z = room.coordinates.z - newRoom.coordinates.z
+    for (let [, targetRoom] of this.state.roomData) {
+      for (let [, potentialExit] of this.state.roomData) {
+        let x = potentialExit.coordinates.x - targetRoom.coordinates.x
+        let y = potentialExit.coordinates.y - targetRoom.coordinates.y
+        let z = potentialExit.coordinates.z - targetRoom.coordinates.z
         if (x == -1 && y == 0 && z == 0) {
-          let currentRoom = this.state.roomData.get(newRoom.area + newRoom.title)
-          currentRoom.exits = currentRoom.exits.push(room.title + ":" + "west")
-          resultList = resultList.set(newRoom.area + newRoom.title, currentRoom)
+          let currentRoom = this.state.roomData.get(targetRoom.area + targetRoom.title)
+          currentRoom.exits = currentRoom.exits.push(potentialExit.title + ":" + "west")
+          resultList = resultList.set(targetRoom.area + targetRoom.title, currentRoom)
         }
         else if (x == 1 && y == 0 && z == 0) {
-          let currentRoom = this.state.roomData.get(newRoom.area + newRoom.title)
-          currentRoom.exits = currentRoom.exits.push(room.title + ":" + "east")
-          resultList = resultList.set(newRoom.area + newRoom.title, currentRoom)
+          let currentRoom = this.state.roomData.get(targetRoom.area + targetRoom.title)
+          currentRoom.exits = currentRoom.exits.push(potentialExit.title + ":" + "east")
+          resultList = resultList.set(targetRoom.area + targetRoom.title, currentRoom)
         }
         else if (x == 0 && y == -1 && z == 0) {
-          let currentRoom = this.state.roomData.get(newRoom.area + newRoom.title)
-          currentRoom.exits = currentRoom.exits.push(room.title + ":" + "north")
-          resultList = resultList.set(newRoom.area + newRoom.title, currentRoom)
+          let currentRoom = this.state.roomData.get(targetRoom.area + targetRoom.title)
+          currentRoom.exits = currentRoom.exits.push(potentialExit.title + ":" + "north")
+          resultList = resultList.set(targetRoom.area + targetRoom.title, currentRoom)
         }
         else if (x == 0 && y == 1 && z == 0) {
-          let currentRoom = this.state.roomData.get(newRoom.area + newRoom.title)
-          currentRoom.exits = currentRoom.exits.push(room.title + ":" + "south")
-          resultList = resultList.set(newRoom.area + newRoom.title, currentRoom)
+          let currentRoom = this.state.roomData.get(targetRoom.area + targetRoom.title)
+          currentRoom.exits = currentRoom.exits.push(potentialExit.title + ":" + "south")
+          resultList = resultList.set(targetRoom.area + targetRoom.title, currentRoom)
         }
         else {
-          resultList = resultList.set(newRoom.area + newRoom.title, newRoom)
+          resultList = resultList.set(targetRoom.area + targetRoom.title, targetRoom)
         }
-        //console.log((room.coordinates.x - newRoom.coordinates.x) + newRoom.title + " " + room.title)
-
       }
     }
     this.setState({
