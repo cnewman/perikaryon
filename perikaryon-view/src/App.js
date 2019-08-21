@@ -8,10 +8,11 @@ import axios from 'axios';
 const { List, Set, Map } = require('immutable');
 const ReactGridLayout = WidthProvider(RGL);
 class Room {
-  constructor(area, title, coordinates) {
+  constructor(area, title, coordinates, elementContainer) {
     this.area = area;
     this.title = title;
     this.coordinates = coordinates;
+    this.elementContainer = elementContainer;
   }
 }
 class App extends Component {
@@ -25,25 +26,41 @@ class App extends Component {
       selectedArea: "",
       areaList: List(),
       floorList: List(),
-      visibleRoomList: List(),
       selectedFloor: 0,
       addRoomField: "",
       roomData: Map(),
     };
   }
+  CreateElementContainer(area, title, coordinates) {
+    return (
+      <div style={{ background: "#000FFF" }}
+        key={area + title}
+        data-grid={{ x: coordinates.x, y: coordinates.y, w: 1, h: 1 }}
+      >
+        {title}({(coordinates.x)},{(coordinates.y)},{coordinates.z})
+      </div>
+    )
+  }
   /*
    *Whenever the layout changes, update the roomData map coordinates
    */
   LayoutChange = (roomLayoutList) => {
-    roomLayoutList.map((roomLayout) => {
+    roomLayoutList.forEach((roomLayout) => {
+      console.log(this.state.roomData)
       this.setState((prevState) => ({
         roomData: prevState.roomData.set(roomLayout.i,
           new Room(this.state.roomData.get(roomLayout.i).area,
             this.state.roomData.get(roomLayout.i).title,
-            { x: roomLayout.x, y: roomLayout.y, z: prevState.roomData.get(roomLayout.i).coordinates.z }))
+            { x: roomLayout.x, y: roomLayout.y, z: prevState.roomData.get(roomLayout.i).coordinates.z },
+            this.CreateElementContainer(
+              this.state.roomData.get(roomLayout.i).area,
+              this.state.roomData.get(roomLayout.i).title,
+              { x: roomLayout.x, y: roomLayout.y, z: prevState.roomData.get(roomLayout.i).coordinates.z }
+            )))
       }));
     });
   }
+
   /*
    *When we first mount the component, grab data from Ranvier.
    */
@@ -51,7 +68,12 @@ class App extends Component {
     let areaMap = Map()
     for (let [, area] of Object.entries(this.state.ranvierAPIResponse)) {
       for (let [, room] of Object.entries(area.roomList)) {
-        areaMap = areaMap.set(area.name + room.title, new Room(area.name, room.title, room.coordinates))
+        if (room.coordinates) {
+          areaMap = areaMap.set(area.name + room.title,
+            new Room(area.name, room.title, room.coordinates,
+              this.CreateElementContainer(room.area.name, room.title,
+                { x: room.coordinates.x, y: room.coordinates.y, z: room.coordinates.z })))
+        }
       }
     }
     this.setState({
@@ -59,7 +81,7 @@ class App extends Component {
     })
   }
   HandleAddRoomEvent = (e) => {
-    if (this.state.addRoomField != "")
+    if (this.state.addRoomField !== "")
       this.AddRoom(this.state.addRoomField)
   }
   HandleChangeFieldEvent = (e) => {
@@ -73,7 +95,9 @@ class App extends Component {
     }), this.GenerateAreaGraph)
   }
   AddRoom(title) {
-    this.UpdateRoomMap(new Room(this.state.selectedArea, title, { x: 0, y: 0, z: 0 }))
+    this.UpdateRoomMap(new Room(this.state.selectedArea, title, { x: 0, y: 0, z: this.state.selectedFloor },
+      this.CreateElementContainer(this.state.selectedArea, title, { x: 0, y: 0, z: this.state.selectedFloor })
+    ))
   }
   /*
    * Take Area data from Ranvier API response and make the graph using react-grid-layout API
@@ -81,22 +105,19 @@ class App extends Component {
    * are part of the currently selected (via dropdown) area and then create a graph node for each.
    */
   GenerateAreaGraph() {
-    this.setState((prevState) => ({
-      visibleRoomList: prevState.visibleRoomList.clear()
-    }))
-    for (let [roomKey, room] of this.state.roomData) {
+    let visibleRoomList = List()
+    for (let [, room] of this.state.roomData) {
       if (room.area == this.state.selectedArea) {
         if (room.coordinates != null) {
           if (this.state.selectedFloor == room.coordinates.z) {
-            this.setState((prevState) => ({
-              visibleRoomList: prevState.visibleRoomList.push(<div style={{ background: "#000FFF" }} key={roomKey} data-grid={{ x: (room.coordinates.x), y: (room.coordinates.y), w: 1, h: 1 }}>{room.title}({(room.coordinates.x)},{(room.coordinates.y)},{room.coordinates.z})</div>)
-            }))
+            visibleRoomList = visibleRoomList.push(room.elementContainer)
           }
         } else {
           console.log("Coordinates is null. Areabuilder currently requires coordinates to work.");
         }
       }
     }
+    return (visibleRoomList)
   }
   /*
   * When a new area is selected in the dropdown, change the value so React can re-render.
@@ -113,7 +134,7 @@ class App extends Component {
   */
   GenerateAreaDropdown() {
     Object.keys(this.state.ranvierAPIResponse)
-      .map((key) => {
+      .forEach((key) => {
         this.setState((prevState) => ({
           areaList: prevState.areaList.push(<option key={this.state.ranvierAPIResponse[key].name} value={this.state.ranvierAPIResponse[key].name}>{this.state.ranvierAPIResponse[key].name}</option>),
         }), this.GenerateAreaGraph)
@@ -187,23 +208,27 @@ class App extends Component {
   render() {
     return (
       <div>
-        <select id={"areaDropdown"} onChange={(areaDropdownEvent) => this.HandleAreaDropdownChange(areaDropdownEvent)}>
-          <option value=""></option>
-          {this.state.areaList}
-        </select>
+        <div id="buttondiv">
+          <select id={"areaDropdown"} onChange={(areaDropdownEvent) => this.HandleAreaDropdownChange(areaDropdownEvent)}>
+            <option value=""></option>
+            {this.state.areaList}
+          </select>
 
-        <select id={"floorDropDown"} onChange={(floorDropdownEvent) => this.HandleFloorDropdownChange(floorDropdownEvent)}>
-          {this.state.floorList}
-        </select>
+          <select id={"floorDropDown"} onChange={(floorDropdownEvent) => this.HandleFloorDropdownChange(floorDropdownEvent)}>
+            {this.state.floorList}
+          </select>
 
-        <button id={"saveButton"} onClick={(clickEvent) => this.HandleSaveArea(clickEvent)}>Save Area</button>
+          <button id={"saveButton"} onClick={(clickEvent) => this.HandleSaveArea(clickEvent)}>Save Area</button>
 
-        <button id={"addAreaButton"} onClick={(clickEvent) => this.HandleAddRoomEvent(clickEvent)}>Add Room</button>
-        <input type="text" onChange={(typingEvent) => this.HandleChangeFieldEvent(typingEvent)} />
+          <button id={"addAreaButton"} onClick={(clickEvent) => this.HandleAddRoomEvent(clickEvent)}>Add Room</button>
+          <input type="text" onChange={(typingEvent) => this.HandleChangeFieldEvent(typingEvent)} />
+        </div>
 
-        <ReactGridLayout layout={this.state.layout} onLayoutChange={this.LayoutChange} id="areaGrid" className="layout" cols={12} rowHeight={30} width={1200} {...this.props}>
-          {this.state.visibleRoomList}
-        </ReactGridLayout>
+        <div id="reactgrid">
+          <ReactGridLayout layout={this.state.layout} onLayoutChange={this.LayoutChange} id="areaGrid" className="layout" cols={12} rowHeight={30} width={1200} {...this.props}>
+            {this.GenerateAreaGraph()}
+          </ReactGridLayout>
+        </div>
       </div>
     );
   }

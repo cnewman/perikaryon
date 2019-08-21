@@ -71,9 +71,9 @@ describe('After loading the test data, the component', () => {
         instance.setState({selectedArea:'mapped'})
         instance.setState({selectedFloor:0})
         instance.InitializeRoomMap()
-        instance.GenerateAreaGraph()
+        
 
-        expect(instance.state.visibleRoomList.count())
+        expect(instance.GenerateAreaGraph().count())
             .toBe(NUMBER_OF_ROOMS_IN_TEST_DATA);
     });
     it('should have these specific room keys', () => {
@@ -84,9 +84,8 @@ describe('After loading the test data, the component', () => {
         instance.setState({ranvierAPIResponse:json})
         instance.setState({selectedArea:'mapped'})
         instance.setState({selectedFloor:0})
-        instance.GenerateAreaGraph()
 
-        expect(instance.state.visibleRoomList
+        expect(instance.GenerateAreaGraph()
             .every(room => INTERNAL_ROOM_KEYS_IN_DATA_SET.includes(room.key)))
             .toBe(true);
     });
