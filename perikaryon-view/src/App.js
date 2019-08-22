@@ -217,7 +217,7 @@ class App extends Component {
     this.setState({
       roomData: resultList
     })
-    axios.put("http://localhost:3004/savearea", this.state.ranvierAPIResponse).then(res => console.log(res.data));
+    axios.put("http://localhost:3004/savearea", this.state.roomData).then(res => console.log(res.data));
   }
 
   /*

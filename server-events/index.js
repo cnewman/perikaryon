@@ -4,7 +4,7 @@ const fs = require('fs');
 const {Data} = require('ranvier');
 const app = express();
 const port = 3004;
-
+const yaml = require('js-yaml')
 const bodyParser = require ('body-parser')
 var cors = require("cors");
 app.use(cors());
@@ -41,7 +41,12 @@ module.exports = {
         res.json(getAreasInfo(state));
       });
       app.put('/savearea', (req, res) => {
-        console.log(req.body);
+        for(let key of Object.keys(req.body)){
+          console.log(req.body[key])
+        }
+        // const config = yaml.safeLoad(fs.readFileSync('/home/wottbox/Desktop/ranviermud/bundles/bundle-example-areas/areas/mapped/rooms.yml', 'utf-8'))
+        // const indentedJson = JSON.stringify(config,null,4)
+        // console.log(indentedJson)
       });
       app.listen(port, () => console.log(`Express listening on port ${port}!`))
     },
