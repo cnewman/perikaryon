@@ -22,7 +22,7 @@ go to ranvier folder root
 
 **./ranvier**
 
-**navigate in browser (tested in firefox) to localhost:3000/areas**
+**navigate in browser (tested in firefox) to localhost:3000**
 
 **select area from menu**
 
