@@ -81,7 +81,7 @@ class App extends Component {
     })
   }
   HandleAddRoomEvent = (e) => {
-    if (this.state.addRoomField !== "") {
+    if (this.state.addRoomField) {
       this.AddRoom(this.state.addRoomField)
     }
   }
@@ -96,8 +96,10 @@ class App extends Component {
     }), this.GenerateAreaGraph)
   }
   AddRoom(title) {
-    this.UpdateRoomMap(new Room(this.state.selectedArea, title, { x: 0, y: 0, z: this.state.selectedFloor },
-      this.CreateElementContainer(this.state.selectedArea, title, { x: 0, y: 0, z: this.state.selectedFloor })))
+    if (title) {
+      this.UpdateRoomMap(new Room(this.state.selectedArea, title, { x: 0, y: 0, z: this.state.selectedFloor },
+        this.CreateElementContainer(this.state.selectedArea, title, { x: 0, y: 0, z: this.state.selectedFloor })))
+    }
   }
   /*
    * Take Area data from Ranvier API response and make the graph using react-grid-layout API
@@ -178,7 +180,7 @@ class App extends Component {
   }
 
   /*
-  * Once changes have been made, upload the new area back to Ranvier for saving.
+  * Once changes have been made, determine exit directions and upload the new area back to Ranvier for saving.
   */
   HandleSaveArea = (e) => {
     let resultList = Map()

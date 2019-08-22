@@ -16,12 +16,69 @@ describe('Test snapshot of component', () => {
         expect(tree).toMatchSnapshot();
     });
 });
+describe('When a room is added to the grid, it', () => {
+    it('should be created', () => {
+        const component = shallow(<App />);
+        const instance = component.instance();
 
+        instance.setState({ranvierAPIResponse:json})
+        instance.setState({selectedArea:'mapped'})
+        instance.setState({selectedFloor:0})
+        instance.InitializeRoomMap()
+        instance.state.addRoomField = 'Blep'
+        instance.AddRoom(instance.state.addRoomField)
+
+        expect(instance.state.roomData.has('mappedBlep')).toBe(true);
+    });
+    it('should have coordinates 0,0,0', () => {
+        const component = shallow(<App />);
+        const instance = component.instance();
+        const DEFAULT_NEW_ROOM_COORDINATES = {x:0, y:0, z:0}
+
+        instance.setState({ranvierAPIResponse:json})
+        instance.setState({selectedArea:'mapped'})
+        instance.setState({selectedFloor:0})
+        instance.InitializeRoomMap()
+        instance.state.addRoomField = 'Blep'
+        instance.AddRoom(instance.state.addRoomField)
+        
+        expect(instance.state.roomData.get('mappedBlep').coordinates).toStrictEqual(DEFAULT_NEW_ROOM_COORDINATES);
+    });
+    it('should have the name given to it in the associated field', () => {
+        const component = shallow(<App />);
+        const instance = component.instance();
+        const NEW_ROOM_NAME = 'Blep'
+
+        instance.setState({ranvierAPIResponse:json})
+        instance.setState({selectedArea:'mapped'})
+        instance.setState({selectedFloor:0})
+        instance.InitializeRoomMap()
+        instance.state.addRoomField = NEW_ROOM_NAME
+        instance.AddRoom(instance.state.addRoomField)
+        
+        expect(instance.state.roomData.get('mappedBlep').title).toBe(NEW_ROOM_NAME);
+    });
+    it('should not be created if name is blank', () => {
+        const component = shallow(<App />);
+        const instance = component.instance();
+        const NEW_ROOM_NAME = ''
+
+        instance.setState({ranvierAPIResponse:json})
+        instance.setState({selectedArea:'mapped'})
+        instance.setState({selectedFloor:0})
+        instance.InitializeRoomMap()
+        instance.state.addRoomField = NEW_ROOM_NAME
+        instance.AddRoom(instance.state.addRoomField)
+        
+        expect(instance.state.roomData.has('mapped')).toBe(false);
+    });
+});
 describe('After loading the test data, the component', () => {
     it('should contain 3 floors', () => {
         const component = shallow(<App />);
         const instance = component.instance();
         const NUMBER_OF_FLOORS_IN_TEST_DATA = 3;
+
         instance.setState({ranvierAPIResponse:json})
         instance.setState({selectedArea:'mapped'})
         instance.GenerateFloorDropdown()
@@ -71,7 +128,6 @@ describe('After loading the test data, the component', () => {
         instance.setState({selectedArea:'mapped'})
         instance.setState({selectedFloor:0})
         instance.InitializeRoomMap()
-        
 
         expect(instance.GenerateAreaGraph().count())
             .toBe(NUMBER_OF_ROOMS_IN_TEST_DATA);
