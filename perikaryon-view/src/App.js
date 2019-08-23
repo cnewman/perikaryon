@@ -35,6 +35,8 @@ class App extends Component {
   CreateElementContainer(area, title, coordinates) {
     return (
       <div style={{ background: "#000FFF" }}
+        id={title}
+        coordinate_values={coordinates}
         key={area + title}
         data-grid={{ x: coordinates.x, y: coordinates.y, w: 1, h: 1 }}
       >

@@ -27,7 +27,8 @@ describe('When a room is added to the grid, it', () => {
         instance.InitializeRoomMap()
         instance.state.addRoomField = 'Blep'
         instance.AddRoom(instance.state.addRoomField)
-
+        
+        expect(component.exists('#Blep')).toBe(true)
         expect(instance.state.roomData.has('mappedBlep')).toBe(true);
     });
     it('should have coordinates 0,0,0', () => {
@@ -41,7 +42,10 @@ describe('When a room is added to the grid, it', () => {
         instance.InitializeRoomMap()
         instance.state.addRoomField = 'Blep'
         instance.AddRoom(instance.state.addRoomField)
-        
+
+        const coord = component.find('div#Blep');
+
+        expect(coord.props()).toHaveProperty('coordinate_values', DEFAULT_NEW_ROOM_COORDINATES)
         expect(instance.state.roomData.get('mappedBlep').coordinates).toStrictEqual(DEFAULT_NEW_ROOM_COORDINATES);
     });
     it('should have the name given to it in the associated field', () => {
@@ -56,6 +60,9 @@ describe('When a room is added to the grid, it', () => {
         instance.state.addRoomField = NEW_ROOM_NAME
         instance.AddRoom(instance.state.addRoomField)
         
+        const addedRoom = component.find('div#Blep');
+
+        expect(addedRoom.text()).toBe('Blep(0,0,0)')
         expect(instance.state.roomData.get('mappedBlep').title).toBe(NEW_ROOM_NAME);
     });
     it('should not be created if name is blank', () => {
@@ -70,6 +77,9 @@ describe('When a room is added to the grid, it', () => {
         instance.state.addRoomField = NEW_ROOM_NAME
         instance.AddRoom(instance.state.addRoomField)
         
+        const roomThatWasNotAdded = component.contains('div#Blep');
+
+        expect(roomThatWasNotAdded).toBe(false)
         expect(instance.state.roomData.has('mapped')).toBe(false);
     });
 });
@@ -82,6 +92,10 @@ describe('After loading the test data, the component', () => {
         instance.setState({ranvierAPIResponse:json})
         instance.setState({selectedArea:'mapped'})
         instance.GenerateFloorDropdown()
+        
+        const floorDropDown = component.find('select#floorDropDown');
+
+        expect(floorDropDown.children()).toHaveLength(NUMBER_OF_FLOORS_IN_TEST_DATA)
         expect(instance.state.floorList.count())
             .toBe(NUMBER_OF_FLOORS_IN_TEST_DATA)
     });
@@ -92,6 +106,12 @@ describe('After loading the test data, the component', () => {
         instance.setState({ranvierAPIResponse:json})
         instance.setState({selectedArea:'mapped'})
         instance.GenerateFloorDropdown()
+
+        const floorDropDown = component.find('select#floorDropDown');
+
+        expect(floorDropDown.childAt(0).props()).toHaveProperty('value', 0)
+        expect(floorDropDown.childAt(1).props()).toHaveProperty('value', -1)
+        expect(floorDropDown.childAt(2).props()).toHaveProperty('value', 1)
         expect(instance.state.floorList
             .every(option => [0, -1, 1].includes(option.props.value)))
             .toBe(true);
@@ -101,9 +121,14 @@ describe('After loading the test data, the component', () => {
         const component = shallow(<App />);
         const instance = component.instance();
         const NUMBER_OF_AREAS_IN_TEST_DATA = 3;
+        const NUMBER_OF_BLANKS_IN_OPTIONS = 1;
 
         instance.setState({ranvierAPIResponse:json})
         instance.GenerateAreaDropdown()
+        
+        const areaDropDown = component.find('select#areaDropdown');
+
+        expect(areaDropDown.children()).toHaveLength(NUMBER_OF_AREAS_IN_TEST_DATA + NUMBER_OF_BLANKS_IN_OPTIONS)
         expect(instance.state.areaList.count())
             .toBe(NUMBER_OF_AREAS_IN_TEST_DATA);
     });
@@ -114,6 +139,12 @@ describe('After loading the test data, the component', () => {
         instance.setState({ranvierAPIResponse:json})
         instance.GenerateAreaDropdown()
 
+        const areaDropDown = component.find('select#areaDropdown');
+
+        expect(areaDropDown.childAt(0).props()).toHaveProperty('value', '')
+        expect(areaDropDown.childAt(1).props()).toHaveProperty('value', 'limbo')
+        expect(areaDropDown.childAt(2).props()).toHaveProperty('value', 'mapped')
+        expect(areaDropDown.childAt(3).props()).toHaveProperty('value', 'craft')
         expect(instance.state.areaList
             .every(option => ['mapped','craft','limbo'].includes(option.props.value)))
             .toBe(true);
@@ -129,6 +160,9 @@ describe('After loading the test data, the component', () => {
         instance.setState({selectedFloor:0})
         instance.InitializeRoomMap()
 
+        const areaGraph = component.find('div#reactgrid');
+
+        expect(areaGraph.childAt(0).children()).toHaveLength(NUMBER_OF_ROOMS_IN_TEST_DATA)
         expect(instance.GenerateAreaGraph().count())
             .toBe(NUMBER_OF_ROOMS_IN_TEST_DATA);
     });
