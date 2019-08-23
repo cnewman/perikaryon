@@ -8,12 +8,15 @@ import axios from 'axios';
 const { List, Set, Map } = require('immutable');
 const ReactGridLayout = WidthProvider(RGL);
 class Room {
-  constructor(area, title, coordinates, elementContainer) {
+  constructor(area, title, description, coordinates, elementContainer, modified = false) {
     this.area = area;
     this.title = title;
+    this.description = description;
     this.coordinates = coordinates;
+    this.exits = List();
+    
     this.elementContainer = elementContainer;
-    this.exits = List()
+    this.modified = modified;
   }
 }
 class App extends Component {
@@ -38,6 +41,7 @@ class App extends Component {
         id={title}
         coordinate_values={coordinates}
         key={area + title}
+        onClick= {this.HandleClickNode}
         data-grid={{ x: coordinates.x, y: coordinates.y, w: 1, h: 1 }}
       >
         {title}({(coordinates.x)},{(coordinates.y)},{coordinates.z})
@@ -53,6 +57,7 @@ class App extends Component {
         roomData: prevState.roomData.set(roomLayout.i,
           new Room(this.state.roomData.get(roomLayout.i).area,
             this.state.roomData.get(roomLayout.i).title,
+            this.state.roomData.get(roomLayout.i).description,
             { x: roomLayout.x, y: roomLayout.y, z: prevState.roomData.get(roomLayout.i).coordinates.z },
             this.CreateElementContainer(
               this.state.roomData.get(roomLayout.i).area,
@@ -72,7 +77,7 @@ class App extends Component {
       for (let [, room] of Object.entries(area.roomList)) {
         if (room.coordinates) {
           areaMap = areaMap.set(area.name + room.title,
-            new Room(area.name, room.title, room.coordinates,
+            new Room(area.name, room.title, room.description, room.coordinates,
               this.CreateElementContainer(room.area.name, room.title,
                 { x: room.coordinates.x, y: room.coordinates.y, z: room.coordinates.z })))
         }
@@ -99,8 +104,8 @@ class App extends Component {
   }
   AddRoom(title) {
     if (title) {
-      this.UpdateRoomMap(new Room(this.state.selectedArea, title, { x: 0, y: 0, z: this.state.selectedFloor },
-        this.CreateElementContainer(this.state.selectedArea, title, { x: 0, y: 0, z: this.state.selectedFloor })))
+      this.UpdateRoomMap(new Room(this.state.selectedArea, title, "", { x: 0, y: 0, z: this.state.selectedFloor },
+        this.CreateElementContainer(this.state.selectedArea, title, { x: 0, y: 0, z: this.state.selectedFloor }, true)))
     }
   }
   /*
@@ -238,6 +243,15 @@ class App extends Component {
   }
   componentDidMount() {
     this.callAPI();
+  }
+  HandleChangeDescriptionEvent(e){}
+  HandleClickNode = (e) => {
+    console.log(e.target.id)
+    this.GenerateTextBlock(this.state.roomData.get(this.state.selectedArea+e.target.id).description)
+  }
+
+  GenerateTextBlock(description){
+    //<input type="text" onChange={(typingEvent) => this.HandleChangeDescriptionEvent(typingEvent)}>{description}</input>
   }
 
   /*

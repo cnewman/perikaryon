@@ -56,7 +56,7 @@ module.exports = {
               id:req.body[key].title,
               title:req.body[key].title,
               coordinates:[req.body[key].coordinates.x, req.body[key].coordinates.y, req.body[key].coordinates.z],
-              description:"Hi I'm a room"
+              description:req.body[key].description
             })
           }
         }
