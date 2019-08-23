@@ -32,7 +32,8 @@ class App extends Component {
       floorList: List(),
       selectedFloor: 0,
       addRoomField: "",
-      roomData: Map()
+      roomData: Map(),
+      selectedRoom:""
     };
   }
   CreateElementContainer(area, title, coordinates) {
@@ -247,11 +248,18 @@ class App extends Component {
   HandleChangeDescriptionEvent(e){}
   HandleClickNode = (e) => {
     console.log(e.target.id)
-    this.GenerateTextBlock(this.state.roomData.get(this.state.selectedArea+e.target.id).description)
+    this.setState({
+      selectedRoom: e.target.id
+    })
   }
 
-  GenerateTextBlock(description){
-    //<input type="text" onChange={(typingEvent) => this.HandleChangeDescriptionEvent(typingEvent)}>{description}</input>
+  GenerateTextBlock(){
+    if(this.state.selectedRoom){
+      let description = this.state.roomData.get(this.state.selectedArea+this.state.selectedRoom).description;
+      return(<textarea type="text" onChange={this.HandleChangeDescriptionEvent} value={description}/>)
+    }else{
+      return(null)
+    }
   }
 
   /*
@@ -281,6 +289,7 @@ class App extends Component {
             {this.GenerateAreaGraph()}
           </ReactGridLayout>
         </div>
+        {this.GenerateTextBlock()}
       </div>
     );
   }
