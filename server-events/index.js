@@ -44,9 +44,25 @@ module.exports = {
         for(let key of Object.keys(req.body)){
           console.log(req.body[key])
         }
-        // const config = yaml.safeLoad(fs.readFileSync('/home/wottbox/Desktop/ranviermud/bundles/bundle-example-areas/areas/mapped/rooms.yml', 'utf-8'))
-        // const indentedJson = JSON.stringify(config,null,4)
-        // console.log(indentedJson)
+        const config = yaml.safeLoad(fs.readFileSync('/home/wottbox/Desktop/ranviermud/bundles/bundle-example-areas/areas/mapped/rooms.yml', 'utf-8'))
+        const indentedJson = JSON.stringify(config,null,null)
+        let area = JSON.parse(indentedJson)
+        for(let room of area){
+          console.log(room)
+        }
+        for(let key of Object.keys(req.body)){
+          if(req.body[key].title == "testArea"){
+            area.push({
+              id:req.body[key].title,
+              title:req.body[key].title,
+              coordinates:[req.body[key].coordinates.x, req.body[key].coordinates.y, req.body[key].coordinates.z],
+              description:"Hi I'm a room"
+            })
+          }
+        }
+        //console.log(yaml.safeDump(area, {condenseFlow:true}))
+        fs.writeFileSync('/home/wottbox/Desktop/ranviermud/bundles/bundle-example-areas/areas/mapped/rooms.yml', yaml.safeDump(area));
+
       });
       app.listen(port, () => console.log(`Express listening on port ${port}!`))
     },
