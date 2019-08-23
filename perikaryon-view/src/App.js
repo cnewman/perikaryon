@@ -245,18 +245,26 @@ class App extends Component {
   componentDidMount() {
     this.callAPI();
   }
-  HandleChangeDescriptionEvent(e){}
+
+  /*
+  * These functions allow for room descriptions to be displayed in the editor as well as modified.
+  * The HandleClicKnode function receives a click and updates the selectedRoom id. GenerateTextBlock
+  * is then used to open a text box with the room's description. Finally, changes made in the textarea
+  * are reflected in the room's description via the HandleChangeDescriptionEvent function.
+  */
+  HandleChangeDescriptionEvent = (e) => {
+    this.state.roomData.get(this.state.selectedArea+this.state.selectedRoom).description = e.target.value;
+  }
   HandleClickNode = (e) => {
     console.log(e.target.id)
     this.setState({
       selectedRoom: e.target.id
     })
   }
-
   GenerateTextBlock(){
     if(this.state.selectedRoom){
       let description = this.state.roomData.get(this.state.selectedArea+this.state.selectedRoom).description;
-      return(<textarea type="text" onChange={this.HandleChangeDescriptionEvent} value={description}/>)
+      return(<textarea type="text" onChange={this.HandleChangeDescriptionEvent}>{description}</textarea>)
     }else{
       return(null)
     }
