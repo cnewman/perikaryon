@@ -8,14 +8,12 @@ import axios from 'axios';
 const { List, Set, Map } = require('immutable');
 const ReactGridLayout = WidthProvider(RGL);
 class Room {
-  constructor(area, title, description, coordinates, elementContainer, modified = false) {
+  constructor(area, title, description, coordinates, modified = false) {
     this.area = area;
     this.title = title;
     this.description = description;
     this.coordinates = coordinates;
     this.exits = List();
-    
-    this.elementContainer = elementContainer;
     this.modified = modified;
   }
 }
@@ -59,12 +57,7 @@ class App extends Component {
           new Room(this.state.roomData.get(roomLayout.i).area,
             this.state.roomData.get(roomLayout.i).title,
             this.state.roomData.get(roomLayout.i).description,
-            { x: roomLayout.x, y: roomLayout.y, z: prevState.roomData.get(roomLayout.i).coordinates.z },
-            this.CreateElementContainer(
-              this.state.roomData.get(roomLayout.i).area,
-              this.state.roomData.get(roomLayout.i).title,
-              { x: roomLayout.x, y: roomLayout.y, z: prevState.roomData.get(roomLayout.i).coordinates.z }
-            )))
+            { x: roomLayout.x, y: roomLayout.y, z: prevState.roomData.get(roomLayout.i).coordinates.z }))
       }));
     });
   }
@@ -78,9 +71,7 @@ class App extends Component {
       for (let [, room] of Object.entries(area.roomList)) {
         if (room.coordinates) {
           areaMap = areaMap.set(area.name + room.title,
-            new Room(area.name, room.title, room.description, room.coordinates,
-              this.CreateElementContainer(room.area.name, room.title,
-                { x: room.coordinates.x, y: room.coordinates.y, z: room.coordinates.z })))
+            new Room(area.name, room.title, room.description, room.coordinates))
         }
       }
     }
@@ -105,8 +96,7 @@ class App extends Component {
   }
   AddRoom(title) {
     if (title) {
-      this.UpdateRoomMap(new Room(this.state.selectedArea, title, "", { x: 0, y: 0, z: this.state.selectedFloor },
-        this.CreateElementContainer(this.state.selectedArea, title, { x: 0, y: 0, z: this.state.selectedFloor }, true)))
+      this.UpdateRoomMap(new Room(this.state.selectedArea, title, "", { x: 0, y: 0, z: this.state.selectedFloor }, true))
     }
   }
   /*
@@ -120,7 +110,7 @@ class App extends Component {
       if (room.area == this.state.selectedArea) {
         if (room.coordinates != null) {
           if (this.state.selectedFloor == room.coordinates.z) {
-            visibleRoomList = visibleRoomList.push(room.elementContainer)
+            visibleRoomList = visibleRoomList.push(this.CreateElementContainer(this.state.selectedArea, room.title, room.coordinates))
           }
         } else {
           console.log("Coordinates is null. Areabuilder currently requires coordinates to work.");
