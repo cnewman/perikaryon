@@ -8,13 +8,16 @@ import axios from 'axios';
 const { List, Set, Map } = require('immutable');
 const ReactGridLayout = WidthProvider(RGL);
 class Room {
-  constructor(area, title, description, coordinates, modified = false) {
+  constructor(area, title, description, coordinates, id, doors = {}, exits = [], npcs = new Set()) {
+    this.id = id;
     this.area = area;
     this.title = title;
     this.description = description;
     this.coordinates = coordinates;
-    this.exits = List();
-    this.modified = modified;
+    //this.modified = modified;
+    this.doors = this.doors = new Map(Object.entries(JSON.parse(JSON.stringify(doors || {}))));
+    this.exits = List(exits);
+    this.npcs = npcs;
   }
 }
 class App extends Component {
@@ -57,7 +60,11 @@ class App extends Component {
           new Room(this.state.roomData.get(roomLayout.i).area,
             this.state.roomData.get(roomLayout.i).title,
             this.state.roomData.get(roomLayout.i).description,
-            { x: roomLayout.x, y: roomLayout.y, z: prevState.roomData.get(roomLayout.i).coordinates.z }))
+            { x: roomLayout.x, y: roomLayout.y, z: prevState.roomData.get(roomLayout.i).coordinates.z },
+            this.state.roomData.get(roomLayout.i).id,
+            this.state.roomData.get(roomLayout.i).doors,
+            this.state.roomData.get(roomLayout.i).exits,
+            this.state.roomData.get(roomLayout.i).npcs))
       }));
     });
   }
@@ -71,7 +78,7 @@ class App extends Component {
       for (let [, room] of Object.entries(area.roomList)) {
         if (room.coordinates) {
           areaMap = areaMap.set(area.name + room.title,
-            new Room(area.name, room.title, room.description, room.coordinates))
+            new Room(area.name, room.title, room.description, room.coordinates, room.id, room.doors, room.exits, room.npcs))
         }
       }
     }
@@ -96,7 +103,7 @@ class App extends Component {
   }
   AddRoom(title) {
     if (title) {
-      this.UpdateRoomMap(new Room(this.state.selectedArea, title, "", { x: 0, y: 0, z: this.state.selectedFloor }, true))
+      this.UpdateRoomMap(new Room(this.state.selectedArea, title, "", { x: 0, y: 0, z: this.state.selectedFloor }, title))
     }
   }
   /*
