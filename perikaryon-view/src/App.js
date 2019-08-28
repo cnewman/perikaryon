@@ -16,7 +16,7 @@ class Room {
     this.coordinates = coordinates;
     //this.modified = modified;
     this.doors = this.doors = new Map(Object.entries(JSON.parse(JSON.stringify(doors || {}))));
-    this.exits = List(exits);
+    this.exits = Set(exits);
     this.npcs = npcs;
   }
 }
@@ -188,40 +188,41 @@ class App extends Component {
   * Once changes have been made, determine exit directions and upload the new area back to Ranvier for saving.
   */
   HandleSaveArea = (e) => {
-    let resultList = Map()
-    for (let [, targetRoom] of this.state.roomData) {
-      for (let [, potentialExit] of this.state.roomData) {
-        let x = potentialExit.coordinates.x - targetRoom.coordinates.x
-        let y = potentialExit.coordinates.y - targetRoom.coordinates.y
-        let z = potentialExit.coordinates.z - targetRoom.coordinates.z
-        if (x == -1 && y == 0 && z == 0) {
-          let currentRoom = this.state.roomData.get(targetRoom.area + targetRoom.title)
-          currentRoom.exits = currentRoom.exits.push(potentialExit.title + ":" + "west")
-          resultList = resultList.set(targetRoom.area + targetRoom.title, currentRoom)
-        }
-        else if (x == 1 && y == 0 && z == 0) {
-          let currentRoom = this.state.roomData.get(targetRoom.area + targetRoom.title)
-          currentRoom.exits = currentRoom.exits.push(potentialExit.title + ":" + "east")
-          resultList = resultList.set(targetRoom.area + targetRoom.title, currentRoom)
-        }
-        else if (x == 0 && y == -1 && z == 0) {
-          let currentRoom = this.state.roomData.get(targetRoom.area + targetRoom.title)
-          currentRoom.exits = currentRoom.exits.push(potentialExit.title + ":" + "north")
-          resultList = resultList.set(targetRoom.area + targetRoom.title, currentRoom)
-        }
-        else if (x == 0 && y == 1 && z == 0) {
-          let currentRoom = this.state.roomData.get(targetRoom.area + targetRoom.title)
-          currentRoom.exits = currentRoom.exits.push(potentialExit.title + ":" + "south")
-          resultList = resultList.set(targetRoom.area + targetRoom.title, currentRoom)
-        }
-        else {
-          resultList = resultList.set(targetRoom.area + targetRoom.title, targetRoom)
-        }
-      }
-    }
-    this.setState({
-      roomData: resultList
-    })
+    //TODO FIX SOMEHOW
+    // let resultList = Map()
+    // for (let [, targetRoom] of this.state.roomData) {
+    //   for (let [, potentialExit] of this.state.roomData) {
+    //     let x = potentialExit.coordinates.x - targetRoom.coordinates.x
+    //     let y = potentialExit.coordinates.y - targetRoom.coordinates.y
+    //     let z = potentialExit.coordinates.z - targetRoom.coordinates.z
+    //     if (x == -1 && y == 0 && z == 0) {
+    //       let currentRoom = this.state.roomData.get(targetRoom.area + targetRoom.title)
+    //       currentRoom.exits = currentRoom.exits.add({roomId:potentialExit.title, direction:"west"})
+    //       resultList = resultList.set(targetRoom.area + targetRoom.title, currentRoom)
+    //     }
+    //     else if (x == 1 && y == 0 && z == 0) {
+    //       let currentRoom = this.state.roomData.get(targetRoom.area + targetRoom.title)
+    //       currentRoom.exits = currentRoom.exits.add({roomId:potentialExit.title, direction:"east"})
+    //       resultList = resultList.set(targetRoom.area + targetRoom.title, currentRoom)
+    //     }
+    //     else if (x == 0 && y == -1 && z == 0) {
+    //       let currentRoom = this.state.roomData.get(targetRoom.area + targetRoom.title)
+    //       currentRoom.exits = currentRoom.exits.add({roomId:potentialExit.title, direction:"north"})
+    //       resultList = resultList.set(targetRoom.area + targetRoom.title, currentRoom)
+    //     }
+    //     else if (x == 0 && y == 1 && z == 0) {
+    //       let currentRoom = this.state.roomData.get(targetRoom.area + targetRoom.title)
+    //       currentRoom.exits = currentRoom.exits.add({roomId:potentialExit.title, direction:"south"})
+    //       resultList = resultList.set(targetRoom.area + targetRoom.title, currentRoom)
+    //     }
+    //     else {
+    //       resultList = resultList.set(targetRoom.area + targetRoom.title, targetRoom)
+    //     }
+    //   }
+    // }
+    // this.setState({
+    //   roomData: resultList
+    // })
     axios.put("http://localhost:3004/savearea", this.state.roomData).then(res => console.log(res.data));
   }
 

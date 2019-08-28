@@ -41,22 +41,23 @@ module.exports = {
         res.json(getAreasInfo(state));
       });
       app.put('/savearea', (req, res) => {
-        const config = yaml.safeLoad(fs.readFileSync('/home/wottbox/Desktop/ranviermud/bundles/bundle-example-areas/areas/mapped/rooms.yml', 'utf-8'))
+        //const config = yaml.safeLoad(fs.readFileSync('/home/wottbox/Desktop/ranviermud/bundles/bundle-example-areas/areas/mapped/rooms.yml', 'utf-8'))
         //fs.rename('/home/wottbox/Desktop/ranviermud/bundles/bundle-example-areas/areas/mapped/rooms.yml', '/home/wottbox/Desktop/ranviermudbackup/rooms.yml')
-        const indentedJson = JSON.stringify(config)
-        let area = JSON.parse(indentedJson)
+        //const indentedJson = JSON.stringify(config)
+        //let area = JSON.parse(indentedJson)
         // for(let key of Object.keys(req.body)){
         //   console.log(req.body[key])
         // }
+        let area = []
         for(let key of Object.keys(req.body)){
             area.push({
               id:req.body[key].id,
-              exits:req.body[key].exits,
+              exits:Array.from(req.body[key].exits),
               area:req.body[key].area,
               title:req.body[key].title,
               coordinates:Object.values(req.body[key].coordinates),
               description:req.body[key].description,
-              npcs:req.body[key].npcs,
+              npcs: Array.from(req.body[key].npcs),
               doors:req.body[key].doors
             })
         }
