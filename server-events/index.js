@@ -65,7 +65,7 @@ module.exports = {
         }
         //console.log(yaml.safeDump(area, {condenseFlow:true, noCompatMode:true}))
         console.log(process.cwd()+'/bundles/' + currBundle + '/areas/mapped/rooms.yml')
-        //fs.writeFileSync(process.cwd()+'/bundles/' + currBundle + '/areas/mapped/rooms.yml', yaml.safeDump(area));
+        fs.writeFileSync(process.cwd()+'/bundles/' + currBundle + '/areas/mapped/rooms.yml', yaml.safeDump(area));
 
       });
       app.listen(port, () => console.log(`Express listening on port ${port}!`))

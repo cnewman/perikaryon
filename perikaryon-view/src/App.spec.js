@@ -179,4 +179,33 @@ describe('After loading the test data, the component', () => {
             .every(room => INTERNAL_ROOM_KEYS_IN_DATA_SET.includes(room.key)))
             .toBe(true);
     });
+    it('the text area should populate with a description', () => {
+        const component = shallow(<App />);
+        const instance = component.instance();
+
+        instance.setState({ranvierAPIResponse:json})
+        instance.setState({selectedArea:'mapped'})
+        instance.setState({selectedFloor:0})
+        instance.InitializeRoomMap()
+
+        const areaGraph = component.find('textarea#roomDescription');
+        
+        expect(areaGraph.props()).toHaveProperty('value', '')
+    });
+});
+describe('After clicking a node on the graph', () => {
+    it('the node should be selected', () => {
+        const component = shallow(<App />);
+        const instance = component.instance();
+
+        instance.setState({ranvierAPIResponse:json})
+        instance.setState({selectedArea:'mapped'})
+        instance.setState({selectedFloor:0})
+        instance.InitializeRoomMap()
+
+        const areaGraph = component.find('div#reactgrid');
+        areaGraph.childAt(0).children().at(0).simulate('click',{'target':{'id':'Hallway South 1'}})
+        expect(instance.state.selectedRoom).toBe('Hallway South 1')
+    });
+
 });

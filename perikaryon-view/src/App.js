@@ -190,41 +190,6 @@ class App extends Component {
   * Once changes have been made, determine exit directions and upload the new area back to Ranvier for saving.
   */
   HandleSaveArea = (e) => {
-    //TODO FIX SOMEHOW
-    // let resultList = Map()
-    // for (let [, targetRoom] of this.state.roomData) {
-    //   for (let [, potentialExit] of this.state.roomData) {
-    //     let x = potentialExit.coordinates.x - targetRoom.coordinates.x
-    //     let y = potentialExit.coordinates.y - targetRoom.coordinates.y
-    //     let z = potentialExit.coordinates.z - targetRoom.coordinates.z
-    //     if (x == -1 && y == 0 && z == 0) {
-    //       let currentRoom = this.state.roomData.get(targetRoom.area + targetRoom.title)
-    //       currentRoom.exits = currentRoom.exits.add({roomId:potentialExit.title, direction:"west"})
-    //       resultList = resultList.set(targetRoom.area + targetRoom.title, currentRoom)
-    //     }
-    //     else if (x == 1 && y == 0 && z == 0) {
-    //       let currentRoom = this.state.roomData.get(targetRoom.area + targetRoom.title)
-    //       currentRoom.exits = currentRoom.exits.add({roomId:potentialExit.title, direction:"east"})
-    //       resultList = resultList.set(targetRoom.area + targetRoom.title, currentRoom)
-    //     }
-    //     else if (x == 0 && y == -1 && z == 0) {
-    //       let currentRoom = this.state.roomData.get(targetRoom.area + targetRoom.title)
-    //       currentRoom.exits = currentRoom.exits.add({roomId:potentialExit.title, direction:"north"})
-    //       resultList = resultList.set(targetRoom.area + targetRoom.title, currentRoom)
-    //     }
-    //     else if (x == 0 && y == 1 && z == 0) {
-    //       let currentRoom = this.state.roomData.get(targetRoom.area + targetRoom.title)
-    //       currentRoom.exits = currentRoom.exits.add({roomId:potentialExit.title, direction:"south"})
-    //       resultList = resultList.set(targetRoom.area + targetRoom.title, currentRoom)
-    //     }
-    //     else {
-    //       resultList = resultList.set(targetRoom.area + targetRoom.title, targetRoom)
-    //     }
-    //   }
-    // }
-    // this.setState({
-    //   roomData: resultList
-    // })
     axios.put("http://localhost:3004/savearea", this.state.roomData).then(res => console.log(res.data));
   }
 
@@ -254,17 +219,20 @@ class App extends Component {
   */
   HandleChangeDescriptionEvent = (e) => {
     this.state.roomData.get(this.state.selectedArea+this.state.selectedRoom).description = e.target.value;
+    this.setState({
+      description: e.target.value
+    })
   }
   HandleClickNode = (e) => {
-    console.log(e.target.id)
     this.setState({
       selectedRoom: e.target.id
-    })
+    }, this.GenerateTextBlock)
   }
   GenerateTextBlock(){
     if(this.state.selectedRoom){
-      let description = this.state.roomData.get(this.state.selectedArea+this.state.selectedRoom).description;
-      return(<textarea type="text" onChange={this.HandleChangeDescriptionEvent}>{description}</textarea>)
+      this.setState({
+        description: this.state.roomData.get(this.state.selectedArea+this.state.selectedRoom).description
+      })
     }else{
       return(null)
     }
@@ -297,7 +265,7 @@ class App extends Component {
             {this.GenerateAreaGraph()}
           </ReactGridLayout>
         </div>
-        {this.GenerateTextBlock()}
+        <textarea id="roomDescription" type="text" readOnly={false} onChange={this.HandleChangeDescriptionEvent} value={this.state.description}/>
       </div>
     );
   }
