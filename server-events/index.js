@@ -49,7 +49,9 @@ module.exports = {
         //   console.log(req.body[key])
         // }
         let area = []
+        let currBundle = ""
         for(let key of Object.keys(req.body)){
+          currBundle = req.body[key].bundle
             area.push({
               id:req.body[key].id,
               exits:Array.from(req.body[key].exits),
@@ -62,7 +64,8 @@ module.exports = {
             })
         }
         //console.log(yaml.safeDump(area, {condenseFlow:true, noCompatMode:true}))
-        fs.writeFileSync('/home/wottbox/Desktop/ranviermud/bundles/bundle-example-areas/areas/mapped/rooms.yml', yaml.safeDump(area));
+        console.log(process.cwd()+'/bundles/' + currBundle + '/areas/mapped/rooms.yml')
+        //fs.writeFileSync(process.cwd()+'/bundles/' + currBundle + '/areas/mapped/rooms.yml', yaml.safeDump(area));
 
       });
       app.listen(port, () => console.log(`Express listening on port ${port}!`))
@@ -77,14 +80,14 @@ function getAreasInfo(state) {
   const areaCount = state.AreaManager.areas.size;
   let areas = []
   for (const [name, area] of state.AreaManager.areas) {
-    const {title, metadata} = area;
+    const {title, metadata, bundle} = area;
     const rooms = area.rooms.size;
     const npcs = area.npcs.size;
     let roomList = [];
     for(const [name, room] of area.rooms){
       roomList.push(room);
     }
-    areas.push({name, title, rooms, npcs, metadata, roomList});
+    areas.push({name, title, rooms, npcs, metadata, bundle, roomList});
   }
 
   return (areas);

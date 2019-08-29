@@ -8,7 +8,7 @@ import axios from 'axios';
 const { List, Set, Map } = require('immutable');
 const ReactGridLayout = WidthProvider(RGL);
 class Room {
-  constructor(area, title, description, coordinates, id, doors = {}, exits = [], npcs = new Set()) {
+  constructor(area, title, description, coordinates, id, bundle, doors = {}, exits = [], npcs = new Set()) {
     this.id = id;
     this.area = area;
     this.title = title;
@@ -18,6 +18,7 @@ class Room {
     this.doors = this.doors = new Map(Object.entries(JSON.parse(JSON.stringify(doors || {}))));
     this.exits = Set(exits);
     this.npcs = npcs;
+    this.bundle = bundle;
   }
 }
 class App extends Component {
@@ -62,6 +63,7 @@ class App extends Component {
             this.state.roomData.get(roomLayout.i).description,
             { x: roomLayout.x, y: roomLayout.y, z: prevState.roomData.get(roomLayout.i).coordinates.z },
             this.state.roomData.get(roomLayout.i).id,
+            this.state.roomData.get(roomLayout.i).bundle,
             this.state.roomData.get(roomLayout.i).doors,
             this.state.roomData.get(roomLayout.i).exits,
             this.state.roomData.get(roomLayout.i).npcs))
@@ -78,7 +80,7 @@ class App extends Component {
       for (let [, room] of Object.entries(area.roomList)) {
         if (room.coordinates) {
           areaMap = areaMap.set(area.name + room.title,
-            new Room(area.name, room.title, room.description, room.coordinates, room.id, room.doors, room.exits, room.npcs))
+            new Room(area.name, room.title, room.description, room.coordinates, room.id, area.bundle, room.doors, room.exits, room.npcs))
         }
       }
     }
