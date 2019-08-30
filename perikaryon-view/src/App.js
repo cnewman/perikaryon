@@ -103,6 +103,13 @@ class App extends Component {
       this.AddRoom(this.state.addRoomField)
     }
   }
+  HandleDeleteRoomEvent = (e) => {
+    if(this.state.roomData){
+      this.setState((prevState) => ({
+        roomData: prevState.roomData.delete(this.state.selectedArea+this.state.selectedRoom)
+      }))
+    }
+  }
   HandleChangeFieldEvent = (e) => {
     this.setState({
       addRoomField: e.target.value
@@ -243,8 +250,6 @@ class App extends Component {
       this.setState({
         description: this.state.roomData.get(this.state.selectedArea+this.state.selectedRoom).description
       })
-    }else{
-      return(null)
     }
   }
 
@@ -265,8 +270,8 @@ class App extends Component {
           </select>
 
           <button id={"saveButton"} onClick={(clickEvent) => this.HandleSaveArea(clickEvent)}>Save Area</button>
-
-          <button id={"addAreaButton"} onClick={(clickEvent) => this.HandleAddRoomEvent(clickEvent)}>Add Room</button>
+          <button id={"deleteRoomButton"} onClick={(clickEvent) => this.HandleDeleteRoomEvent(clickEvent)}>Delete Room</button>
+          <button id={"addRoomButton"} onClick={(clickEvent) => this.HandleAddRoomEvent(clickEvent)}>Add Room</button>
           <input type="text" onChange={(typingEvent) => this.HandleChangeFieldEvent(typingEvent)} />
         </div>
 
