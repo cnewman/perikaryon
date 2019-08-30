@@ -39,13 +39,23 @@ class App extends Component {
     };
   }
   CreateElementContainer(area, title, coordinates) {
+    let smallestYCoordinate = 0
+    let smallestXCoordinate = 0
+    for (let [, room] of this.state.roomData) {
+      if (room.area == this.state.selectedArea) {
+        if (room.coordinates != null) {
+          smallestXCoordinate = Math.min(room.coordinates.x, smallestXCoordinate)
+          smallestYCoordinate = Math.min(room.coordinates.y, smallestYCoordinate)
+        }
+      }
+    }
     return (
       <div style={{ background: "#000FFF" }}
         id={title}
         coordinate_values={coordinates}
         key={area + title}
         onClick= {this.HandleClickNode}
-        data-grid={{ x: coordinates.x, y: coordinates.y, w: 1, h: 1 }}
+        data-grid={{ x: (coordinates.x + Math.abs(smallestXCoordinate)), y: (coordinates.y + Math.abs(smallestYCoordinate)), w: 1, h: 1 }}
       >
         {title}({(coordinates.x)},{(coordinates.y)},{coordinates.z})
       </div>
