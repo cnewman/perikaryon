@@ -265,7 +265,7 @@ class App extends Component {
             {this.GenerateAreaGraph()}
           </ReactGridLayout>
         </div>
-        <textarea id="roomDescription" type="text" readOnly={false} onChange={this.HandleChangeDescriptionEvent} value={this.state.description}/>
+        <textarea id="roomDescription" type="text" readOnly={false} onChange={this.HandleChangeDescriptionEvent} value={this.state.description || ''}/>
       </div>
     );
   }

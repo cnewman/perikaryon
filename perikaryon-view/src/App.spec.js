@@ -179,7 +179,7 @@ describe('After loading the test data, the component', () => {
             .every(room => INTERNAL_ROOM_KEYS_IN_DATA_SET.includes(room.key)))
             .toBe(true);
     });
-    it('the text area should populate with a description', () => {
+    it('should have a description text area that is blank', () => {
         const component = shallow(<App />);
         const instance = component.instance();
 
@@ -188,9 +188,8 @@ describe('After loading the test data, the component', () => {
         instance.setState({selectedFloor:0})
         instance.InitializeRoomMap()
 
-        const areaGraph = component.find('textarea#roomDescription');
-        
-        expect(areaGraph.props()).toHaveProperty('value', '')
+        const textArea = component.find('textarea#roomDescription');
+        expect(textArea.props()).toHaveProperty('value', '')
     });
 });
 describe('After clicking a node on the graph', () => {
@@ -206,6 +205,26 @@ describe('After clicking a node on the graph', () => {
         const areaGraph = component.find('div#reactgrid');
         areaGraph.childAt(0).children().at(0).simulate('click',{'target':{'id':'Hallway South 1'}})
         expect(instance.state.selectedRoom).toBe('Hallway South 1')
+    });
+    it('the text area should populate with a description', () => {
+        const component = shallow(<App />);
+        const instance = component.instance();
+
+        instance.setState({ranvierAPIResponse:json})
+        instance.setState({selectedArea:'mapped'})
+        instance.setState({selectedFloor:0})
+        instance.InitializeRoomMap()
+
+        const areaGraph = component.find('div#reactgrid');
+        areaGraph.childAt(0).children().at(0).simulate('click',{'target':{'id':'Hallway South 1'}})
+
+        const southTextArea = component.find('textarea#roomDescription');
+        expect(southTextArea.props()).toHaveProperty('value', 'You are in the south hallway.')
+
+        
+        areaGraph.childAt(0).children().at(2).simulate('click',{'target':{'id':'Hallway East 1'}})
+        const eastTextArea = component.find('textarea#roomDescription');
+        expect(eastTextArea.props()).toHaveProperty('value', 'You are in the east hallway.')
     });
 
 });
