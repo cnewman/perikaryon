@@ -189,6 +189,7 @@ describe('After loading the test data, the component', () => {
         instance.InitializeRoomMap()
 
         const textArea = component.find('textarea#roomDescription');
+
         expect(textArea.props()).toHaveProperty('value', '')
     });
 });
@@ -204,6 +205,7 @@ describe('After clicking a node on the graph', () => {
 
         const areaGraph = component.find('div#reactgrid');
         areaGraph.childAt(0).children().at(0).simulate('click',{'target':{'id':'Hallway South 1'}})
+
         expect(instance.state.selectedRoom).toBe('Hallway South 1')
     });
     it('the text area should populate with a description', () => {
@@ -224,7 +226,28 @@ describe('After clicking a node on the graph', () => {
         
         areaGraph.childAt(0).children().at(2).simulate('click',{'target':{'id':'Hallway East 1'}})
         const eastTextArea = component.find('textarea#roomDescription');
+
         expect(eastTextArea.props()).toHaveProperty('value', 'You are in the east hallway.')
     });
+    it('we should be able to delete using the delete button', () => {
+        const component = shallow(<App />);
+        const instance = component.instance();
 
+        instance.setState({ranvierAPIResponse:json})
+        instance.setState({selectedArea:'mapped'})
+        instance.setState({selectedFloor:0})
+        instance.InitializeRoomMap()
+
+        const areaGraph = component.find('div#reactgrid');
+        areaGraph.childAt(0).children().at(0).simulate('click',{'target':{'id':'Hallway South 1'}})
+        
+        //Make sure it does actually exist
+        expect(instance.state.roomData.has('mappedHallway South 1')).toBe(true); 
+        
+        const deleteButton = component.find('button#deleteRoomButton');
+        deleteButton.simulate('click')
+
+        //Make sure it now does not exist
+        expect(instance.state.roomData.has('mappedHallway South 1')).toBe(false);
+    });
 });
