@@ -1,3 +1,7 @@
+$ranvier-light-green: rgba(123, 187, 117, 1);
+$ranvier-green: rgba(104,160,99,1);
+$ranvier-dark-green: rgba(83,130,78,1);
+
 .App {
   text-align: center;
 }
@@ -18,8 +22,18 @@
   font-size: calc(10px + 2vmin);
   color: white;
 }
-div.blu {
-  background-color: blue;
+div.room {
+  cursor: pointer;
+  padding:4px;
+  text-align: center;
+  background-color: $ranvier-green;
+  border: 3px solid $ranvier-dark-green;
+  border-radius: 15px;
+  
+}
+div.room:hover{
+  background-color: $ranvier-light-green;
+  box-shadow: 2px 2px 2px rgba(0,0,0,0.5);
 }
 .App-link {
   color: #61dafb;

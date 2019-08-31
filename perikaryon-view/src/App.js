@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import "./App.css";
+import "./App.scss";
 import "../node_modules/react-grid-layout/css/styles.css"
 import "../node_modules/react-resizable/css/styles.css"
 import RGL, { WidthProvider } from "react-grid-layout";
@@ -50,7 +50,7 @@ class App extends Component {
       }
     }
     return (
-      <div style={{ background: "#000FFF" }}
+      <div className={'room'}
         id={title}
         coordinate_values={coordinates}
         key={area + title}
@@ -243,8 +243,6 @@ class App extends Component {
       this.setState({
         description: this.state.roomData.get(this.state.selectedArea+this.state.selectedRoom).description
       })
-    }else{
-      return(null)
     }
   }
 
