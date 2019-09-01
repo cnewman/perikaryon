@@ -26,59 +26,84 @@ class App extends Component {
     verticalCompact: false,
     margin:[20,20],
     preventCollision: true,
+    isResizable: false,
   };
   constructor(props) {
     super(props);
     this.state = {
       ranvierAPIResponse: "",
       selectedArea: "",
-      areaList: List(),
-      floorList: List(),
-      selectedFloor: 0,
+      selectedRoom:"",
       addRoomField: "",
-      roomData: Map(),
-      selectedRoom:""
+      selectedFloor: 0,
+      listOfAreas: List(),
+      listOfFloorsInArea: List(),
+      mapOfRoomsInArea: Map(),
+      smallestYCoordinate: 0,
+      smallestXCoordinate: 0,
+      nodeHeight: 2,
     };
   }
   CreateElementContainer(area, title, coordinates) {
-    let smallestYCoordinate = 0
-    let smallestXCoordinate = 0
-    for (let [, room] of this.state.roomData) {
-      if (room.area == this.state.selectedArea) {
-        if (room.coordinates != null) {
-          smallestXCoordinate = Math.min(room.coordinates.x, smallestXCoordinate)
-          smallestYCoordinate = Math.min(room.coordinates.y, smallestYCoordinate)
-        }
-      }
-    }
+    const ranvierCoordinates = this.TranslateReactGridToRanvierCoordinates(coordinates, this.state.smallestXCoordinate, this.state.smallestYCoordinate)
     return (
       <div className={'room'}
         id={title}
         coordinate_values={coordinates}
         key={area + title}
         onClick= {this.HandleClickNode}
-        data-grid={{ x: (coordinates.x + Math.abs(smallestXCoordinate)), y: (coordinates.y + Math.abs(smallestYCoordinate)), w: 1, h: 1 }}
+        data-grid={{ x: coordinates.x, y: coordinates.y, w: 1, h: this.state.nodeHeight }}
       >
-        {title}({(coordinates.x)},{(coordinates.y)},{coordinates.z})
+        {title} <br/> ({ranvierCoordinates.x},{ranvierCoordinates.y},{ranvierCoordinates.z})
       </div>
     )
   }
+  TranslateRanvierToReactGridCoordinates(coordinates, minX, minY){
+    return({
+      x:(coordinates.x + Math.abs(minX)),
+      y:((coordinates.y + Math.abs(minY))*this.state.nodeHeight),
+      z:coordinates.z
+    })
+  }
+  TranslateReactGridToRanvierCoordinates(coordinates, minX, minY){
+    return({
+      x:coordinates.x-Math.abs(minX),
+      y:(coordinates.y/this.state.nodeHeight)-Math.abs(minY),
+      z:coordinates.z,
+    })
+  }
   /*
-   *Whenever the layout changes, update the roomData map coordinates
+   *Whenever the layout changes, update the mapOfRoomsInArea map coordinates
    */
   LayoutChange = (roomLayoutList) => {
+    let xCoord = 0;
+    let yCoord = 0;    
+    for (let room of roomLayoutList) {
+      let currentRanvierCoords = this.TranslateReactGridToRanvierCoordinates(room, this.state.smallestXCoordinate, this.state.smallestYCoordinate)
+      xCoord = Math.min(currentRanvierCoords.x, xCoord)
+      yCoord = Math.min(currentRanvierCoords.y, yCoord)
+    }
+    this.setState({
+      smallestXCoordinate: xCoord,
+      smallestYCoordinate: yCoord,
+    })
     roomLayoutList.forEach((roomLayout) => {
+      console.log(roomLayout)
       this.setState((prevState) => ({
-        roomData: prevState.roomData.set(roomLayout.i,
-          new Room(this.state.roomData.get(roomLayout.i).area,
-            this.state.roomData.get(roomLayout.i).title,
-            this.state.roomData.get(roomLayout.i).description,
-            { x: roomLayout.x, y: roomLayout.y, z: prevState.roomData.get(roomLayout.i).coordinates.z },
-            this.state.roomData.get(roomLayout.i).id,
-            this.state.roomData.get(roomLayout.i).bundle,
-            this.state.roomData.get(roomLayout.i).doors,
-            this.state.roomData.get(roomLayout.i).exits,
-            this.state.roomData.get(roomLayout.i).npcs))
+        mapOfRoomsInArea: prevState.mapOfRoomsInArea.set(roomLayout.i,
+          new Room(this.state.mapOfRoomsInArea.get(roomLayout.i).area,
+            this.state.mapOfRoomsInArea.get(roomLayout.i).title,
+            this.state.mapOfRoomsInArea.get(roomLayout.i).description,
+            { 
+              x: roomLayout.x, 
+              y: roomLayout.y, 
+              z: prevState.mapOfRoomsInArea.get(roomLayout.i).coordinates.z 
+            },
+            this.state.mapOfRoomsInArea.get(roomLayout.i).id,
+            this.state.mapOfRoomsInArea.get(roomLayout.i).bundle,
+            this.state.mapOfRoomsInArea.get(roomLayout.i).doors,
+            this.state.mapOfRoomsInArea.get(roomLayout.i).exits,
+            this.state.mapOfRoomsInArea.get(roomLayout.i).npcs))
       }));
     });
   }
@@ -88,16 +113,31 @@ class App extends Component {
    */
   InitializeRoomMap() {
     let areaMap = Map()
+    let minX = 0
+    let minY = 0
     for (let [, area] of Object.entries(this.state.ranvierAPIResponse)) {
       for (let [, room] of Object.entries(area.roomList)) {
         if (room.coordinates) {
-          areaMap = areaMap.set(area.name + room.title,
-            new Room(area.name, room.title, room.description, room.coordinates, room.id, area.bundle, room.doors, room.exits, room.npcs))
+          minX = Math.min(minX, room.coordinates.x)
+          minY = Math.min(minY, room.coordinates.y)
         }
       }
     }
     this.setState({
-      roomData: areaMap
+      smallestXCoordinate: minX,
+      smallestYCoordinate: minY,
+    })
+    for (let [, area] of Object.entries(this.state.ranvierAPIResponse)) {
+      for (let [, room] of Object.entries(area.roomList)) {
+        if (room.coordinates) {
+          const coordinates = this.TranslateRanvierToReactGridCoordinates(room.coordinates, minX, minY)
+          areaMap = areaMap.set(area.name + room.title,
+            new Room(area.name, room.title, room.description, coordinates, room.id, area.bundle, room.doors, room.exits, room.npcs))
+        }
+      }
+    }
+    this.setState({
+      mapOfRoomsInArea: areaMap,
     })
   }
   HandleAddRoomEvent = (e) => {
@@ -106,9 +146,9 @@ class App extends Component {
     }
   }
   HandleDeleteRoomEvent = (e) => {
-    if(this.state.roomData){
+    if(this.state.mapOfRoomsInArea){
       this.setState((prevState) => ({
-        roomData: prevState.roomData.delete(this.state.selectedArea+this.state.selectedRoom)
+        mapOfRoomsInArea: prevState.mapOfRoomsInArea.delete(this.state.selectedArea+this.state.selectedRoom)
       }))
     }
   }
@@ -119,12 +159,12 @@ class App extends Component {
   }
   UpdateRoomMap(room) {
     this.setState((prevState) => ({
-      roomData: prevState.roomData.set(this.state.selectedArea + room.title, room)
+      mapOfRoomsInArea: prevState.mapOfRoomsInArea.set(this.state.selectedArea + room.title, room)
     }))
   }
   AddRoom(title) {
     if (title) {
-      this.UpdateRoomMap(new Room(this.state.selectedArea, title, "", { x: 0, y: 0, z: this.state.selectedFloor }, title))
+      this.UpdateRoomMap(new Room(this.state.selectedArea, title, "", { x: 10, y: 10, z: this.state.selectedFloor }, title))
     }
   }
   /*
@@ -134,7 +174,7 @@ class App extends Component {
    */
   GenerateAreaGraph() {
     let visibleRoomList = List()
-    for (let [, room] of this.state.roomData) {
+    for (let [, room] of this.state.mapOfRoomsInArea) {
       if (room.area == this.state.selectedArea) {
         if (room.coordinates != null) {
           if (this.state.selectedFloor == room.coordinates.z) {
@@ -164,7 +204,7 @@ class App extends Component {
     Object.keys(this.state.ranvierAPIResponse)
       .forEach((key) => {
         this.setState((prevState) => ({
-          areaList: prevState.areaList.push(<option key={this.state.ranvierAPIResponse[key].name} value={this.state.ranvierAPIResponse[key].name}>{this.state.ranvierAPIResponse[key].name}</option>),
+          listOfAreas: prevState.listOfAreas.push(<option key={this.state.ranvierAPIResponse[key].name} value={this.state.ranvierAPIResponse[key].name}>{this.state.ranvierAPIResponse[key].name}</option>),
         }))
       })
   }
@@ -183,12 +223,12 @@ class App extends Component {
   * unique floor numbers to populate the dropdown.
   */
   GenerateFloorDropdown() {
-    let uniqueFloorList = Set()
+    let uniquelistOfFloorsInArea = Set()
     for (let apikey of Object.keys(this.state.ranvierAPIResponse)) {
       if (this.state.ranvierAPIResponse[apikey].name == this.state.selectedArea) {
         for (let room of this.state.ranvierAPIResponse[apikey].roomList) {
           if (room.coordinates != null) {
-            uniqueFloorList = uniqueFloorList.add(room.coordinates.z)
+            uniquelistOfFloorsInArea = uniquelistOfFloorsInArea.add(room.coordinates.z)
           } else {
             console.log("Coordinates property is null. Areabuilder currently requires coordinates to work.");
           }
@@ -196,11 +236,11 @@ class App extends Component {
       }
     }
     let uniqueFloorDropdownElements = List()
-    for (let floor of uniqueFloorList) {
+    for (let floor of uniquelistOfFloorsInArea) {
       uniqueFloorDropdownElements = uniqueFloorDropdownElements.push(<option key={floor} value={floor}>{floor}</option>)
     }
     this.setState({
-      floorList: uniqueFloorDropdownElements
+      listOfFloorsInArea: uniqueFloorDropdownElements
     });
 
   }
@@ -209,7 +249,7 @@ class App extends Component {
   * Once changes have been made, determine exit directions and upload the new area back to Ranvier for saving.
   */
   HandleSaveArea = (e) => {
-    axios.put("http://localhost:3004/savearea", this.state.roomData).then(res => console.log(res.data));
+    axios.put("http://localhost:3004/savearea", this.state.mapOfRoomsInArea).then(res => console.log(res.data));
   }
 
   /*
@@ -237,7 +277,7 @@ class App extends Component {
   * are reflected in the room's description via the HandleChangeDescriptionEvent function.
   */
   HandleChangeDescriptionEvent = (e) => {
-    this.state.roomData.get(this.state.selectedArea+this.state.selectedRoom).description = e.target.value;
+    this.state.mapOfRoomsInArea.get(this.state.selectedArea+this.state.selectedRoom).description = e.target.value;
     this.setState({
       description: e.target.value
     })
@@ -250,7 +290,7 @@ class App extends Component {
   GenerateTextBlock(){
     if(this.state.selectedRoom){
       this.setState({
-        description: this.state.roomData.get(this.state.selectedArea+this.state.selectedRoom).description
+        description: this.state.mapOfRoomsInArea.get(this.state.selectedArea+this.state.selectedRoom).description
       })
     }
   }
@@ -264,11 +304,11 @@ class App extends Component {
         <div id="buttondiv">
           <select id={"areaDropdown"} onChange={(areaDropdownEvent) => this.HandleAreaDropdownChange(areaDropdownEvent)}>
             <option value=""></option>
-            {this.state.areaList}
+            {this.state.listOfAreas}
           </select>
 
           <select id={"floorDropDown"} onChange={(floorDropdownEvent) => this.HandleFloorDropdownChange(floorDropdownEvent)}>
-            {this.state.floorList}
+            {this.state.listOfFloorsInArea}
           </select>
 
           <button id={"saveButton"} onClick={(clickEvent) => this.HandleSaveArea(clickEvent)}>Save Area</button>

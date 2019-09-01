@@ -29,12 +29,12 @@ describe('When a room is added to the grid, it', () => {
         instance.AddRoom(instance.state.addRoomField)
         
         expect(component.exists('#Blep')).toBe(true)
-        expect(instance.state.roomData.has('mappedBlep')).toBe(true);
+        expect(instance.state.mapOfRoomsInArea.has('mappedBlep')).toBe(true);
     });
     it('should have coordinates 0,0,0', () => {
         const component = shallow(<App />);
         const instance = component.instance();
-        const DEFAULT_NEW_ROOM_COORDINATES = {x:0, y:0, z:0}
+        const DEFAULT_NEW_ROOM_COORDINATES = {x:10, y:10, z:0}
 
         instance.setState({ranvierAPIResponse:json})
         instance.setState({selectedArea:'mapped'})
@@ -46,7 +46,7 @@ describe('When a room is added to the grid, it', () => {
         const coord = component.find('div#Blep');
 
         expect(coord.props()).toHaveProperty('coordinate_values', DEFAULT_NEW_ROOM_COORDINATES)
-        expect(instance.state.roomData.get('mappedBlep').coordinates).toStrictEqual(DEFAULT_NEW_ROOM_COORDINATES);
+        expect(instance.state.mapOfRoomsInArea.get('mappedBlep').coordinates).toStrictEqual(DEFAULT_NEW_ROOM_COORDINATES);
     });
     it('should have the name given to it in the associated field', () => {
         const component = shallow(<App />);
@@ -62,8 +62,8 @@ describe('When a room is added to the grid, it', () => {
         
         const addedRoom = component.find('div#Blep');
 
-        expect(addedRoom.text()).toBe('Blep(0,0,0)')
-        expect(instance.state.roomData.get('mappedBlep').title).toBe(NEW_ROOM_NAME);
+        expect(addedRoom.text()).toBe('Blep  (10,3,0)')
+        expect(instance.state.mapOfRoomsInArea.get('mappedBlep').title).toBe(NEW_ROOM_NAME);
     });
     it('should not be created if name is blank', () => {
         const component = shallow(<App />);
@@ -80,7 +80,7 @@ describe('When a room is added to the grid, it', () => {
         const roomThatWasNotAdded = component.contains('div#Blep');
 
         expect(roomThatWasNotAdded).toBe(false)
-        expect(instance.state.roomData.has('mapped')).toBe(false);
+        expect(instance.state.mapOfRoomsInArea.has('mapped')).toBe(false);
     });
 });
 describe('After loading the test data, the component', () => {
@@ -96,7 +96,7 @@ describe('After loading the test data, the component', () => {
         const floorDropDown = component.find('select#floorDropDown');
 
         expect(floorDropDown.children()).toHaveLength(NUMBER_OF_FLOORS_IN_TEST_DATA)
-        expect(instance.state.floorList.count())
+        expect(instance.state.listOfFloorsInArea.count())
             .toBe(NUMBER_OF_FLOORS_IN_TEST_DATA)
     });
 
@@ -112,7 +112,7 @@ describe('After loading the test data, the component', () => {
         expect(floorDropDown.childAt(0).props()).toHaveProperty('value', 0)
         expect(floorDropDown.childAt(1).props()).toHaveProperty('value', -1)
         expect(floorDropDown.childAt(2).props()).toHaveProperty('value', 1)
-        expect(instance.state.floorList
+        expect(instance.state.listOfFloorsInArea
             .every(option => [0, -1, 1].includes(option.props.value)))
             .toBe(true);
     });
@@ -129,7 +129,7 @@ describe('After loading the test data, the component', () => {
         const areaDropDown = component.find('select#areaDropdown');
 
         expect(areaDropDown.children()).toHaveLength(NUMBER_OF_AREAS_IN_TEST_DATA + NUMBER_OF_BLANKS_IN_OPTIONS)
-        expect(instance.state.areaList.count())
+        expect(instance.state.listOfAreas.count())
             .toBe(NUMBER_OF_AREAS_IN_TEST_DATA);
     });
     it('should contain the mapped, craft, and limbo areas', () => {
@@ -145,7 +145,7 @@ describe('After loading the test data, the component', () => {
         expect(areaDropDown.childAt(1).props()).toHaveProperty('value', 'limbo')
         expect(areaDropDown.childAt(2).props()).toHaveProperty('value', 'mapped')
         expect(areaDropDown.childAt(3).props()).toHaveProperty('value', 'craft')
-        expect(instance.state.areaList
+        expect(instance.state.listOfAreas
             .every(option => ['mapped','craft','limbo'].includes(option.props.value)))
             .toBe(true);
     });
@@ -242,12 +242,12 @@ describe('After clicking a node on the graph', () => {
         areaGraph.childAt(0).children().at(0).simulate('click',{'target':{'id':'Hallway South 1'}})
         
         //Make sure it does actually exist
-        expect(instance.state.roomData.has('mappedHallway South 1')).toBe(true); 
+        expect(instance.state.mapOfRoomsInArea.has('mappedHallway South 1')).toBe(true); 
         
         const deleteButton = component.find('button#deleteRoomButton');
         deleteButton.simulate('click')
 
         //Make sure it now does not exist
-        expect(instance.state.roomData.has('mappedHallway South 1')).toBe(false);
+        expect(instance.state.mapOfRoomsInArea.has('mappedHallway South 1')).toBe(false);
     });
 });
