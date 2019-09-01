@@ -23,7 +23,9 @@ class Room {
 }
 class App extends Component {
   static defaultProps = {
-    verticalCompact: false
+    verticalCompact: false,
+    margin:[20,20],
+    preventCollision: true,
   };
   constructor(props) {
     super(props);
@@ -118,7 +120,7 @@ class App extends Component {
   UpdateRoomMap(room) {
     this.setState((prevState) => ({
       roomData: prevState.roomData.set(this.state.selectedArea + room.title, room)
-    }), this.GenerateAreaGraph)
+    }))
   }
   AddRoom(title) {
     if (title) {
@@ -163,7 +165,7 @@ class App extends Component {
       .forEach((key) => {
         this.setState((prevState) => ({
           areaList: prevState.areaList.push(<option key={this.state.ranvierAPIResponse[key].name} value={this.state.ranvierAPIResponse[key].name}>{this.state.ranvierAPIResponse[key].name}</option>),
-        }), this.GenerateAreaGraph)
+        }))
       })
   }
   /*
@@ -172,7 +174,7 @@ class App extends Component {
   HandleFloorDropdownChange = (e) => {
     this.setState({
       selectedFloor: e.target.value
-    }, this.GenerateAreaGraph);
+    });
   }
   /*
   * Take Area data from Ranvier API response and make a dropdown.
@@ -199,7 +201,7 @@ class App extends Component {
     }
     this.setState({
       floorList: uniqueFloorDropdownElements
-    }, this.GenerateAreaGraph);
+    });
 
   }
 
