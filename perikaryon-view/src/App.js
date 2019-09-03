@@ -82,8 +82,8 @@ class App extends Component {
     let yCoord = 0;
     for (let room of roomLayoutList) {
       let currentRanvierCoords = this.TranslateReactGridToRanvierCoordinates(room, this.state.smallestXCoordinate, this.state.smallestYCoordinate)
-      xCoord = Math.min(currentRanvierCoords.x, this.state.smallestXCoordinate)
-      yCoord = Math.min(currentRanvierCoords.y, this.state.smallestYCoordinate)
+      xCoord = Math.min(currentRanvierCoords.x, xCoord)
+      yCoord = Math.min(currentRanvierCoords.y, yCoord)
     }
     this.setState({
       smallestXCoordinate: xCoord,
@@ -144,7 +144,7 @@ class App extends Component {
   }
   HandleAddRoomEvent = (e) => {
     if (this.state.addRoomField) {
-      this.AddRoom(this.state.addRoomField)
+      this.UpdateRoomMap(new Room(this.state.selectedArea, this.state.addRoomField, "", { x: 10, y: 10, z: this.state.selectedFloor }, this.state.addRoomField))
     }
   }
   HandleDeleteRoomEvent = (e) => {
@@ -163,11 +163,6 @@ class App extends Component {
     this.setState((prevState) => ({
       mapOfRoomsInArea: prevState.mapOfRoomsInArea.set(this.state.selectedArea + room.title, room)
     }))
-  }
-  AddRoom(title) {
-    if (title) {
-      this.UpdateRoomMap(new Room(this.state.selectedArea, title, "", { x: 10, y: 10, z: this.state.selectedFloor }, title))
-    }
   }
   /*
    * Take Area data from Ranvier API response and make the graph using react-grid-layout API
