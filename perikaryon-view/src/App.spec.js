@@ -62,7 +62,7 @@ describe('When a room is added to the grid, it', () => {
         
         const addedRoom = component.find('div#Blep');
 
-        expect(addedRoom.text()).toBe('Blep  (10,3,0)')
+        expect(addedRoom.text()).toBe('Blep  (4,-3,0)')
         expect(instance.state.mapOfRoomsInArea.get('mappedBlep').title).toBe(NEW_ROOM_NAME);
     });
     it('should not be created if name is blank', () => {
@@ -162,7 +162,7 @@ describe('After loading the test data, the component', () => {
 
         const areaGraph = component.find('div#reactgrid');
 
-        expect(areaGraph.childAt(0).children()).toHaveLength(NUMBER_OF_ROOMS_IN_TEST_DATA)
+        expect(areaGraph.childAt(0).childAt(0).children()).toHaveLength(NUMBER_OF_ROOMS_IN_TEST_DATA)
         expect(instance.GenerateAreaGraph().count())
             .toBe(NUMBER_OF_ROOMS_IN_TEST_DATA);
     });
@@ -204,7 +204,7 @@ describe('After clicking a node on the graph', () => {
         instance.InitializeRoomMap()
 
         const areaGraph = component.find('div#reactgrid');
-        areaGraph.childAt(0).children().at(0).simulate('click',{'target':{'id':'Hallway South 1'}})
+        areaGraph.childAt(0).childAt(0).children().at(0).simulate('click',{'target':{'id':'Hallway South 1'}})
 
         expect(instance.state.selectedRoom).toBe('Hallway South 1')
     });
@@ -218,13 +218,13 @@ describe('After clicking a node on the graph', () => {
         instance.InitializeRoomMap()
 
         const areaGraph = component.find('div#reactgrid');
-        areaGraph.childAt(0).children().at(0).simulate('click',{'target':{'id':'Hallway South 1'}})
+        areaGraph.childAt(0).childAt(0).children().at(0).simulate('click',{'target':{'id':'Hallway South 1'}})
 
         const southTextArea = component.find('textarea#roomDescription');
         expect(southTextArea.props()).toHaveProperty('value', 'You are in the south hallway.')
 
         
-        areaGraph.childAt(0).children().at(2).simulate('click',{'target':{'id':'Hallway East 1'}})
+        areaGraph.childAt(0).childAt(0).children().at(2).simulate('click',{'target':{'id':'Hallway East 1'}})
         const eastTextArea = component.find('textarea#roomDescription');
 
         expect(eastTextArea.props()).toHaveProperty('value', 'You are in the east hallway.')
@@ -239,7 +239,7 @@ describe('After clicking a node on the graph', () => {
         instance.InitializeRoomMap()
 
         const areaGraph = component.find('div#reactgrid');
-        areaGraph.childAt(0).children().at(0).simulate('click',{'target':{'id':'Hallway South 1'}})
+        areaGraph.childAt(0).childAt(0).children().at(0).simulate('click',{'target':{'id':'Hallway South 1'}})
         
         //Make sure it does actually exist
         expect(instance.state.mapOfRoomsInArea.has('mappedHallway South 1')).toBe(true); 

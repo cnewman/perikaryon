@@ -7,6 +7,8 @@ import axios from 'axios';
 
 const { List, Set, Map } = require('immutable');
 const ReactGridLayout = WidthProvider(RGL);
+const gridWidth = 12;
+const centerOfGrid = gridWidth/2;
 class Room {
   constructor(area, title, description, coordinates, id, bundle, doors = {}, exits = [], npcs = new Set()) {
     this.id = id;
@@ -24,7 +26,7 @@ class Room {
 class App extends Component {
   static defaultProps = {
     verticalCompact: false,
-    margin:[20,20],
+    margin: [20, 20],
     preventCollision: true,
     isResizable: false,
   };
@@ -33,7 +35,7 @@ class App extends Component {
     this.state = {
       ranvierAPIResponse: "",
       selectedArea: "",
-      selectedRoom:"",
+      selectedRoom: "",
       addRoomField: "",
       selectedFloor: 0,
       listOfAreas: List(),
@@ -51,25 +53,25 @@ class App extends Component {
         id={title}
         coordinate_values={coordinates}
         key={area + title}
-        onClick= {this.HandleClickNode}
+        onClick={this.HandleClickNode}
         data-grid={{ x: coordinates.x, y: coordinates.y, w: 1, h: this.state.nodeHeight }}
       >
-        {title} <br/> ({ranvierCoordinates.x},{ranvierCoordinates.y},{ranvierCoordinates.z})
+        {title} <br /> ({ranvierCoordinates.x},{ranvierCoordinates.y},{ranvierCoordinates.z})
       </div>
     )
   }
-  TranslateRanvierToReactGridCoordinates(coordinates, minX, minY){
-    return({
-      x:(coordinates.x + Math.abs(minX)),
-      y:((coordinates.y + Math.abs(minY))*this.state.nodeHeight),
-      z:coordinates.z
+  TranslateRanvierToReactGridCoordinates(coordinates, minX, minY) {
+    return ({
+      x: (coordinates.x + Math.max(centerOfGrid, Math.abs(minX))),
+      y: (((-coordinates.y) + Math.abs(minY)) * this.state.nodeHeight),
+      z: coordinates.z
     })
   }
-  TranslateReactGridToRanvierCoordinates(coordinates, minX, minY){
-    return({
-      x:coordinates.x-Math.abs(minX),
-      y:(coordinates.y/this.state.nodeHeight)-Math.abs(minY),
-      z:coordinates.z,
+  TranslateReactGridToRanvierCoordinates(coordinates, minX, minY) {
+    return ({
+      x: coordinates.x - Math.max(centerOfGrid, Math.abs(minX)),
+      y: -(((coordinates.y / this.state.nodeHeight)) - Math.abs(minY)),
+      z: coordinates.z,
     })
   }
   /*
@@ -77,11 +79,11 @@ class App extends Component {
    */
   LayoutChange = (roomLayoutList) => {
     let xCoord = 0;
-    let yCoord = 0;    
+    let yCoord = 0;
     for (let room of roomLayoutList) {
       let currentRanvierCoords = this.TranslateReactGridToRanvierCoordinates(room, this.state.smallestXCoordinate, this.state.smallestYCoordinate)
-      xCoord = Math.min(currentRanvierCoords.x, xCoord)
-      yCoord = Math.min(currentRanvierCoords.y, yCoord)
+      xCoord = Math.min(currentRanvierCoords.x, this.state.smallestXCoordinate)
+      yCoord = Math.min(currentRanvierCoords.y, this.state.smallestYCoordinate)
     }
     this.setState({
       smallestXCoordinate: xCoord,
@@ -94,10 +96,10 @@ class App extends Component {
           new Room(this.state.mapOfRoomsInArea.get(roomLayout.i).area,
             this.state.mapOfRoomsInArea.get(roomLayout.i).title,
             this.state.mapOfRoomsInArea.get(roomLayout.i).description,
-            { 
-              x: roomLayout.x, 
-              y: roomLayout.y, 
-              z: prevState.mapOfRoomsInArea.get(roomLayout.i).coordinates.z 
+            {
+              x: roomLayout.x,
+              y: roomLayout.y,
+              z: prevState.mapOfRoomsInArea.get(roomLayout.i).coordinates.z
             },
             this.state.mapOfRoomsInArea.get(roomLayout.i).id,
             this.state.mapOfRoomsInArea.get(roomLayout.i).bundle,
@@ -146,9 +148,9 @@ class App extends Component {
     }
   }
   HandleDeleteRoomEvent = (e) => {
-    if(this.state.mapOfRoomsInArea){
+    if (this.state.mapOfRoomsInArea) {
       this.setState((prevState) => ({
-        mapOfRoomsInArea: prevState.mapOfRoomsInArea.delete(this.state.selectedArea+this.state.selectedRoom)
+        mapOfRoomsInArea: prevState.mapOfRoomsInArea.delete(this.state.selectedArea + this.state.selectedRoom)
       }))
     }
   }
@@ -277,7 +279,7 @@ class App extends Component {
   * are reflected in the room's description via the HandleChangeDescriptionEvent function.
   */
   HandleChangeDescriptionEvent = (e) => {
-    this.state.mapOfRoomsInArea.get(this.state.selectedArea+this.state.selectedRoom).description = e.target.value;
+    this.state.mapOfRoomsInArea.get(this.state.selectedArea + this.state.selectedRoom).description = e.target.value;
     this.setState({
       description: e.target.value
     })
@@ -287,10 +289,10 @@ class App extends Component {
       selectedRoom: e.target.id
     }, this.GenerateTextBlock)
   }
-  GenerateTextBlock(){
-    if(this.state.selectedRoom){
+  GenerateTextBlock() {
+    if (this.state.selectedRoom) {
       this.setState({
-        description: this.state.mapOfRoomsInArea.get(this.state.selectedArea+this.state.selectedRoom).description
+        description: this.state.mapOfRoomsInArea.get(this.state.selectedArea + this.state.selectedRoom).description
       })
     }
   }
@@ -300,29 +302,38 @@ class App extends Component {
   */
   render() {
     return (
-      <div>
-        <div id="buttondiv">
-          <select id={"areaDropdown"} onChange={(areaDropdownEvent) => this.HandleAreaDropdownChange(areaDropdownEvent)}>
-            <option value=""></option>
-            {this.state.listOfAreas}
-          </select>
+      <div className="container-fluid">
+        <div className="row" id="topdash">
+          <div id="buttondiv" className="col-xl">
+            <select id={"areaDropdown"} onChange={(areaDropdownEvent) => this.HandleAreaDropdownChange(areaDropdownEvent)}>
+              <option value=""></option>
+              {this.state.listOfAreas}
+            </select>
 
-          <select id={"floorDropDown"} onChange={(floorDropdownEvent) => this.HandleFloorDropdownChange(floorDropdownEvent)}>
-            {this.state.listOfFloorsInArea}
-          </select>
+            <select id={"floorDropDown"} onChange={(floorDropdownEvent) => this.HandleFloorDropdownChange(floorDropdownEvent)}>
+              {this.state.listOfFloorsInArea}
+            </select>
 
-          <button id={"saveButton"} onClick={(clickEvent) => this.HandleSaveArea(clickEvent)}>Save Area</button>
-          <button id={"deleteRoomButton"} onClick={(clickEvent) => this.HandleDeleteRoomEvent(clickEvent)}>Delete Room</button>
-          <button id={"addRoomButton"} onClick={(clickEvent) => this.HandleAddRoomEvent(clickEvent)}>Add Room</button>
-          <input type="text" onChange={(typingEvent) => this.HandleChangeFieldEvent(typingEvent)} />
+            <button id={"saveButton"} onClick={(clickEvent) => this.HandleSaveArea(clickEvent)}>Save Area</button>
+            <button id={"deleteRoomButton"} onClick={(clickEvent) => this.HandleDeleteRoomEvent(clickEvent)}>Delete Room</button>
+            <button id={"addRoomButton"} onClick={(clickEvent) => this.HandleAddRoomEvent(clickEvent)}>Add Room</button>
+            <input type="text" onChange={(typingEvent) => this.HandleChangeFieldEvent(typingEvent)} />
+          </div>
         </div>
-
-        <div id="reactgrid">
-          <ReactGridLayout layout={this.state.layout} onLayoutChange={this.LayoutChange} id="areaGrid" className="layout" cols={12} rowHeight={30} width={1200} {...this.props}>
-            {this.GenerateAreaGraph()}
-          </ReactGridLayout>
+        <div id="reactgrid" className="row">
+          <div className="col-xl">
+            <ReactGridLayout layout={this.state.layout} onLayoutChange={this.LayoutChange} id="areaGrid" className="layout" cols={gridWidth} rowHeight={30} width={1200} {...this.props}>
+              {this.GenerateAreaGraph()}
+            </ReactGridLayout>
+          </div>
         </div>
-        <textarea id="roomDescription" type="text" readOnly={false} onChange={this.HandleChangeDescriptionEvent} value={this.state.description || ''}/>
+        <div className="row" id="dashboard">
+          <div id="itemDiv" className="col-xl"></div>
+          <div id="descriptionDiv" className="col-xl">
+            <textarea id="roomDescription" type="text" readOnly={false} onChange={this.HandleChangeDescriptionEvent} value={this.state.description || ''} />
+          </div>
+          <div id="npcDiv" className="col-xl"></div>
+        </div>
       </div>
     );
   }
