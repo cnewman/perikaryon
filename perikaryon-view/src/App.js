@@ -58,6 +58,14 @@ class App extends Component {
       </div>
     )
   }
+  /*
+   * Take ranvier coordinates and do one of two things: If y is negative, remove the negative and shove it upward
+   * by the smallest negative number in the set of room coordinates (since react-grid won't show anything lower than)
+   * (0,0). Additionally, flip the y coordinate on its axis so that north and south appear correctly on the map.
+   * Same with x except just shove things over by the smallest negative x-coordinate.
+   * If y is positive, do the same thing as before for x and z. For y, just multiply by node height so that nodes do
+   * not overlap.
+   */
   TranslateRanvierToReactGridCoordinates(coordinates, minX, minY) {
     if(minY < 0){
       return ({
@@ -74,6 +82,11 @@ class App extends Component {
     }
 
   }
+  /*
+  * Translate back to ranvier coordinates by subtracting grid center from x (to move it back to origin)
+  * and dividing y by nodeheight to shrink it back to size == 1. This does not re-generate the original
+  * coordinates, but it generates an equivalent coordinate system that won't change area layout.
+  */
   TranslateReactGridToRanvierCoordinates(coordinates) {
     return ({
       x: coordinates.x - centerOfGrid,
@@ -295,6 +308,17 @@ class App extends Component {
       <div className="container-fluid">
         <div className="row" id="topdash">
           <div id="buttondiv" className="col-xl">
+            <ul className="nav nav-tabs">
+              <li className="nav-item">
+                <a href="#itemDiv" className="nav-link active" data-toggle="tab">Items</a>
+              </li>
+              <li className="nav-item">
+                <a href="#descriptionDiv" className="nav-link" data-toggle="tab">Desc</a>
+              </li>
+              <li className="nav-item">
+                <a href="#npcDiv" className="nav-link" data-toggle="tab">NPCs</a>
+              </li>
+            </ul>
             <select id={"areaDropdown"} onChange={(areaDropdownEvent) => this.HandleAreaDropdownChange(areaDropdownEvent)}>
               <option value=""></option>
               {this.state.listOfAreas}
@@ -303,7 +327,6 @@ class App extends Component {
             <select id={"floorDropDown"} onChange={(floorDropdownEvent) => this.HandleFloorDropdownChange(floorDropdownEvent)}>
               {this.state.listOfFloorsInArea}
             </select>
-
             <button id={"saveButton"} onClick={(clickEvent) => this.HandleSaveArea(clickEvent)}>Save Area</button>
             <button id={"deleteRoomButton"} onClick={(clickEvent) => this.HandleDeleteRoomEvent(clickEvent)}>Delete Room</button>
             <button id={"addRoomButton"} onClick={(clickEvent) => this.HandleAddRoomEvent(clickEvent)}>Add Room</button>
@@ -316,13 +339,15 @@ class App extends Component {
               {this.GenerateAreaGraph()}
             </ReactGridLayout>
           </div>
-        </div>
-        <div className="row" id="dashboard">
-          <div id="itemDiv" className="col-xl"></div>
-          <div id="descriptionDiv" className="col-xl">
-            <textarea id="roomDescription" type="text" readOnly={false} onChange={this.HandleChangeDescriptionEvent} value={this.state.description || ''} />
+          <div className="row" id="dashboard">
+            <div className="col-xl tab-content">
+              <div id="itemDiv" className="tab-pane fade show active"></div>
+              <div id="descriptionDiv" className="tab-pane fade">
+                <textarea id="roomDescription" type="text" readOnly={false} onChange={this.HandleChangeDescriptionEvent} value={this.state.description || ''} />
+              </div>
+              <div id="npcDiv" className="tab-pane fade"></div>
+            </div>
           </div>
-          <div id="npcDiv" className="col-xl"></div>
         </div>
       </div>
     );
