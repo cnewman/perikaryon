@@ -1,0 +1,112 @@
+@import "node_modules/bootstrap/scss/bootstrap";
+
+$ranvier-light-green: rgba(123, 187, 117, 1);
+$ranvier-green: rgba(104,160,99,1);
+$ranvier-dark-green: rgba(83,130,78,1);
+
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  animation: App-logo-spin infinite 20s linear;
+  height: 40vmin;
+  pointer-events: none;
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+div.room {
+  cursor: pointer;
+  padding:4px;
+  text-align: center;
+  background-color: $ranvier-green;
+  border: 3px solid $ranvier-dark-green;
+  border-radius: 15px;
+  
+}
+html, body, #root, .App {
+  width:100%
+}
+.container{
+  width:100%;
+}
+#itemDiv:before{
+  content:"Items";
+  text-align: center;
+  background-color: $ranvier-green;
+  border: 3px solid $ranvier-dark-green;
+  display: block;
+}
+#itemDiv.col-xl{
+  padding-left: 0px;
+  padding-right:0px;
+}
+#descriptionDiv:before {
+  content:"Description";
+  text-align: center;
+  background-color: $ranvier-green;
+  border: 3px solid $ranvier-dark-green;
+  display: block;
+}
+#descriptionDiv.col-xl{
+  padding-left: 0px;
+  padding-right:0px;
+}
+#npcDiv:before{
+  content:"NPCs";
+  text-align: center;
+  background-color: $ranvier-green;
+  border: 3px solid $ranvier-dark-green;
+  display: block;
+}
+#npcDiv.col-xl{
+  padding-left: 0px;
+  padding-right:0px;
+}
+#dashboard{
+  position:fixed;
+  bottom:0;
+  width:100%;
+}
+#reactgrid{
+  margin-left: auto;
+  margin-right: auto;
+}
+#topdash{
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+}
+div.room:hover{
+  background-color: $ranvier-light-green;
+  box-shadow: 2px 2px 2px rgba(0,0,0,0.5);
+}
+#roomDescription{
+  width:100%;
+  height:100%;
+  resize:vertical;
+  -webkit-box-sizing:border-box;
+  -moz-box-sizing:border-box;
+  box-sizing: border-box;
+}
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
