@@ -67,7 +67,7 @@ describe('When a room is added to the grid, it', () => {
         addButton.simulate('click')
 
         const addedRoom = component.find('div#Blep');
-        expect(addedRoom.text()).toBe('Blep  (4,-3,0)')
+        expect(addedRoom.text()).toBe('Blep  (4,5,0)')
         expect(instance.state.mapOfRoomsInArea.get('mappedBlep').title).toBe(NEW_ROOM_NAME);
     });
     it('should not be created if name is blank', () => {

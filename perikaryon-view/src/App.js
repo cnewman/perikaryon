@@ -41,13 +41,11 @@ class App extends Component {
       listOfAreas: List(),
       listOfFloorsInArea: List(),
       mapOfRoomsInArea: Map(),
-      smallestYCoordinate: 0,
-      smallestXCoordinate: 0,
       nodeHeight: 2,
     };
   }
   CreateElementContainer(area, title, coordinates) {
-    const ranvierCoordinates = this.TranslateReactGridToRanvierCoordinates(coordinates, this.state.smallestXCoordinate, this.state.smallestYCoordinate)
+    const ranvierCoordinates = this.TranslateReactGridToRanvierCoordinates(coordinates)
     return (
       <div className={'room'}
         id={title}
@@ -61,16 +59,25 @@ class App extends Component {
     )
   }
   TranslateRanvierToReactGridCoordinates(coordinates, minX, minY) {
-    return ({
-      x: (coordinates.x + Math.max(centerOfGrid, Math.abs(minX))),
-      y: (((-coordinates.y) + Math.abs(minY)) * this.state.nodeHeight),
-      z: coordinates.z
-    })
+    if(minY < 0){
+      return ({
+        x: (coordinates.x + Math.max(centerOfGrid, Math.abs(minX))),
+        y: (((-coordinates.y) + Math.abs(minY)) * this.state.nodeHeight),
+        z: coordinates.z
+      })
+    } else {
+      return ({
+        x: (coordinates.x + Math.max(centerOfGrid, Math.abs(minX))),
+        y: (coordinates.y * this.state.nodeHeight),
+        z: coordinates.z
+      })
+    }
+
   }
-  TranslateReactGridToRanvierCoordinates(coordinates, minX, minY) {
+  TranslateReactGridToRanvierCoordinates(coordinates) {
     return ({
-      x: coordinates.x - Math.max(centerOfGrid, Math.abs(minX)),
-      y: -(((coordinates.y / this.state.nodeHeight)) - Math.abs(minY)),
+      x: coordinates.x - centerOfGrid,
+      y: coordinates.y / this.state.nodeHeight,
       z: coordinates.z,
     })
   }
@@ -78,17 +85,6 @@ class App extends Component {
    *Whenever the layout changes, update the mapOfRoomsInArea map coordinates
    */
   LayoutChange = (roomLayoutList) => {
-    let xCoord = 0;
-    let yCoord = 0;
-    for (let room of roomLayoutList) {
-      let currentRanvierCoords = this.TranslateReactGridToRanvierCoordinates(room, this.state.smallestXCoordinate, this.state.smallestYCoordinate)
-      xCoord = Math.min(currentRanvierCoords.x, xCoord)
-      yCoord = Math.min(currentRanvierCoords.y, yCoord)
-    }
-    this.setState({
-      smallestXCoordinate: xCoord,
-      smallestYCoordinate: yCoord,
-    })
     roomLayoutList.forEach((roomLayout) => {
       console.log(roomLayout)
       this.setState((prevState) => ({
@@ -125,10 +121,6 @@ class App extends Component {
         }
       }
     }
-    this.setState({
-      smallestXCoordinate: minX,
-      smallestYCoordinate: minY,
-    })
     for (let [, area] of Object.entries(this.state.ranvierAPIResponse)) {
       for (let [, room] of Object.entries(area.roomList)) {
         if (room.coordinates) {
@@ -246,6 +238,9 @@ class App extends Component {
   * Once changes have been made, determine exit directions and upload the new area back to Ranvier for saving.
   */
   HandleSaveArea = (e) => {
+    for (let [, room] of this.state.mapOfRoomsInArea) {
+      room.coordinates = this.TranslateReactGridToRanvierCoordinates(room.coordinates)
+    }
     axios.put("http://localhost:3004/savearea", this.state.mapOfRoomsInArea).then(res => console.log(res.data));
   }
 
