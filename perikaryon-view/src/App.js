@@ -8,7 +8,7 @@ import axios from 'axios';
 const { List, Set, Map } = require('immutable');
 const ReactGridLayout = WidthProvider(RGL);
 const gridWidth = 12;
-const centerOfGrid = gridWidth/2;
+const centerOfGrid = gridWidth / 2;
 class Room {
   constructor(area, title, description, coordinates, id, bundle, doors = {}, exits = [], npcs = new Set()) {
     this.id = id;
@@ -67,7 +67,7 @@ class App extends Component {
    * not overlap.
    */
   TranslateRanvierToReactGridCoordinates(coordinates, minX, minY) {
-    if(minY < 0){
+    if (minY < 0) {
       return ({
         x: (coordinates.x + Math.max(centerOfGrid, Math.abs(minX))),
         y: (((-coordinates.y) + Math.abs(minY)) * this.state.nodeHeight),
@@ -308,25 +308,28 @@ class App extends Component {
       <div className="container-fluid">
         <div className="row" id="topdash">
           <div id="buttondiv" className="col-xl">
-            <ul className="nav nav-tabs">
-              <li className="nav-item">
-                <a href="#itemDiv" className="nav-link active" data-toggle="tab">Items</a>
-              </li>
-              <li className="nav-item">
-                <a href="#descriptionDiv" className="nav-link" data-toggle="tab">Desc</a>
-              </li>
-              <li className="nav-item">
-                <a href="#npcDiv" className="nav-link" data-toggle="tab">NPCs</a>
-              </li>
-            </ul>
-            <select id={"areaDropdown"} onChange={(areaDropdownEvent) => this.HandleAreaDropdownChange(areaDropdownEvent)}>
-              <option value=""></option>
-              {this.state.listOfAreas}
-            </select>
-
-            <select id={"floorDropDown"} onChange={(floorDropdownEvent) => this.HandleFloorDropdownChange(floorDropdownEvent)}>
-              {this.state.listOfFloorsInArea}
-            </select>
+            <nav className="navbar navbar-expand-lg navbar-light bg-light">
+              <ul className="navbar-nav">
+                <li className="nav-item">
+                  <a href="#itemDiv" className="nav-link active" data-toggle="tab">Items</a>
+                </li>
+                <li className="nav-item">
+                  <a href="#descriptionDiv" className="nav-link" data-toggle="tab">Desc</a>
+                </li>
+                <li className="nav-item">
+                  <a href="#npcDiv" className="nav-link" data-toggle="tab">NPCs</a>
+                </li>
+              </ul>
+              <ul className="navbar-nav ml-auto">
+                <select id={"areaDropdown"} className="custom-select" onChange={(areaDropdownEvent) => this.HandleAreaDropdownChange(areaDropdownEvent)}>
+                  <option value=""></option>
+                  {this.state.listOfAreas}
+                </select>
+                <select id={"floorDropdown"} className="custom-select" onChange={(floorDropdownEvent) => this.HandleFloorDropdownChange(floorDropdownEvent)}>
+                  {this.state.listOfFloorsInArea}
+                </select>
+              </ul>
+            </nav>
             <button id={"saveButton"} onClick={(clickEvent) => this.HandleSaveArea(clickEvent)}>Save Area</button>
             <button id={"deleteRoomButton"} onClick={(clickEvent) => this.HandleDeleteRoomEvent(clickEvent)}>Delete Room</button>
             <button id={"addRoomButton"} onClick={(clickEvent) => this.HandleAddRoomEvent(clickEvent)}>Add Room</button>

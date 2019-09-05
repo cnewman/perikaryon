@@ -103,7 +103,7 @@ describe('After loading the test data, the component', () => {
         instance.setState({selectedArea:'mapped'})
         instance.GenerateFloorDropdown()
         
-        const floorDropDown = component.find('select#floorDropDown');
+        const floorDropDown = component.find('select#floorDropdown');
 
         expect(floorDropDown.children()).toHaveLength(NUMBER_OF_FLOORS_IN_TEST_DATA)
         expect(instance.state.listOfFloorsInArea.count())
@@ -117,7 +117,7 @@ describe('After loading the test data, the component', () => {
         instance.setState({selectedArea:'mapped'})
         instance.GenerateFloorDropdown()
 
-        const floorDropDown = component.find('select#floorDropDown');
+        const floorDropDown = component.find('select#floorDropdown');
 
         expect(floorDropDown.childAt(0).props()).toHaveProperty('value', 0)
         expect(floorDropDown.childAt(1).props()).toHaveProperty('value', -1)

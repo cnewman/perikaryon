@@ -90,8 +90,14 @@ div.room:hover{
   background-color: $ranvier-light-green;
   box-shadow: 2px 2px 2px rgba(0,0,0,0.5);
 }
+#areaDropdown{
+  width:200px;
+}
+#floorDropdown{
+  width:100px;
+}
 #roomDescription{
-  width:100%;
+  width:50%;
   height:100%;
   resize:vertical;
   -webkit-box-sizing:border-box;

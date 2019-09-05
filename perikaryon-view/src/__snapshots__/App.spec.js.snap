@@ -12,55 +12,65 @@ exports[`Test snapshot of component Snapshot has not changed 1`] = `
       className="col-xl"
       id="buttondiv"
     >
-      <ul
-        className="nav nav-tabs"
+      <nav
+        className="navbar navbar-expand-lg navbar-light bg-light"
       >
-        <li
-          className="nav-item"
+        <ul
+          className="navbar-nav"
         >
-          <a
-            className="nav-link active"
-            data-toggle="tab"
-            href="#itemDiv"
+          <li
+            className="nav-item"
           >
-            Items
-          </a>
-        </li>
-        <li
-          className="nav-item"
+            <a
+              className="nav-link active"
+              data-toggle="tab"
+              href="#itemDiv"
+            >
+              Items
+            </a>
+          </li>
+          <li
+            className="nav-item"
+          >
+            <a
+              className="nav-link"
+              data-toggle="tab"
+              href="#descriptionDiv"
+            >
+              Desc
+            </a>
+          </li>
+          <li
+            className="nav-item"
+          >
+            <a
+              className="nav-link"
+              data-toggle="tab"
+              href="#npcDiv"
+            >
+              NPCs
+            </a>
+          </li>
+        </ul>
+        <ul
+          className="navbar-nav ml-auto"
         >
-          <a
-            className="nav-link"
-            data-toggle="tab"
-            href="#descriptionDiv"
+          <select
+            className="custom-select"
+            id="areaDropdown"
+            onChange={[Function]}
           >
-            Desc
-          </a>
-        </li>
-        <li
-          className="nav-item"
-        >
-          <a
-            className="nav-link"
-            data-toggle="tab"
-            href="#npcDiv"
-          >
-            NPCs
-          </a>
-        </li>
-      </ul>
-      <select
-        id="areaDropdown"
-        onChange={[Function]}
-      >
-        <option
-          value=""
-        />
-      </select>
-      <select
-        id="floorDropDown"
-        onChange={[Function]}
-      />
+            <option
+              value=""
+            />
+          </select>
+          <select
+            className="custom-select"
+            id="floorDropdown"
+            onChange={[Function]}
+          />
+        </ul>
+      </nav>
       <button
         id="saveButton"
         onClick={[Function]}
