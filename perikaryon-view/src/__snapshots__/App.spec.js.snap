@@ -1,0 +1,135 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Test snapshot of component Snapshot has not changed 1`] = `
+<div
+  className="container-fluid"
+>
+  <div
+    className="row"
+    id="topdash"
+  >
+    <div
+      className="col-xl"
+      id="buttondiv"
+    >
+      <ul
+        className="nav nav-tabs"
+      >
+        <li
+          className="nav-item"
+        >
+          <a
+            className="nav-link active"
+            data-toggle="tab"
+            href="#itemDiv"
+          >
+            Items
+          </a>
+        </li>
+        <li
+          className="nav-item"
+        >
+          <a
+            className="nav-link"
+            data-toggle="tab"
+            href="#descriptionDiv"
+          >
+            Desc
+          </a>
+        </li>
+        <li
+          className="nav-item"
+        >
+          <a
+            className="nav-link"
+            data-toggle="tab"
+            href="#npcDiv"
+          >
+            NPCs
+          </a>
+        </li>
+      </ul>
+      <select
+        id="areaDropdown"
+        onChange={[Function]}
+      >
+        <option
+          value=""
+        />
+      </select>
+      <select
+        id="floorDropDown"
+        onChange={[Function]}
+      />
+      <button
+        id="saveButton"
+        onClick={[Function]}
+      >
+        Save Area
+      </button>
+      <button
+        id="deleteRoomButton"
+        onClick={[Function]}
+      >
+        Delete Room
+      </button>
+      <button
+        id="addRoomButton"
+        onClick={[Function]}
+      >
+        Add Room
+      </button>
+      <input
+        onChange={[Function]}
+        type="text"
+      />
+    </div>
+  </div>
+  <div
+    className="row"
+    id="reactgrid"
+  >
+    <div
+      className="col-xl"
+    >
+      <div
+        className="react-grid-layout layout"
+        style={
+          Object {
+            "height": "20px",
+          }
+        }
+      />
+    </div>
+    <div
+      className="row"
+      id="dashboard"
+    >
+      <div
+        className="col-xl tab-content"
+      >
+        <div
+          className="tab-pane fade show active"
+          id="itemDiv"
+        />
+        <div
+          className="tab-pane fade"
+          id="descriptionDiv"
+        >
+          <textarea
+            id="roomDescription"
+            onChange={[Function]}
+            readOnly={false}
+            type="text"
+            value=""
+          />
+        </div>
+        <div
+          className="tab-pane fade"
+          id="npcDiv"
+        />
+      </div>
+    </div>
+  </div>
+</div>
+`;
