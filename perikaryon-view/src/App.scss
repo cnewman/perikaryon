@@ -57,9 +57,10 @@ html, body, #root, .App {
   border: 3px solid $ranvier-dark-green;
   display: block;
 }
-#descriptionDiv.col-xl{
+#descriptionDiv{
   padding-left: 0px;
   padding-right:0px;
+  width:20%;
 }
 #npcDiv:before{
   content:"NPCs";
@@ -71,6 +72,9 @@ html, body, #root, .App {
 #npcDiv.col-xl{
   padding-left: 0px;
   padding-right:0px;
+}
+.dashbutton{
+  float: right;
 }
 #dashboard{
   position:fixed;
@@ -97,7 +101,7 @@ div.room:hover{
   width:100px;
 }
 #roomDescription{
-  width:50%;
+  width:100%;
   height:100%;
   resize:vertical;
   -webkit-box-sizing:border-box;

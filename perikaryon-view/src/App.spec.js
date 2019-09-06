@@ -25,13 +25,12 @@ describe('When a room is added to the grid, it', () => {
         instance.setState({selectedArea:'mapped'})
         instance.setState({selectedFloor:0})
         instance.InitializeRoomMap()
-        instance.state.addRoomField = 'Blep'
 
         const addButton = component.find('button#addRoomButton');
         addButton.simulate('click')
 
-        expect(component.exists('#Blep')).toBe(true)
-        expect(instance.state.mapOfRoomsInArea.has('mappedBlep')).toBe(true);
+        expect(component.exists('#ChangeMe')).toBe(true)
+        expect(instance.state.mapOfRoomsInArea.has('mappedChangeMe')).toBe(true);
     });
     it('should have coordinates 0,0,0', () => {
         const component = shallow(<App />);
@@ -42,55 +41,31 @@ describe('When a room is added to the grid, it', () => {
         instance.setState({selectedArea:'mapped'})
         instance.setState({selectedFloor:0})
         instance.InitializeRoomMap()
-        instance.state.addRoomField = 'Blep'
 
         const addButton = component.find('button#addRoomButton');
         addButton.simulate('click')
 
-        const coord = component.find('div#Blep');
+        const coord = component.find('div#ChangeMe');
 
         expect(coord.props()).toHaveProperty('coordinate_values', DEFAULT_NEW_ROOM_COORDINATES)
-        expect(instance.state.mapOfRoomsInArea.get('mappedBlep').coordinates).toStrictEqual(DEFAULT_NEW_ROOM_COORDINATES);
+        expect(instance.state.mapOfRoomsInArea.get('mappedChangeMe').coordinates).toStrictEqual(DEFAULT_NEW_ROOM_COORDINATES);
     });
     it('should have the name given to it in the associated field', () => {
         const component = shallow(<App />);
         const instance = component.instance();
-        const NEW_ROOM_NAME = 'Blep'
 
         instance.setState({ranvierAPIResponse:json})
         instance.setState({selectedArea:'mapped'})
         instance.setState({selectedFloor:0})
         instance.InitializeRoomMap()
-        instance.state.addRoomField = NEW_ROOM_NAME
 
         const addButton = component.find('button#addRoomButton');
         addButton.simulate('click')
 
-        const addedRoom = component.find('div#Blep');
-        expect(addedRoom.text()).toBe('Blep  (4,5,0)')
-        expect(instance.state.mapOfRoomsInArea.get('mappedBlep').title).toBe(NEW_ROOM_NAME);
-    });
-    it('should not be created if name is blank', () => {
-        const component = shallow(<App />);
-        const instance = component.instance();
-        const NEW_ROOM_NAME = ''
-        const NUMBER_OF_ROOMS_IN_TEST_DATA = 8
-        
-        instance.setState({ranvierAPIResponse:json})
-        instance.setState({selectedArea:'mapped'})
-        instance.setState({selectedFloor:0})
-        instance.InitializeRoomMap()
-        instance.state.addRoomField = NEW_ROOM_NAME
-
-        const addButton = component.find('button#addRoomButton');
-        addButton.simulate('click')
-        
-        const areaGraph = component.find('div#reactgrid');
-
-        //Should not have added more than default number of rooms in mapped area, which is 8.
-        expect(areaGraph.childAt(0).childAt(0).children()).toHaveLength(NUMBER_OF_ROOMS_IN_TEST_DATA)
-        expect(instance.GenerateAreaGraph().count())
-            .toBe(NUMBER_OF_ROOMS_IN_TEST_DATA);
+        const addedRoom = component.find('div#ChangeMe');
+        expect(addedRoom.text()).toBe('<RIEInput /> (4,5,0)')
+        expect(addedRoom.childAt(0).props()).toHaveProperty('value', 'ChangeMe')
+        expect(instance.state.mapOfRoomsInArea.get('mappedChangeMe').title).toBe('ChangeMe');
     });
 });
 describe('After loading the test data, the component', () => {

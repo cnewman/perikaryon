@@ -71,28 +71,6 @@ exports[`Test snapshot of component Snapshot has not changed 1`] = `
           />
         </ul>
       </nav>
-      <button
-        id="saveButton"
-        onClick={[Function]}
-      >
-        Save Area
-      </button>
-      <button
-        id="deleteRoomButton"
-        onClick={[Function]}
-      >
-        Delete Room
-      </button>
-      <button
-        id="addRoomButton"
-        onClick={[Function]}
-      >
-        Add Room
-      </button>
-      <input
-        onChange={[Function]}
-        type="text"
-      />
     </div>
   </div>
   <div
@@ -118,10 +96,27 @@ exports[`Test snapshot of component Snapshot has not changed 1`] = `
       <div
         className="col-xl tab-content"
       >
-        <div
-          className="tab-pane fade show active"
-          id="itemDiv"
-        />
+        <button
+          className="btn btn-light dashbutton"
+          id="saveButton"
+          onClick={[Function]}
+        >
+          Save Area
+        </button>
+        <button
+          className="btn btn-light dashbutton"
+          id="deleteRoomButton"
+          onClick={[Function]}
+        >
+          Delete Room
+        </button>
+        <button
+          className="btn btn-light dashbutton"
+          id="addRoomButton"
+          onClick={[Function]}
+        >
+          Add Room
+        </button>
         <div
           className="tab-pane fade"
           id="descriptionDiv"
@@ -134,10 +129,6 @@ exports[`Test snapshot of component Snapshot has not changed 1`] = `
             value=""
           />
         </div>
-        <div
-          className="tab-pane fade"
-          id="npcDiv"
-        />
       </div>
     </div>
   </div>

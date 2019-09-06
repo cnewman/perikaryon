@@ -4,7 +4,7 @@ import "../node_modules/react-grid-layout/css/styles.css"
 import "../node_modules/react-resizable/css/styles.css"
 import RGL, { WidthProvider } from "react-grid-layout";
 import axios from 'axios';
-
+import {RIEToggle, RIEInput, RIETextArea, RIENumber, RIETags, RIESelect} from 'riek'
 const { List, Set, Map } = require('immutable');
 const ReactGridLayout = WidthProvider(RGL);
 const gridWidth = 12;
@@ -36,7 +36,6 @@ class App extends Component {
       ranvierAPIResponse: "",
       selectedArea: "",
       selectedRoom: "",
-      addRoomField: "",
       selectedFloor: 0,
       listOfAreas: List(),
       listOfFloorsInArea: List(),
@@ -54,7 +53,12 @@ class App extends Component {
         onClick={this.HandleClickNode}
         data-grid={{ x: coordinates.x, y: coordinates.y, w: 1, h: this.state.nodeHeight }}
       >
-        {title} <br /> ({ranvierCoordinates.x},{ranvierCoordinates.y},{ranvierCoordinates.z})
+        <RIEInput
+          value={title}
+          propName={title}
+          change={this.HandleChangeRoomNameEvent}
+        />
+        <br /> ({ranvierCoordinates.x},{ranvierCoordinates.y},{ranvierCoordinates.z})
       </div>
     )
   }
@@ -99,7 +103,6 @@ class App extends Component {
    */
   LayoutChange = (roomLayoutList) => {
     roomLayoutList.forEach((roomLayout) => {
-      console.log(roomLayout)
       this.setState((prevState) => ({
         mapOfRoomsInArea: prevState.mapOfRoomsInArea.set(roomLayout.i,
           new Room(this.state.mapOfRoomsInArea.get(roomLayout.i).area,
@@ -148,9 +151,7 @@ class App extends Component {
     })
   }
   HandleAddRoomEvent = (e) => {
-    if (this.state.addRoomField) {
-      this.UpdateRoomMap(new Room(this.state.selectedArea, this.state.addRoomField, "", { x: 10, y: 10, z: this.state.selectedFloor }, this.state.addRoomField))
-    }
+      this.UpdateRoomMap(new Room(this.state.selectedArea, "ChangeMe", "Hello! I'm a new room", { x: 10, y: 10, z: this.state.selectedFloor }, "ChangeMe"))
   }
   HandleDeleteRoomEvent = (e) => {
     if (this.state.mapOfRoomsInArea) {
@@ -159,10 +160,21 @@ class App extends Component {
       }))
     }
   }
-  HandleChangeFieldEvent = (e) => {
-    this.setState({
-      addRoomField: e.target.value
-    })
+  HandleChangeRoomNameEvent = (newName) => {
+    const key = Object.keys(newName);
+    let room = JSON.parse(JSON.stringify(this.state.mapOfRoomsInArea.get(this.state.selectedArea+key)))
+    room.title = newName[key];
+   
+    const newID = newName[key].toLowerCase().split(' ').join('-')
+    room.id = newID
+
+    this.setState((prevState) => ({
+      mapOfRoomsInArea: prevState.mapOfRoomsInArea.delete(this.state.selectedArea+key)
+    }))
+
+    this.setState((prevState) => ({
+      mapOfRoomsInArea: prevState.mapOfRoomsInArea.set(room.area+room.title, room)
+    }))
   }
   UpdateRoomMap(room) {
     this.setState((prevState) => ({
@@ -330,10 +342,6 @@ class App extends Component {
                 </select>
               </ul>
             </nav>
-            <button id={"saveButton"} onClick={(clickEvent) => this.HandleSaveArea(clickEvent)}>Save Area</button>
-            <button id={"deleteRoomButton"} onClick={(clickEvent) => this.HandleDeleteRoomEvent(clickEvent)}>Delete Room</button>
-            <button id={"addRoomButton"} onClick={(clickEvent) => this.HandleAddRoomEvent(clickEvent)}>Add Room</button>
-            <input type="text" onChange={(typingEvent) => this.HandleChangeFieldEvent(typingEvent)} />
           </div>
         </div>
         <div id="reactgrid" className="row">
@@ -344,11 +352,17 @@ class App extends Component {
           </div>
           <div className="row" id="dashboard">
             <div className="col-xl tab-content">
-              <div id="itemDiv" className="tab-pane fade show active"></div>
+              <button id="saveButton" className="btn btn-light dashbutton" onClick={(clickEvent) => this.HandleSaveArea(clickEvent)}>Save Area</button>
+              <button id="deleteRoomButton" className="btn btn-light dashbutton" onClick={(clickEvent) => this.HandleDeleteRoomEvent(clickEvent)}>Delete Room</button>
+              <button id="addRoomButton" className="btn btn-light dashbutton" onClick={(clickEvent) => this.HandleAddRoomEvent(clickEvent)}>Add Room</button>
               <div id="descriptionDiv" className="tab-pane fade">
                 <textarea id="roomDescription" type="text" readOnly={false} onChange={this.HandleChangeDescriptionEvent} value={this.state.description || ''} />
               </div>
-              <div id="npcDiv" className="tab-pane fade"></div>
+              {/* <div id="itemDiv" className="tab-pane fade show active"></div>
+              <div id="descriptionDiv" className="tab-pane fade">
+                <textarea id="roomDescription" type="text" readOnly={false} onChange={this.HandleChangeDescriptionEvent} value={this.state.description || ''} />
+              </div>
+              <div id="npcDiv" className="tab-pane fade"></div> */}
             </div>
           </div>
         </div>

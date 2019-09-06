@@ -38,6 +38,7 @@
     "enzyme": "^3.10.0",
     "enzyme-adapter-react-16": "^1.14.0",
     "immutable": "^4.0.0-rc.12",
-    "react-test-renderer": "^16.9.0"
+    "react-test-renderer": "^16.9.0",
+    "riek": "^1.1.0"
   }
 }
