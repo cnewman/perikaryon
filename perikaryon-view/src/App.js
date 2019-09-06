@@ -46,7 +46,7 @@ class App extends Component {
   CreateElementContainer(area, title, coordinates) {
     const ranvierCoordinates = this.TranslateReactGridToRanvierCoordinates(coordinates)
     return (
-      <div className={'room'}
+      <div className={this.state.selectedRoom == title? 'room Selected' : 'room'}
         id={title}
         coordinate_values={coordinates}
         key={area + title}
@@ -350,14 +350,17 @@ class App extends Component {
               {this.GenerateAreaGraph()}
             </ReactGridLayout>
           </div>
-          <div className="row" id="dashboard">
-            <div className="col-xl tab-content">
-              <button id="saveButton" className="btn btn-light dashbutton" onClick={(clickEvent) => this.HandleSaveArea(clickEvent)}>Save Area</button>
-              <button id="deleteRoomButton" className="btn btn-light dashbutton" onClick={(clickEvent) => this.HandleDeleteRoomEvent(clickEvent)}>Delete Room</button>
-              <button id="addRoomButton" className="btn btn-light dashbutton" onClick={(clickEvent) => this.HandleAddRoomEvent(clickEvent)}>Add Room</button>
+        </div>
+        <div className="d-flex flex-row align-items-end justify-content-between" id="dashboard">
+            <div className="tab-content">
               <div id="descriptionDiv" className="tab-pane fade">
                 <textarea id="roomDescription" type="text" readOnly={false} onChange={this.HandleChangeDescriptionEvent} value={this.state.description || ''} />
               </div>
+            </div>
+            <div className="tab-content">
+              <button id="saveButton" className="btn btn-light dashbutton" onClick={(clickEvent) => this.HandleSaveArea(clickEvent)}>Save Area</button>
+              <button id="deleteRoomButton" className="btn btn-light dashbutton" onClick={(clickEvent) => this.HandleDeleteRoomEvent(clickEvent)}>Delete Room</button>
+              <button id="addRoomButton" className="btn btn-light dashbutton" onClick={(clickEvent) => this.HandleAddRoomEvent(clickEvent)}>Add Room</button>
               {/* <div id="itemDiv" className="tab-pane fade show active"></div>
               <div id="descriptionDiv" className="tab-pane fade">
                 <textarea id="roomDescription" type="text" readOnly={false} onChange={this.HandleChangeDescriptionEvent} value={this.state.description || ''} />
@@ -365,7 +368,6 @@ class App extends Component {
               <div id="npcDiv" className="tab-pane fade"></div> */}
             </div>
           </div>
-        </div>
       </div>
     );
   }

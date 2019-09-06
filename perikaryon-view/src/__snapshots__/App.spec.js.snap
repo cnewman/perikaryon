@@ -89,47 +89,51 @@ exports[`Test snapshot of component Snapshot has not changed 1`] = `
         }
       />
     </div>
+  </div>
+  <div
+    className="d-flex flex-row align-items-end justify-content-between"
+    id="dashboard"
+  >
     <div
-      className="row"
-      id="dashboard"
+      className="tab-content"
     >
       <div
-        className="col-xl tab-content"
+        className="tab-pane fade"
+        id="descriptionDiv"
       >
-        <button
-          className="btn btn-light dashbutton"
-          id="saveButton"
-          onClick={[Function]}
-        >
-          Save Area
-        </button>
-        <button
-          className="btn btn-light dashbutton"
-          id="deleteRoomButton"
-          onClick={[Function]}
-        >
-          Delete Room
-        </button>
-        <button
-          className="btn btn-light dashbutton"
-          id="addRoomButton"
-          onClick={[Function]}
-        >
-          Add Room
-        </button>
-        <div
-          className="tab-pane fade"
-          id="descriptionDiv"
-        >
-          <textarea
-            id="roomDescription"
-            onChange={[Function]}
-            readOnly={false}
-            type="text"
-            value=""
-          />
-        </div>
+        <textarea
+          id="roomDescription"
+          onChange={[Function]}
+          readOnly={false}
+          type="text"
+          value=""
+        />
       </div>
+    </div>
+    <div
+      className="tab-content"
+    >
+      <button
+        className="btn btn-light dashbutton"
+        id="saveButton"
+        onClick={[Function]}
+      >
+        Save Area
+      </button>
+      <button
+        className="btn btn-light dashbutton"
+        id="deleteRoomButton"
+        onClick={[Function]}
+      >
+        Delete Room
+      </button>
+      <button
+        className="btn btn-light dashbutton"
+        id="addRoomButton"
+        onClick={[Function]}
+      >
+        Add Room
+      </button>
     </div>
   </div>
 </div>

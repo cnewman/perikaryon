@@ -1,8 +1,9 @@
 @import "node_modules/bootstrap/scss/bootstrap";
 
 $ranvier-light-green: rgba(123, 187, 117, 1);
-$ranvier-green: rgba(104,160,99,1);
-$ranvier-dark-green: rgba(83,130,78,1);
+$ranvier-green: #68a063;
+$ranvier-dark-green: #53824e;
+$ranvier-selected-orange: #ff7d04;
 
 .App {
   text-align: center;
@@ -60,7 +61,6 @@ html, body, #root, .App {
 #descriptionDiv{
   padding-left: 0px;
   padding-right:0px;
-  width:20%;
 }
 #npcDiv:before{
   content:"NPCs";
@@ -85,10 +85,21 @@ html, body, #root, .App {
   margin-left: auto;
   margin-right: auto;
 }
+#reactgrid::after{
+  clear: both;
+}
 #topdash{
   margin-left: auto;
   margin-right: auto;
   text-align: center;
+}
+div.room.Selected{
+  background-color: $ranvier-selected-orange;
+  border: 3px solid $ranvier-selected-orange;
+  box-shadow: 2px 2px 2px rgba(0,0,0,0.5);
+}
+div.room.Selected:hover{
+  background-color: $ranvier-selected-orange;
 }
 div.room:hover{
   background-color: $ranvier-light-green;
