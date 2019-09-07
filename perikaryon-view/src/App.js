@@ -289,7 +289,7 @@ class App extends Component {
 
   /*
   * These functions allow for room descriptions to be displayed in the editor as well as modified.
-  * The HandleClicKnode function receives a click and updates the selectedRoom id. GenerateTextBlock
+  * The HandleClicknode function receives a click and updates the selectedRoom id. GenerateTextBlock
   * is then used to open a text box with the room's description. Finally, changes made in the textarea
   * are reflected in the room's description via the HandleChangeDescriptionEvent function.
   */
@@ -300,16 +300,27 @@ class App extends Component {
     })
   }
   HandleClickNode = (e) => {
-    this.setState({
-      selectedRoom: e.target.id
-    }, this.GenerateTextBlock)
-  }
-  GenerateTextBlock() {
-    if (this.state.selectedRoom) {
+    if(e.target.id){
       this.setState({
-        description: this.state.mapOfRoomsInArea.get(this.state.selectedArea + this.state.selectedRoom).description
+        selectedRoom: e.target.id,
+        description: this.state.mapOfRoomsInArea.get(this.state.selectedArea + e.target.id).description
+      })
+    }else{
+      this.setState({
+        selectedRoom: ""
       })
     }
+
+  }
+  GenerateTextBlock() {
+    if (this.state.selectedRoom !== "") {
+      return (
+        <div id="descriptionDiv">
+          <textarea id="roomDescription" type="text" readOnly={false} onChange={this.HandleChangeDescriptionEvent} value={this.state.description || ''} />
+        </div>
+      )
+    }
+    return <div></div>;
   }
 
   /*
@@ -324,9 +335,6 @@ class App extends Component {
               <ul className="navbar-nav">
                 <li className="nav-item">
                   <a href="#itemDiv" className="nav-link active" data-toggle="tab">Items</a>
-                </li>
-                <li className="nav-item">
-                  <a href="#descriptionDiv" className="nav-link" data-toggle="tab">Desc</a>
                 </li>
                 <li className="nav-item">
                   <a href="#npcDiv" className="nav-link" data-toggle="tab">NPCs</a>
@@ -345,29 +353,25 @@ class App extends Component {
           </div>
         </div>
         <div id="reactgrid" className="row">
-          <div className="col-xl">
+          <div className="col-xl" onClick={this.HandleClickNode}>
             <ReactGridLayout layout={this.state.layout} onLayoutChange={this.LayoutChange} id="areaGrid" className="layout" cols={gridWidth} rowHeight={30} width={1200} {...this.props}>
               {this.GenerateAreaGraph()}
             </ReactGridLayout>
           </div>
         </div>
         <div className="d-flex flex-row align-items-end justify-content-between" id="dashboard">
-            <div className="tab-content">
-              <div id="descriptionDiv" className="tab-pane fade">
-                <textarea id="roomDescription" type="text" readOnly={false} onChange={this.HandleChangeDescriptionEvent} value={this.state.description || ''} />
-              </div>
-            </div>
-            <div className="tab-content">
-              <button id="saveButton" className="btn btn-light dashbutton" onClick={(clickEvent) => this.HandleSaveArea(clickEvent)}>Save Area</button>
-              <button id="deleteRoomButton" className="btn btn-light dashbutton" onClick={(clickEvent) => this.HandleDeleteRoomEvent(clickEvent)}>Delete Room</button>
-              <button id="addRoomButton" className="btn btn-light dashbutton" onClick={(clickEvent) => this.HandleAddRoomEvent(clickEvent)}>Add Room</button>
-              {/* <div id="itemDiv" className="tab-pane fade show active"></div>
+          {this.GenerateTextBlock()}
+          <div id="roomButtons" className="tab-content">
+            <button id="saveButton" className="btn btn-light dashbutton" onClick={(clickEvent) => this.HandleSaveArea(clickEvent)}>Save Area</button>
+            <button id="deleteRoomButton" className="btn btn-light dashbutton" onClick={(clickEvent) => this.HandleDeleteRoomEvent(clickEvent)}>Delete Room</button>
+            <button id="addRoomButton" className="btn btn-light dashbutton" onClick={(clickEvent) => this.HandleAddRoomEvent(clickEvent)}>Add Room</button>
+            {/* <div id="itemDiv" className="tab-pane fade show active"></div>
               <div id="descriptionDiv" className="tab-pane fade">
                 <textarea id="roomDescription" type="text" readOnly={false} onChange={this.HandleChangeDescriptionEvent} value={this.state.description || ''} />
               </div>
               <div id="npcDiv" className="tab-pane fade"></div> */}
-            </div>
           </div>
+        </div>
       </div>
     );
   }

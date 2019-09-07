@@ -164,19 +164,6 @@ describe('After loading the test data, the component', () => {
             .every(room => INTERNAL_ROOM_KEYS_IN_DATA_SET.includes(room.key)))
             .toBe(true);
     });
-    it('should have a description text area that is blank', () => {
-        const component = shallow(<App />);
-        const instance = component.instance();
-
-        instance.setState({ranvierAPIResponse:json})
-        instance.setState({selectedArea:'mapped'})
-        instance.setState({selectedFloor:0})
-        instance.InitializeRoomMap()
-
-        const textArea = component.find('textarea#roomDescription');
-
-        expect(textArea.props()).toHaveProperty('value', '')
-    });
 });
 describe('After clicking a node on the graph', () => {
     it('the node should be selected', () => {

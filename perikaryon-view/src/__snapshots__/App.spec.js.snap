@@ -35,17 +35,6 @@ exports[`Test snapshot of component Snapshot has not changed 1`] = `
             <a
               className="nav-link"
               data-toggle="tab"
-              href="#descriptionDiv"
-            >
-              Desc
-            </a>
-          </li>
-          <li
-            className="nav-item"
-          >
-            <a
-              className="nav-link"
-              data-toggle="tab"
               href="#npcDiv"
             >
               NPCs
@@ -79,6 +68,7 @@ exports[`Test snapshot of component Snapshot has not changed 1`] = `
   >
     <div
       className="col-xl"
+      onClick={[Function]}
     >
       <div
         className="react-grid-layout layout"
@@ -94,24 +84,10 @@ exports[`Test snapshot of component Snapshot has not changed 1`] = `
     className="d-flex flex-row align-items-end justify-content-between"
     id="dashboard"
   >
+    <div />
     <div
       className="tab-content"
-    >
-      <div
-        className="tab-pane fade"
-        id="descriptionDiv"
-      >
-        <textarea
-          id="roomDescription"
-          onChange={[Function]}
-          readOnly={false}
-          type="text"
-          value=""
-        />
-      </div>
-    </div>
-    <div
-      className="tab-content"
+      id="roomButtons"
     >
       <button
         className="btn btn-light dashbutton"
