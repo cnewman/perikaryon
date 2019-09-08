@@ -331,7 +331,7 @@ class App extends Component {
       <div className="container-fluid">
         <div className="row" id="topdash">
           <div id="buttondiv" className="col-xl">
-            <nav className="navbar navbar-expand-lg navbar-light bg-light">
+            <nav id="topNavBar" className="navbar navbar-expand-lg navbar-light bg-light">
               <ul className="navbar-nav">
                 <li className="nav-item">
                   <a href="#itemDiv" className="nav-link active" data-toggle="tab">Items</a>
@@ -340,6 +340,7 @@ class App extends Component {
                   <a href="#npcDiv" className="nav-link" data-toggle="tab">NPCs</a>
                 </li>
               </ul>
+              <p id="title">{this.state.selectedArea}</p>
               <ul className="navbar-nav ml-auto">
                 <select id={"areaDropdown"} className="custom-select" onChange={(areaDropdownEvent) => this.HandleAreaDropdownChange(areaDropdownEvent)}>
                   <option value=""></option>

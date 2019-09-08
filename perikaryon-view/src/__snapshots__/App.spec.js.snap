@@ -14,6 +14,7 @@ exports[`Test snapshot of component Snapshot has not changed 1`] = `
     >
       <nav
         className="navbar navbar-expand-lg navbar-light bg-light"
+        id="topNavBar"
       >
         <ul
           className="navbar-nav"
@@ -41,6 +42,11 @@ exports[`Test snapshot of component Snapshot has not changed 1`] = `
             </a>
           </li>
         </ul>
+        <p
+          id="title"
+        >
+          
+        </p>
         <ul
           className="navbar-nav ml-auto"
         >

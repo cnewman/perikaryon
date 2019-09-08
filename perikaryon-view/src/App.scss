@@ -112,8 +112,21 @@ div.room:hover{
 #floorDropdown{
   width:100px;
 }
+#title{
+  width:100%;
+  font-size:3vw;
+  margin:0;
+}
+#topNavBar{
+  padding-top: 0px;
+  padding-bottom: 0px;
+}
 #roomButtons{
   padding-right:30px;
+}
+#buttondiv{
+  margin:0;
+  padding:0;
 }
 #roomDescription{
   width:100%;
