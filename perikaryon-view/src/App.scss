@@ -94,6 +94,9 @@ html, body, #root, .App {
   margin-right: auto;
   text-align: center;
 }
+select:invalid{
+  color: gray;
+}
 div.room.Selected{
   background-color: $ranvier-selected-orange;
   border: 3px solid $ranvier-selected-orange;
@@ -113,7 +116,7 @@ div.room:hover{
   width:100px;
 }
 #title{
-  width:100%;
+  width:60%;
   font-size:3vw;
   margin:0;
 }

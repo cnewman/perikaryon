@@ -55,9 +55,9 @@ exports[`Test snapshot of component Snapshot has not changed 1`] = `
             id="areaDropdown"
             onChange={[Function]}
           >
-            <option
-              value=""
-            />
+            <option>
+              Select Area
+            </option>
           </select>
           <select
             className="custom-select"
@@ -65,6 +65,13 @@ exports[`Test snapshot of component Snapshot has not changed 1`] = `
             onChange={[Function]}
           />
         </ul>
+        <button
+          className="btn btn-light dashbutton"
+          id="saveButton"
+          onClick={[Function]}
+        >
+          Save Area
+        </button>
       </nav>
     </div>
   </div>
@@ -109,13 +116,6 @@ exports[`Test snapshot of component Snapshot has not changed 1`] = `
       className="tab-content"
       id="roomButtons"
     >
-      <button
-        className="btn btn-light dashbutton"
-        id="saveButton"
-        onClick={[Function]}
-      >
-        Save Area
-      </button>
       <button
         className="btn btn-light dashbutton"
         id="deleteRoomButton"

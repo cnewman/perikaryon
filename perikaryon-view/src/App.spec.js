@@ -126,7 +126,7 @@ describe('After loading the test data, the component', () => {
 
         const areaDropDown = component.find('select#areaDropdown');
 
-        expect(areaDropDown.childAt(0).props()).toHaveProperty('value', '')
+        expect(areaDropDown.childAt(0).props()).toHaveProperty('children', 'Select Area')
         expect(areaDropDown.childAt(1).props()).toHaveProperty('value', 'limbo')
         expect(areaDropDown.childAt(2).props()).toHaveProperty('value', 'mapped')
         expect(areaDropDown.childAt(3).props()).toHaveProperty('value', 'craft')

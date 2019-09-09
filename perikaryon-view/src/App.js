@@ -345,13 +345,14 @@ class App extends Component {
               <p id="title">{this.state.selectedArea}</p>
               <ul className="navbar-nav ml-auto">
                 <select id={"areaDropdown"} className="custom-select" onChange={(areaDropdownEvent) => this.HandleAreaDropdownChange(areaDropdownEvent)}>
-                  <option value=""></option>
+                  <option>Select Area</option>
                   {this.state.listOfAreas}
                 </select>
                 <select id={"floorDropdown"} className="custom-select" onChange={(floorDropdownEvent) => this.HandleFloorDropdownChange(floorDropdownEvent)}>
                   {this.state.listOfFloorsInArea}
                 </select>
               </ul>
+              <button id="saveButton" className="btn btn-light dashbutton" onClick={(clickEvent) => this.HandleSaveArea(clickEvent)}>Save Area</button>
             </nav>
           </div>
         </div>
@@ -368,7 +369,6 @@ class App extends Component {
         <div className="d-flex flex-row align-items-end justify-content-between" id="dashboard">
           <div/>
           <div id="roomButtons" className="tab-content">
-            <button id="saveButton" className="btn btn-light dashbutton" onClick={(clickEvent) => this.HandleSaveArea(clickEvent)}>Save Area</button>
             <button id="deleteRoomButton" className="btn btn-light dashbutton" onClick={(clickEvent) => this.HandleDeleteRoomEvent(clickEvent)}>Delete Room</button>
             <button id="addRoomButton" className="btn btn-light dashbutton" onClick={(clickEvent) => this.HandleAddRoomEvent(clickEvent)}>Add Room</button>
             {/* <div id="itemDiv" className="tab-pane fade show active"></div>
