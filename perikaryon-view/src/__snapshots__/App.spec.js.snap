@@ -87,6 +87,20 @@ exports[`Test snapshot of component Snapshot has not changed 1`] = `
     </div>
   </div>
   <div
+    className="react-draggable"
+    onMouseDown={[Function]}
+    onMouseUp={[Function]}
+    onTouchEnd={[Function]}
+    onTouchStart={[Function]}
+    style={
+      Object {
+        "touchAction": "none",
+        "transform": "translate(0px,0px)",
+      }
+    }
+    transform={null}
+  />
+  <div
     className="d-flex flex-row align-items-end justify-content-between"
     id="dashboard"
   >

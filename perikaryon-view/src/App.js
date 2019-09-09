@@ -5,6 +5,8 @@ import "../node_modules/react-resizable/css/styles.css"
 import RGL, { WidthProvider } from "react-grid-layout";
 import axios from 'axios';
 import {RIEToggle, RIEInput, RIETextArea, RIENumber, RIETags, RIESelect} from 'riek'
+import Draggable from 'react-draggable'
+
 const { List, Set, Map } = require('immutable');
 const ReactGridLayout = WidthProvider(RGL);
 const gridWidth = 12;
@@ -360,8 +362,11 @@ class App extends Component {
             </ReactGridLayout>
           </div>
         </div>
+        <Draggable cancel="textarea">
+        {this.GenerateTextBlock()}
+        </Draggable>
         <div className="d-flex flex-row align-items-end justify-content-between" id="dashboard">
-          {this.GenerateTextBlock()}
+          <div/>
           <div id="roomButtons" className="tab-content">
             <button id="saveButton" className="btn btn-light dashbutton" onClick={(clickEvent) => this.HandleSaveArea(clickEvent)}>Save Area</button>
             <button id="deleteRoomButton" className="btn btn-light dashbutton" onClick={(clickEvent) => this.HandleDeleteRoomEvent(clickEvent)}>Delete Room</button>
