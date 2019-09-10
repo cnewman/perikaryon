@@ -6,6 +6,7 @@ import RGL, { WidthProvider } from "react-grid-layout";
 import axios from 'axios';
 import {RIEToggle, RIEInput, RIETextArea, RIENumber, RIETags, RIESelect} from 'riek'
 import Draggable from 'react-draggable'
+const shortid = require('shortid')
 
 const { List, Set, Map } = require('immutable');
 const ReactGridLayout = WidthProvider(RGL);
@@ -153,12 +154,14 @@ class App extends Component {
     })
   }
   HandleAddRoomEvent = (e) => {
-      this.UpdateRoomMap(new Room(this.state.selectedArea, "ChangeMe", "Hello! I'm a new room", { x: 10, y: 10, z: this.state.selectedFloor }, "ChangeMe"))
+    const roomtitle = "ChangeMe "+shortid.generate();
+      this.UpdateRoomMap(new Room(this.state.selectedArea, roomtitle, "Hello! I'm a new room", { x: 10, y: 10, z: this.state.selectedFloor }, roomtitle))
   }
   HandleDeleteRoomEvent = (e) => {
     if (this.state.mapOfRoomsInArea) {
       this.setState((prevState) => ({
-        mapOfRoomsInArea: prevState.mapOfRoomsInArea.delete(this.state.selectedArea + this.state.selectedRoom)
+        mapOfRoomsInArea: prevState.mapOfRoomsInArea.delete(this.state.selectedArea + this.state.selectedRoom),
+        selectedRoom: ""
       }))
     }
   }
