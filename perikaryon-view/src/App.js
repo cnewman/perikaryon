@@ -4,7 +4,7 @@ import "../node_modules/react-grid-layout/css/styles.css"
 import "../node_modules/react-resizable/css/styles.css"
 import RGL, { WidthProvider } from "react-grid-layout";
 import axios from 'axios';
-import {RIEToggle, RIEInput, RIETextArea, RIENumber, RIETags, RIESelect} from 'riek'
+import { RIEToggle, RIEInput, RIETextArea, RIENumber, RIETags, RIESelect } from 'riek'
 import Draggable from 'react-draggable'
 const shortid = require('shortid')
 
@@ -49,7 +49,7 @@ class App extends Component {
   CreateElementContainer(area, title, coordinates) {
     const ranvierCoordinates = this.TranslateReactGridToRanvierCoordinates(coordinates)
     return (
-      <div className={this.state.selectedRoom == title? 'room Selected' : 'room'}
+      <div className={this.state.selectedRoom == title ? 'room Selected' : 'room'}
         id={title}
         coordinate_values={coordinates}
         key={area + title}
@@ -154,8 +154,12 @@ class App extends Component {
     })
   }
   HandleAddRoomEvent = (e) => {
-    const roomtitle = "ChangeMe "+shortid.generate();
-      this.UpdateRoomMap(new Room(this.state.selectedArea, roomtitle, "Hello! I'm a new room", { x: 10, y: 10, z: this.state.selectedFloor }, roomtitle))
+    const roomtitle = "ChangeMe" + shortid.generate();
+    this.UpdateRoomMap(new Room(this.state.selectedArea, roomtitle, "Hello! I'm a new room", { x: 10, y: 10, z: this.state.selectedFloor }, roomtitle))
+    this.setState({
+      selectedRoom: roomtitle,
+      description: "Hello! I'm a new room"
+    })
   }
   HandleDeleteRoomEvent = (e) => {
     if (this.state.mapOfRoomsInArea) {
@@ -167,18 +171,18 @@ class App extends Component {
   }
   HandleChangeRoomNameEvent = (newName) => {
     const key = Object.keys(newName);
-    let room = JSON.parse(JSON.stringify(this.state.mapOfRoomsInArea.get(this.state.selectedArea+key)))
+    let room = JSON.parse(JSON.stringify(this.state.mapOfRoomsInArea.get(this.state.selectedArea + key)))
     room.title = newName[key];
-   
+
     const newID = newName[key].toLowerCase().split(' ').join('-')
     room.id = newID
 
     this.setState((prevState) => ({
-      mapOfRoomsInArea: prevState.mapOfRoomsInArea.delete(this.state.selectedArea+key)
+      mapOfRoomsInArea: prevState.mapOfRoomsInArea.delete(this.state.selectedArea + key)
     }))
 
     this.setState((prevState) => ({
-      mapOfRoomsInArea: prevState.mapOfRoomsInArea.set(room.area+room.title, room)
+      mapOfRoomsInArea: prevState.mapOfRoomsInArea.set(room.area + room.title, room)
     }))
   }
   UpdateRoomMap(room) {
@@ -305,12 +309,12 @@ class App extends Component {
     })
   }
   HandleClickNode = (e) => {
-    if(e.target.id){
+    if (e.target.id) {
       this.setState({
         selectedRoom: e.target.id,
         description: this.state.mapOfRoomsInArea.get(this.state.selectedArea + e.target.id).description
       })
-    }else{
+    } else {
       this.setState({
         selectedRoom: ""
       })
@@ -367,10 +371,10 @@ class App extends Component {
           </div>
         </div>
         <Draggable cancel="textarea">
-        {this.GenerateTextBlock()}
+          {this.GenerateTextBlock()}
         </Draggable>
         <div className="d-flex flex-row align-items-end justify-content-between" id="dashboard">
-          <div/>
+          <div />
           <div id="roomButtons" className="tab-content">
             <button id="deleteRoomButton" className="btn btn-light dashbutton" onClick={(clickEvent) => this.HandleDeleteRoomEvent(clickEvent)}>Delete Room</button>
             <button id="addRoomButton" className="btn btn-light dashbutton" onClick={(clickEvent) => this.HandleAddRoomEvent(clickEvent)}>Add Room</button>

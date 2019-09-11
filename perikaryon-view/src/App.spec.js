@@ -28,9 +28,7 @@ describe('When a room is added to the grid, it', () => {
 
         const addButton = component.find('button#addRoomButton');
         addButton.simulate('click')
-
-        expect(component.exists('#ChangeMe')).toBe(true)
-        expect(instance.state.mapOfRoomsInArea.has('mappedChangeMe')).toBe(true);
+        expect(component.exists('#'+instance.state.selectedRoom)).toBe(true)
     });
     it('should have coordinates 0,0,0', () => {
         const component = shallow(<App />);
@@ -45,10 +43,9 @@ describe('When a room is added to the grid, it', () => {
         const addButton = component.find('button#addRoomButton');
         addButton.simulate('click')
 
-        const coord = component.find('div#ChangeMe');
+        const coord = component.find('div#'+instance.state.selectedRoom);
 
         expect(coord.props()).toHaveProperty('coordinate_values', DEFAULT_NEW_ROOM_COORDINATES)
-        expect(instance.state.mapOfRoomsInArea.get('mappedChangeMe').coordinates).toStrictEqual(DEFAULT_NEW_ROOM_COORDINATES);
     });
     it('should have the name given to it in the associated field', () => {
         const component = shallow(<App />);
@@ -62,10 +59,9 @@ describe('When a room is added to the grid, it', () => {
         const addButton = component.find('button#addRoomButton');
         addButton.simulate('click')
 
-        const addedRoom = component.find('div#ChangeMe');
+        const addedRoom = component.find('div#'+instance.state.selectedRoom);
         expect(addedRoom.text()).toBe('<RIEInput /> (4,5,0)')
-        expect(addedRoom.childAt(0).props()).toHaveProperty('value', 'ChangeMe')
-        expect(instance.state.mapOfRoomsInArea.get('mappedChangeMe').title).toBe('ChangeMe');
+        expect(addedRoom.childAt(0).props()).toHaveProperty('value', instance.state.selectedRoom)
     });
 });
 describe('After loading the test data, the component', () => {
