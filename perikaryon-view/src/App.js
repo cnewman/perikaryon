@@ -13,7 +13,7 @@ const ReactGridLayout = WidthProvider(RGL);
 const gridWidth = 12;
 const centerOfGrid = gridWidth / 2;
 class Room {
-  constructor(area, title, description, coordinates, id, bundle, doors = {}, exits = [], npcs = new Set()) {
+  constructor(area, title, description, coordinates, id, bundle, doors = {}, exits = [], npcs = new Set(), items = []) {
     this.id = id;
     this.area = area;
     this.title = title;
@@ -24,6 +24,7 @@ class Room {
     this.exits = Set(exits);
     this.npcs = npcs;
     this.bundle = bundle;
+    this.items = items;
   }
 }
 class App extends Component {
@@ -120,7 +121,8 @@ class App extends Component {
             this.state.mapOfRoomsInArea.get(roomLayout.i).bundle,
             this.state.mapOfRoomsInArea.get(roomLayout.i).doors,
             this.state.mapOfRoomsInArea.get(roomLayout.i).exits,
-            this.state.mapOfRoomsInArea.get(roomLayout.i).npcs))
+            this.state.mapOfRoomsInArea.get(roomLayout.i).npcs,
+            this.state.mapOfRoomsInArea.get(roomLayout.i).items))
       }));
     });
   }
@@ -145,7 +147,7 @@ class App extends Component {
         if (room.coordinates) {
           const coordinates = this.TranslateRanvierToReactGridCoordinates(room.coordinates, minX, minY)
           areaMap = areaMap.set(area.name + room.title,
-            new Room(area.name, room.title, room.description, coordinates, room.id, area.bundle, room.doors, room.exits, room.npcs))
+            new Room(area.name, room.title, room.description, coordinates, room.id, area.bundle, room.doors, room.exits, room.defaultNpcs, room.defaultItems))
         }
       }
     }
