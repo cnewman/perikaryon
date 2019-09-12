@@ -94,6 +94,12 @@ html, body, #root, .App {
   margin-right: auto;
   text-align: center;
 }
+.topdashbtn{
+  margin:3px;
+}
+.topdashbtn.active{
+  background-color: $ranvier-selected-orange;
+}
 select:invalid{
   color: gray;
 }

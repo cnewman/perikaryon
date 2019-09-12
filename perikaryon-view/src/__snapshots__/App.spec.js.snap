@@ -16,32 +16,30 @@ exports[`Test snapshot of component Snapshot has not changed 1`] = `
         className="navbar navbar-expand-lg navbar-light bg-light"
         id="topNavBar"
       >
-        <ul
-          className="navbar-nav"
+        <button
+          className="topdashbtn btn btn-secondary"
+          id="descBtn"
+          onClick={[Function]}
+          type="button"
         >
-          <li
-            className="nav-item"
-          >
-            <a
-              className="nav-link active"
-              data-toggle="tab"
-              href="#itemDiv"
-            >
-              Items
-            </a>
-          </li>
-          <li
-            className="nav-item"
-          >
-            <a
-              className="nav-link"
-              data-toggle="tab"
-              href="#npcDiv"
-            >
-              NPCs
-            </a>
-          </li>
-        </ul>
+          Description
+        </button>
+        <button
+          className="topdashbtn btn btn-secondary"
+          id="itemBtn"
+          onClick={[Function]}
+          type="button"
+        >
+          Items
+        </button>
+        <button
+          className="topdashbtn btn btn-secondary"
+          id="npcBtn"
+          onClick={[Function]}
+          type="button"
+        >
+          NPC
+        </button>
         <p
           id="title"
         >

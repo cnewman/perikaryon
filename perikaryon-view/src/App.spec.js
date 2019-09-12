@@ -185,6 +185,9 @@ describe('After clicking a node on the graph', () => {
         instance.setState({selectedFloor:0})
         instance.InitializeRoomMap()
 
+        const descButton = component.find('button#descBtn');
+        descButton.simulate('click');
+        
         const areaGraph = component.find('div#reactgrid');
         areaGraph.childAt(0).childAt(0).children().at(0).simulate('click',{'target':{'id':'Hallway South 1'}})
 

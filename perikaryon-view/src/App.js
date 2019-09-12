@@ -45,6 +45,9 @@ class App extends Component {
       listOfFloorsInArea: List(),
       mapOfRoomsInArea: Map(),
       nodeHeight: 2,
+      showDesc: false,
+      showNpcs: false,
+      showItems: false,
     };
   }
   CreateElementContainer(area, title, coordinates) {
@@ -321,10 +324,9 @@ class App extends Component {
         selectedRoom: ""
       })
     }
-
   }
   GenerateTextBlock() {
-    if (this.state.selectedRoom !== "") {
+    if (this.state.selectedRoom !== "" && this.state.showDesc) {
       return (
         <div id="descriptionDiv">
           <textarea id="roomDescription" type="text" readOnly={false} onChange={this.HandleChangeDescriptionEvent} value={this.state.description || ''} />
@@ -333,24 +335,31 @@ class App extends Component {
     }
     return <div></div>;
   }
-
+  HandleBtnToggleClick = (buttonId) => {
+    if(buttonId === 'descBtn'){
+      this.state.showDesc === true ? this.setState({ showDesc: false}) : this.setState({ showDesc: true})
+    }else if(buttonId === 'itemBtn'){
+      this.state.showItems === true ? this.setState({ showItems: false}) : this.setState({ showItems: true})
+    }else if (buttonId === 'npcBtn'){
+      this.state.showNpcs === true ? this.setState({ showNpcs: false}) : this.setState({ showNpcs: true})
+    }
+  }
   /*
   * Render the dropdown and area graph. The area graph uses react-grid-layout's API.
   */
   render() {
+    let descBtnClass = this.state.showDesc === true ? "active" : "btn-secondary";
+    let itemBtnClass = this.state.showItems === true ? "active" : "btn-secondary";
+    let npcBtnClass = this.state.showNpcs === true ? "active" : "btn-secondary";
+    
     return (
       <div className="container-fluid">
         <div className="row" id="topdash">
           <div id="buttondiv" className="col-xl">
             <nav id="topNavBar" className="navbar navbar-expand-lg navbar-light bg-light">
-              <ul className="navbar-nav">
-                <li className="nav-item">
-                  <a href="#itemDiv" className="nav-link active" data-toggle="tab">Items</a>
-                </li>
-                <li className="nav-item">
-                  <a href="#npcDiv" className="nav-link" data-toggle="tab">NPCs</a>
-                </li>
-              </ul>
+              <button id="descBtn" onClick={()=>this.HandleBtnToggleClick("descBtn")} type="button" className={"topdashbtn btn "+descBtnClass} >Description</button>
+              <button id="itemBtn" onClick={()=>this.HandleBtnToggleClick("itemBtn")} type="button" className={"topdashbtn btn "+itemBtnClass}>Items</button>
+              <button id="npcBtn" onClick={()=>this.HandleBtnToggleClick("npcBtn")} type="button" className={"topdashbtn btn "+npcBtnClass}>NPC</button>
               <p id="title">{this.state.selectedArea}</p>
               <ul className="navbar-nav ml-auto">
                 <select id={"areaDropdown"} className="custom-select" onChange={(areaDropdownEvent) => this.HandleAreaDropdownChange(areaDropdownEvent)}>
