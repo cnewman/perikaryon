@@ -1,17 +1,20 @@
-import React, { Component } from "react";
 import "./App.scss";
 import "../node_modules/react-grid-layout/css/styles.css"
 import "../node_modules/react-resizable/css/styles.css"
-import RGL, { WidthProvider } from "react-grid-layout";
-import axios from 'axios';
-import { RIEToggle, RIEInput, RIETextArea, RIENumber, RIETags, RIESelect } from 'riek'
-import Draggable from 'react-draggable'
-const shortid = require('shortid')
 
-const { List, Set, Map } = require('immutable');
+import axios from 'axios';
+import {RIEInput} from 'riek'
+import Draggable from 'react-draggable'
+import React, { Component } from "react";
+import RGL, { WidthProvider } from "react-grid-layout";
+
+const shortid = require('shortid')
 const ReactGridLayout = WidthProvider(RGL);
+const { List, Set, Map } = require('immutable');
+
 const gridWidth = 12;
 const centerOfGrid = gridWidth / 2;
+
 class Room {
   constructor(area, title, description, coordinates, id, bundle, doors = {}, exits = [], npcs = new Set(), items = []) {
     this.id = id;
@@ -50,25 +53,99 @@ class App extends Component {
       showItems: false,
     };
   }
-  CreateElementContainer(area, title, coordinates) {
-    const ranvierCoordinates = this.TranslateReactGridToRanvierCoordinates(coordinates)
-    return (
-      <div className={this.state.selectedRoom == title ? 'room Selected' : 'room'}
-        id={title}
-        coordinate_values={coordinates}
-        key={area + title}
-        onClick={this.HandleClickNode}
-        data-grid={{ x: coordinates.x, y: coordinates.y, w: 1, h: this.state.nodeHeight }}
-      >
-        <RIEInput
-          value={title}
-          propName={title}
-          change={this.HandleChangeRoomNameEvent}
-        />
-        <br /> ({ranvierCoordinates.x},{ranvierCoordinates.y},{ranvierCoordinates.z})
-      </div>
-    )
+  //#region [rgba(155,89,182,0.1)] Handlers
+  HandleAddRoomEvent = (e) => {
+    const roomtitle = "ChangeMe" + shortid.generate();
+    this.UpdateRoomMap(new Room(this.state.selectedArea, roomtitle, "Hello! I'm a new room", { x: 10, y: 10, z: this.state.selectedFloor }, roomtitle))
+    this.setState({
+      selectedRoom: roomtitle,
+      description: "Hello! I'm a new room"
+    })
   }
+  HandleDeleteRoomEvent = (e) => {
+    if (this.state.mapOfRoomsInArea) {
+      this.setState((prevState) => ({
+        mapOfRoomsInArea: prevState.mapOfRoomsInArea.delete(this.state.selectedArea + this.state.selectedRoom),
+        selectedRoom: ""
+      }))
+    }
+  }
+  HandleChangeRoomNameEvent = (newName) => {
+    const key = Object.keys(newName);
+    let room = JSON.parse(JSON.stringify(this.state.mapOfRoomsInArea.get(this.state.selectedArea + key)))
+    room.title = newName[key];
+
+    const newID = newName[key].toLowerCase().split(' ').join('-')
+    room.id = newID
+
+    this.setState((prevState) => ({
+      mapOfRoomsInArea: prevState.mapOfRoomsInArea.delete(this.state.selectedArea + key)
+    }))
+
+    this.setState((prevState) => ({
+      mapOfRoomsInArea: prevState.mapOfRoomsInArea.set(room.area + room.title, room)
+    }))
+  }
+  /*
+   * When a new area is selected in the dropdown, change the value so React can re-render.
+   */
+  HandleAreaDropdownChange = (e) => {
+    this.setState({
+      selectedArea: e.target.value,
+    }, this.GenerateFloorDropdown);
+  }
+  /*
+   * Once changes have been made, determine exit directions and upload the new area back to Ranvier for saving.
+   */
+  HandleSaveArea = (e) => {
+    for (let [, room] of this.state.mapOfRoomsInArea) {
+      room.coordinates = this.TranslateReactGridToRanvierCoordinates(room.coordinates)
+    }
+    axios.put("http://localhost:3004/savearea", this.state.mapOfRoomsInArea).then(res => console.log(res.data));
+  }
+  /*
+   * When a new floor is selected in the dropdown, change the value so React can re-render.
+   */
+  HandleFloorDropdownChange = (e) => {
+    this.setState({
+      selectedFloor: e.target.value
+    });
+  }
+  HandleBtnToggleClick = (buttonId) => {
+    if (buttonId === 'descBtn') {
+      this.state.showDesc === true ? this.setState({ showDesc: false }) : this.setState({ showDesc: true })
+    } else if (buttonId === 'itemBtn') {
+      this.state.showItems === true ? this.setState({ showItems: false }) : this.setState({ showItems: true })
+    } else if (buttonId === 'npcBtn') {
+      this.state.showNpcs === true ? this.setState({ showNpcs: false }) : this.setState({ showNpcs: true })
+    }
+  }
+  /*
+   * These functions allow for room descriptions to be displayed in the editor as well as modified.
+   * The HandleClicknode function receives a click and updates the selectedRoom id. GenerateDescriptionBox
+   * is then used to open a text box with the room's description. Finally, changes made in the textarea
+   * are reflected in the room's description via the HandleChangeDescriptionEvent function.
+   */
+  HandleChangeDescriptionEvent = (e) => {
+    this.state.mapOfRoomsInArea.get(this.state.selectedArea + this.state.selectedRoom).description = e.target.value;
+    this.setState({
+      description: e.target.value
+    })
+  }
+  HandleClickNode = (e) => {
+    if (e.target.id) {
+      this.setState({
+        selectedRoom: e.target.id,
+        description: this.state.mapOfRoomsInArea.get(this.state.selectedArea + e.target.id).description
+      })
+    } else {
+      this.setState({
+        selectedRoom: ""
+      })
+    }
+  }
+  //#endregion
+  //#region [rgba(250,150,30,0.1)] Helper Functions
   /*
    * Take ranvier coordinates and do one of two things: If y is negative, remove the negative and shove it upward
    * by the smallest negative number in the set of room coordinates (since react-grid won't show anything lower than)
@@ -129,7 +206,29 @@ class App extends Component {
       }));
     });
   }
+  UpdateRoomMap(room) {
+    this.setState((prevState) => ({
+      mapOfRoomsInArea: prevState.mapOfRoomsInArea.set(this.state.selectedArea + room.title, room)
+    }))
+  }
+  /*
+  * Once the component mounts, call Ranvier's API (only locally, currently) so that we can
+  * populate area grid and dropdown.
+  */
+  callAPI() {
+    fetch("http://localhost:3004/areas")
+      .then(res => res.json())
+      .then(res => {
+        this.setState({ ranvierAPIResponse: res }, this.InitializeRoomMap);
+        this.GenerateAreaDropdown();
+      })
+      .catch(err => err);
 
+  }
+  componentDidMount() {
+    this.callAPI();
+  }
+  //#endregion 
   /*
    *When we first mount the component, grab data from Ranvier.
    */
@@ -158,42 +257,24 @@ class App extends Component {
       mapOfRoomsInArea: areaMap,
     })
   }
-  HandleAddRoomEvent = (e) => {
-    const roomtitle = "ChangeMe" + shortid.generate();
-    this.UpdateRoomMap(new Room(this.state.selectedArea, roomtitle, "Hello! I'm a new room", { x: 10, y: 10, z: this.state.selectedFloor }, roomtitle))
-    this.setState({
-      selectedRoom: roomtitle,
-      description: "Hello! I'm a new room"
-    })
-  }
-  HandleDeleteRoomEvent = (e) => {
-    if (this.state.mapOfRoomsInArea) {
-      this.setState((prevState) => ({
-        mapOfRoomsInArea: prevState.mapOfRoomsInArea.delete(this.state.selectedArea + this.state.selectedRoom),
-        selectedRoom: ""
-      }))
-    }
-  }
-  HandleChangeRoomNameEvent = (newName) => {
-    const key = Object.keys(newName);
-    let room = JSON.parse(JSON.stringify(this.state.mapOfRoomsInArea.get(this.state.selectedArea + key)))
-    room.title = newName[key];
-
-    const newID = newName[key].toLowerCase().split(' ').join('-')
-    room.id = newID
-
-    this.setState((prevState) => ({
-      mapOfRoomsInArea: prevState.mapOfRoomsInArea.delete(this.state.selectedArea + key)
-    }))
-
-    this.setState((prevState) => ({
-      mapOfRoomsInArea: prevState.mapOfRoomsInArea.set(room.area + room.title, room)
-    }))
-  }
-  UpdateRoomMap(room) {
-    this.setState((prevState) => ({
-      mapOfRoomsInArea: prevState.mapOfRoomsInArea.set(this.state.selectedArea + room.title, room)
-    }))
+  CreateElementContainer(area, title, coordinates) {
+    const ranvierCoordinates = this.TranslateReactGridToRanvierCoordinates(coordinates)
+    return (
+      <div className={this.state.selectedRoom == title ? 'room Selected' : 'room'}
+        id={title}
+        coordinate_values={coordinates}
+        key={area + title}
+        onClick={this.HandleClickNode}
+        data-grid={{ x: coordinates.x, y: coordinates.y, w: 1, h: this.state.nodeHeight }}
+      >
+        <RIEInput
+          value={title}
+          propName={title}
+          change={this.HandleChangeRoomNameEvent}
+        />
+        <br /> ({ranvierCoordinates.x},{ranvierCoordinates.y},{ranvierCoordinates.z})
+      </div>
+    )
   }
   /*
    * Take Area data from Ranvier API response and make the graph using react-grid-layout API
@@ -215,14 +296,7 @@ class App extends Component {
     }
     return (visibleRoomList)
   }
-  /*
-  * When a new area is selected in the dropdown, change the value so React can re-render.
-  */
-  HandleAreaDropdownChange = (e) => {
-    this.setState({
-      selectedArea: e.target.value,
-    }, this.GenerateFloorDropdown);
-  }
+
   /*
   * Take Area data from Ranvier API response and make a dropdown.
   * User can select an area from the dropdown and the area's rooms will be displayed.
@@ -235,14 +309,6 @@ class App extends Component {
           listOfAreas: prevState.listOfAreas.push(<option key={this.state.ranvierAPIResponse[key].name} value={this.state.ranvierAPIResponse[key].name}>{this.state.ranvierAPIResponse[key].name}</option>),
         }))
       })
-  }
-  /*
-  * When a new floor is selected in the dropdown, change the value so React can re-render.
-  */
-  HandleFloorDropdownChange = (e) => {
-    this.setState({
-      selectedFloor: e.target.value
-    });
   }
   /*
   * Take Area data from Ranvier API response and make a dropdown.
@@ -272,60 +338,7 @@ class App extends Component {
     });
 
   }
-
-  /*
-  * Once changes have been made, determine exit directions and upload the new area back to Ranvier for saving.
-  */
-  HandleSaveArea = (e) => {
-    for (let [, room] of this.state.mapOfRoomsInArea) {
-      room.coordinates = this.TranslateReactGridToRanvierCoordinates(room.coordinates)
-    }
-    axios.put("http://localhost:3004/savearea", this.state.mapOfRoomsInArea).then(res => console.log(res.data));
-  }
-
-  /*
-  * Once the component mounts, call Ranvier's API (only locally, currently) so that we can
-  * populate area grid and dropdown.
-  */
-  callAPI() {
-    fetch("http://localhost:3004/areas")
-      .then(res => res.json())
-      .then(res => {
-        this.setState({ ranvierAPIResponse: res }, this.InitializeRoomMap);
-        this.GenerateAreaDropdown();
-      })
-      .catch(err => err);
-
-  }
-  componentDidMount() {
-    this.callAPI();
-  }
-
-  /*
-  * These functions allow for room descriptions to be displayed in the editor as well as modified.
-  * The HandleClicknode function receives a click and updates the selectedRoom id. GenerateTextBlock
-  * is then used to open a text box with the room's description. Finally, changes made in the textarea
-  * are reflected in the room's description via the HandleChangeDescriptionEvent function.
-  */
-  HandleChangeDescriptionEvent = (e) => {
-    this.state.mapOfRoomsInArea.get(this.state.selectedArea + this.state.selectedRoom).description = e.target.value;
-    this.setState({
-      description: e.target.value
-    })
-  }
-  HandleClickNode = (e) => {
-    if (e.target.id) {
-      this.setState({
-        selectedRoom: e.target.id,
-        description: this.state.mapOfRoomsInArea.get(this.state.selectedArea + e.target.id).description
-      })
-    } else {
-      this.setState({
-        selectedRoom: ""
-      })
-    }
-  }
-  GenerateTextBlock() {
+  GenerateDescriptionBox() {
     if (this.state.selectedRoom !== "" && this.state.showDesc) {
       return (
         <div id="descriptionDiv">
@@ -335,15 +348,7 @@ class App extends Component {
     }
     return <div></div>;
   }
-  HandleBtnToggleClick = (buttonId) => {
-    if(buttonId === 'descBtn'){
-      this.state.showDesc === true ? this.setState({ showDesc: false}) : this.setState({ showDesc: true})
-    }else if(buttonId === 'itemBtn'){
-      this.state.showItems === true ? this.setState({ showItems: false}) : this.setState({ showItems: true})
-    }else if (buttonId === 'npcBtn'){
-      this.state.showNpcs === true ? this.setState({ showNpcs: false}) : this.setState({ showNpcs: true})
-    }
-  }
+
   /*
   * Render the dropdown and area graph. The area graph uses react-grid-layout's API.
   */
@@ -351,15 +356,15 @@ class App extends Component {
     let descBtnClass = this.state.showDesc === true ? "active" : "btn-secondary";
     let itemBtnClass = this.state.showItems === true ? "active" : "btn-secondary";
     let npcBtnClass = this.state.showNpcs === true ? "active" : "btn-secondary";
-    
+
     return (
       <div className="container-fluid">
         <div className="row" id="topdash">
           <div id="buttondiv" className="col-xl">
             <nav id="topNavBar" className="navbar navbar-expand-lg navbar-light bg-light">
-              <button id="descBtn" onClick={()=>this.HandleBtnToggleClick("descBtn")} type="button" className={"topdashbtn btn "+descBtnClass} >Description</button>
-              <button id="itemBtn" onClick={()=>this.HandleBtnToggleClick("itemBtn")} type="button" className={"topdashbtn btn "+itemBtnClass}>Items</button>
-              <button id="npcBtn" onClick={()=>this.HandleBtnToggleClick("npcBtn")} type="button" className={"topdashbtn btn "+npcBtnClass}>NPC</button>
+              <button id="descBtn" onClick={() => this.HandleBtnToggleClick("descBtn")} type="button" className={"topdashbtn btn " + descBtnClass} >Description</button>
+              <button id="itemBtn" onClick={() => this.HandleBtnToggleClick("itemBtn")} type="button" className={"topdashbtn btn " + itemBtnClass}>Items</button>
+              <button id="npcBtn" onClick={() => this.HandleBtnToggleClick("npcBtn")} type="button" className={"topdashbtn btn " + npcBtnClass}>NPC</button>
               <p id="title">{this.state.selectedArea}</p>
               <ul className="navbar-nav ml-auto">
                 <select id={"areaDropdown"} className="custom-select" onChange={(areaDropdownEvent) => this.HandleAreaDropdownChange(areaDropdownEvent)}>
@@ -382,7 +387,7 @@ class App extends Component {
           </div>
         </div>
         <Draggable cancel="textarea">
-          {this.GenerateTextBlock()}
+          {this.GenerateDescriptionBox()}
         </Draggable>
         <div className="d-flex flex-row align-items-end justify-content-between" id="dashboard">
           <div />
