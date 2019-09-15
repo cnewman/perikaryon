@@ -219,6 +219,7 @@ class App extends Component {
     fetch("http://localhost:3004/areas")
       .then(res => res.json())
       .then(res => {
+
         this.setState({ ranvierAPIResponse: res }, this.InitializeRoomMap);
         this.GenerateAreaDropdown();
       })
@@ -236,16 +237,19 @@ class App extends Component {
     let areaMap = Map()
     let minX = 0
     let minY = 0
-    for (let [, area] of Object.entries(this.state.ranvierAPIResponse)) {
-      for (let [, room] of Object.entries(area.roomList)) {
+    
+    for (let area of this.state.ranvierAPIResponse['areas']) {
+      let APIResponseMap = new Map(Object.entries(area))
+      for (let room of APIResponseMap.get('roomList')) {
         if (room.coordinates) {
           minX = Math.min(minX, room.coordinates.x)
           minY = Math.min(minY, room.coordinates.y)
         }
       }
     }
-    for (let [, area] of Object.entries(this.state.ranvierAPIResponse)) {
-      for (let [, room] of Object.entries(area.roomList)) {
+    for (let area of this.state.ranvierAPIResponse['areas']) {
+      let APIResponseMap = new Map(Object.entries(area))
+      for (let room of APIResponseMap.get('roomList')) {
         if (room.coordinates) {
           const coordinates = this.TranslateRanvierToReactGridCoordinates(room.coordinates, minX, minY)
           areaMap = areaMap.set(area.name + room.title,
@@ -303,12 +307,11 @@ class App extends Component {
   * This function maps over the API response object from Ranvier and just pulls each area name.
   */
   GenerateAreaDropdown() {
-    Object.keys(this.state.ranvierAPIResponse)
-      .forEach((key) => {
-        this.setState((prevState) => ({
-          listOfAreas: prevState.listOfAreas.push(<option key={this.state.ranvierAPIResponse[key].name} value={this.state.ranvierAPIResponse[key].name}>{this.state.ranvierAPIResponse[key].name}</option>),
-        }))
-      })
+    for (let area of this.state.ranvierAPIResponse['areas']) {
+      this.setState((prevState) => ({
+        listOfAreas: prevState.listOfAreas.push(<option key={area.name} value={area.name}>{area.name}</option>),
+      }))
+    }
   }
   /*
   * Take Area data from Ranvier API response and make a dropdown.
@@ -318,9 +321,9 @@ class App extends Component {
   */
   GenerateFloorDropdown() {
     let uniquelistOfFloorsInArea = Set()
-    for (let apikey of Object.keys(this.state.ranvierAPIResponse)) {
-      if (this.state.ranvierAPIResponse[apikey].name == this.state.selectedArea) {
-        for (let room of this.state.ranvierAPIResponse[apikey].roomList) {
+    for (let area of this.state.ranvierAPIResponse['areas']) {
+      if (area.name == this.state.selectedArea) {
+        for (let room of area.roomList) {
           if (room.coordinates != null) {
             uniquelistOfFloorsInArea = uniquelistOfFloorsInArea.add(room.coordinates.z)
           } else {
@@ -348,7 +351,21 @@ class App extends Component {
     }
     return <div></div>;
   }
-
+  GenerateNPCBox() {
+    if (this.state.selectedRoom !== "" && this.state.showNpcs) {
+      //console.log("HI")
+      let room = JSON.parse(JSON.stringify(this.state.mapOfRoomsInArea.get(this.state.selectedArea + this.state.selectedRoom)))
+      for( let npc of room.npcs ){
+       // console.log(npc)
+      }
+      // return (
+      //   <div id="npcDiv">
+      //     <textarea id="roomDescription" type="text" readOnly={false} onChange={this.HandleChangeDescriptionEvent} value={this.state.description || ''} />
+      //   </div>
+      // )
+    }
+    return <div></div>;
+  }
   /*
   * Render the dropdown and area graph. The area graph uses react-grid-layout's API.
   */
@@ -389,6 +406,7 @@ class App extends Component {
         <Draggable cancel="textarea">
           {this.GenerateDescriptionBox()}
         </Draggable>
+        {this.GenerateNPCBox()}
         <div className="d-flex flex-row align-items-end justify-content-between" id="dashboard">
           <div />
           <div id="roomButtons" className="tab-content">

@@ -134,7 +134,7 @@ describe('After loading the test data, the component', () => {
     it('should contain 8 rooms', () => {
         const component = shallow(<App />);
         const instance = component.instance();
-        const NUMBER_OF_ROOMS_IN_TEST_DATA = 8;
+        const NUMBER_OF_ROOMS_IN_TEST_DATA = 9;
 
         instance.setState({ranvierAPIResponse:json})
         instance.setState({selectedArea:'mapped'})

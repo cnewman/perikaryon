@@ -105,6 +105,7 @@ exports[`Test snapshot of component Snapshot has not changed 1`] = `
     }
     transform={null}
   />
+  <div />
   <div
     className="d-flex flex-row align-items-end justify-content-between"
     id="dashboard"

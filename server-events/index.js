@@ -89,6 +89,12 @@ function getAreasInfo(state) {
     }
     areas.push({name, title, rooms, npcs, metadata, bundle, roomList});
   }
+  let npcs = []
 
-  return (areas);
+  for (const [name, npc] of state.MobManager.mobs) {
+    const {area, script, behaviors, equipment, defaultEquipment, defaultItems, description, id, keywords, quests} = npc;
+    npcs.push({name, area, script, behaviors, equipment, defaultEquipment, defaultItems, description, id, keywords, quests})
+  }
+
+  return ({areas, npcs});
 }
