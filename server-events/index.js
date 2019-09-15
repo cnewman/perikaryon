@@ -77,7 +77,6 @@ module.exports = {
 };
 
 function getAreasInfo(state) {
-  const areaCount = state.AreaManager.areas.size;
   let areas = []
   for (const [name, area] of state.AreaManager.areas) {
     const {title, metadata, bundle} = area;
@@ -89,12 +88,17 @@ function getAreasInfo(state) {
     }
     areas.push({name, title, rooms, npcs, metadata, bundle, roomList});
   }
-  let npcs = []
 
+  let npcs = []
   for (const [name, npc] of state.MobManager.mobs) {
     const {area, script, behaviors, equipment, defaultEquipment, defaultItems, description, id, keywords, quests} = npc;
     npcs.push({name, area, script, behaviors, equipment, defaultEquipment, defaultItems, description, id, keywords, quests})
   }
 
-  return ({areas, npcs});
+  let items = []
+  for (const item of state.ItemManager.items) {
+    const {area, metadata, behaviors, defaultItems, description, id, name, room, roomDesc, script} = item;
+    items.push({area, metadata, behaviors, defaultItems, description, id, name, room, roomDesc, script})
+  }
+  return ({areas, npcs, items});
 }

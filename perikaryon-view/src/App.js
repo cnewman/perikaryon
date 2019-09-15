@@ -47,6 +47,8 @@ class App extends Component {
       listOfAreas: List(),
       listOfFloorsInArea: List(),
       mapOfRoomsInArea: Map(),
+      mapOfNpcs: Map(),
+      mapOfItems: Map(),
       nodeHeight: 2,
       showDesc: false,
       showNpcs: false,
@@ -235,9 +237,19 @@ class App extends Component {
    */
   InitializeRoomMap() {
     let areaMap = Map()
+    let npcMap = Map()
+    let itemMap = Map()
     let minX = 0
     let minY = 0
-    
+    console.log(JSON.stringify(this.state.ranvierAPIResponse))
+    for(let npc of this.state.ranvierAPIResponse['npcs']){
+      let npcResponseMap = new Map(Object.entries(npc))
+      npcMap = npcMap.set(npcResponseMap.get('area').name+npcResponseMap.get('id'), npc)
+    }
+    for(let item of this.state.ranvierAPIResponse['items']){
+      let itemResponseMap = new Map(Object.entries(item))
+      itemMap = itemMap.set(itemResponseMap.get('area').name+itemResponseMap.get('id'), item)
+    }
     for (let area of this.state.ranvierAPIResponse['areas']) {
       let APIResponseMap = new Map(Object.entries(area))
       for (let room of APIResponseMap.get('roomList')) {
@@ -259,6 +271,8 @@ class App extends Component {
     }
     this.setState({
       mapOfRoomsInArea: areaMap,
+      mapOfNpcs: npcMap,
+      mapOfItems: itemMap
     })
   }
   CreateElementContainer(area, title, coordinates) {
