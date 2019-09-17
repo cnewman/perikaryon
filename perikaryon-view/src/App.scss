@@ -70,9 +70,10 @@ html, body, #root, .App {
   border: 3px solid $ranvier-dark-green;
   display: block;
 }
-#npcDiv.col-xl{
+#npcDiv{
   padding-left: 0px;
   padding-right:0px;
+  width:40%;
 }
 .dashbutton{
   float: right;

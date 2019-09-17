@@ -90,9 +90,9 @@ function getAreasInfo(state) {
   }
 
   let npcs = []
-  for (const [name, npc] of state.MobManager.mobs) {
+  for (const [uuid, npc] of state.MobManager.mobs) {
     const {area, script, behaviors, equipment, defaultEquipment, defaultItems, description, id, keywords, quests} = npc;
-    npcs.push({name, area, script, behaviors, equipment, defaultEquipment, defaultItems, description, id, keywords, quests})
+    npcs.push({area, script, behaviors, equipment, defaultEquipment, defaultItems, description, id, keywords, quests})
   }
 
   let items = []

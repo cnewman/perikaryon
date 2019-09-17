@@ -241,14 +241,14 @@ class App extends Component {
     let itemMap = Map()
     let minX = 0
     let minY = 0
-    console.log(JSON.stringify(this.state.ranvierAPIResponse))
+    
     for(let npc of this.state.ranvierAPIResponse['npcs']){
       let npcResponseMap = new Map(Object.entries(npc))
-      npcMap = npcMap.set(npcResponseMap.get('area').name+npcResponseMap.get('id'), npc)
+      npcMap = npcMap.set(npcResponseMap.get('area').name+':'+npcResponseMap.get('id'), npc)
     }
     for(let item of this.state.ranvierAPIResponse['items']){
       let itemResponseMap = new Map(Object.entries(item))
-      itemMap = itemMap.set(itemResponseMap.get('area').name+itemResponseMap.get('id'), item)
+      itemMap = itemMap.set(itemResponseMap.get('area').name+':'+itemResponseMap.get('id'), item)
     }
     for (let area of this.state.ranvierAPIResponse['areas']) {
       let APIResponseMap = new Map(Object.entries(area))
@@ -367,16 +367,29 @@ class App extends Component {
   }
   GenerateNPCBox() {
     if (this.state.selectedRoom !== "" && this.state.showNpcs) {
-      //console.log("HI")
-      let room = JSON.parse(JSON.stringify(this.state.mapOfRoomsInArea.get(this.state.selectedArea + this.state.selectedRoom)))
+      let npcList = []
+      let room = this.state.mapOfRoomsInArea.get(this.state.selectedArea + this.state.selectedRoom)
       for( let npc of room.npcs ){
-       // console.log(npc)
+        let npcs = this.state.mapOfNpcs.get(npc)
+       npcList.push(
+        <div className="card">
+          <div className="card-header" id={npcs.id}>
+            <button className="btn btn-link" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+              {npcs.id}
+            </button>
+          </div>
+        </div>
+       )
       }
-      // return (
-      //   <div id="npcDiv">
-      //     <textarea id="roomDescription" type="text" readOnly={false} onChange={this.HandleChangeDescriptionEvent} value={this.state.description || ''} />
-      //   </div>
-      // )
+      return(
+        <Draggable>
+          <div id="npcDiv">
+            <div id="accordion">
+              {npcList}
+            </div>
+          </div>
+        </Draggable>
+      )
     }
     return <div></div>;
   }
@@ -420,7 +433,9 @@ class App extends Component {
         <Draggable cancel="textarea">
           {this.GenerateDescriptionBox()}
         </Draggable>
-        {this.GenerateNPCBox()}
+
+          {this.GenerateNPCBox()}
+
         <div className="d-flex flex-row align-items-end justify-content-between" id="dashboard">
           <div />
           <div id="roomButtons" className="tab-content">
