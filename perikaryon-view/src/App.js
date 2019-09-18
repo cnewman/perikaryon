@@ -1,16 +1,19 @@
 import "./App.scss";
-import "../node_modules/react-grid-layout/css/styles.css"
-import "../node_modules/react-resizable/css/styles.css"
+import "../node_modules/react-grid-layout/css/styles.css";
+import "../node_modules/react-resizable/css/styles.css";
+import 'jsoneditor-react/es/editor.min.css';
 
-import axios from 'axios';
+import axios from 'axios'
 import {RIEInput} from 'riek'
 import Draggable from 'react-draggable'
-import React, { Component } from "react";
-import RGL, { WidthProvider } from "react-grid-layout";
+import { JsonEditor as Editor } from 'jsoneditor-react'
+import React, { Component } from 'react'
+import RGL, { WidthProvider } from 'react-grid-layout'
+
 
 const shortid = require('shortid')
-const ReactGridLayout = WidthProvider(RGL);
-const { List, Set, Map } = require('immutable');
+const ReactGridLayout = WidthProvider(RGL)
+const { List, Set, Map } = require('immutable')
 
 const gridWidth = 12;
 const centerOfGrid = gridWidth / 2;
@@ -145,6 +148,9 @@ class App extends Component {
         selectedRoom: ""
       })
     }
+  }
+  HandleJsonChange = (e) => {
+
   }
   //#endregion
   //#region [rgba(250,150,30,0.1)] Helper Functions
@@ -373,10 +379,16 @@ class App extends Component {
         let npcs = this.state.mapOfNpcs.get(npc)
        npcList.push(
         <div className="card">
-          <div className="card-header" id={npcs.id}>
-            <button className="btn btn-link" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+          <div className="card-header" id={npcs.uuid}>
+            <button className="btn btn-link" type="button" data-toggle="collapse" data-target={"#"+npcs.id} aria-expanded="true" aria-controls={npcs.id}>
               {npcs.id}
             </button>
+          </div>
+          <div id = {npcs.id} className="collapse show" aria-labelledby={npcs.uuid} data-parent="#npcAccordion">
+              <Editor
+              value={npcs}
+              onChange={this.HandleJsonChange}
+              />
           </div>
         </div>
        )
@@ -384,7 +396,7 @@ class App extends Component {
       return(
         <Draggable>
           <div id="npcDiv">
-            <div id="accordion">
+            <div className="accordion" id="npcAccordion">
               {npcList}
             </div>
           </div>

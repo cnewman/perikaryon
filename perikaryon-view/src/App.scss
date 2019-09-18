@@ -95,6 +95,9 @@ html, body, #root, .App {
   margin-right: auto;
   text-align: center;
 }
+.collapse.show{
+  visibility: visible;
+}
 .topdashbtn{
   margin:3px;
 }
