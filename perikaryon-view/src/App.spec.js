@@ -144,21 +144,6 @@ describe('After loading the test data, the component', () => {
         const areaGraph = component.find('div#reactgrid');
 
         expect(areaGraph.childAt(0).childAt(0).children()).toHaveLength(NUMBER_OF_ROOMS_IN_TEST_DATA)
-        expect(instance.GenerateAreaGraph().count())
-            .toBe(NUMBER_OF_ROOMS_IN_TEST_DATA);
-    });
-    it('should have these specific room keys', () => {
-        const component = shallow(<App />);
-        const instance = component.instance();
-        const INTERNAL_ROOM_KEYS_IN_DATA_SET = ['0', '1', '2', '4', '5', '7', '8', '9'];
-
-        instance.setState({ranvierAPIResponse:json})
-        instance.setState({selectedArea:'mapped'})
-        instance.setState({selectedFloor:0})
-
-        expect(instance.GenerateAreaGraph()
-            .every(room => INTERNAL_ROOM_KEYS_IN_DATA_SET.includes(room.key)))
-            .toBe(true);
     });
 });
 describe('After clicking a node on the graph', () => {

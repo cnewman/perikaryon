@@ -1,7 +1,5 @@
 import "./App.scss";
-import "../node_modules/react-grid-layout/css/styles.css";
-import "../node_modules/react-resizable/css/styles.css";
-import 'jsoneditor-react/es/editor.min.css';
+
 
 import axios from 'axios'
 import {RIEInput} from 'riek'
@@ -214,6 +212,11 @@ class App extends Component {
       }));
     });
   }
+  /*
+   * Handles the addition of new rooms by updating the current room map state with an additional room.
+   * This function should possibly be combined with handleaddroom. It only exists because of some prior
+   * behavior that has been removed.
+   */
   UpdateRoomMap(room) {
     this.setState((prevState) => ({
       mapOfRoomsInArea: prevState.mapOfRoomsInArea.set(this.state.selectedArea + room.title, room)
@@ -281,6 +284,9 @@ class App extends Component {
       mapOfItems: itemMap
     })
   }
+  /*
+   * Generate the HTML to create a new node on the area graph.
+   */
   CreateElementContainer(area, title, coordinates) {
     const ranvierCoordinates = this.TranslateReactGridToRanvierCoordinates(coordinates)
     return (
@@ -318,7 +324,11 @@ class App extends Component {
         }
       }
     }
-    return (visibleRoomList)
+    return (
+      <ReactGridLayout layout={this.state.layout} onLayoutChange={this.LayoutChange} id="areaGrid" className="layout" cols={gridWidth} rowHeight={30} width={1200} {...this.props}>
+        {visibleRoomList}
+      </ReactGridLayout>
+    )
   }
 
   /*
@@ -361,39 +371,45 @@ class App extends Component {
     });
 
   }
+  //Generates a room description box whenever there is a room selected and the option to show descriptions is active.
   GenerateDescriptionBox() {
     if (this.state.selectedRoom !== "" && this.state.showDesc) {
       return (
-        <div id="descriptionDiv">
-          <textarea id="roomDescription" type="text" readOnly={false} onChange={this.HandleChangeDescriptionEvent} value={this.state.description || ''} />
-        </div>
+        <Draggable cancel="textarea">
+          <div id="descriptionDiv">
+            <textarea id="roomDescription" type="text" readOnly={false} onChange={this.HandleChangeDescriptionEvent} value={this.state.description || ''} />
+          </div>
+        </Draggable>
       )
     }
     return <div></div>;
   }
+  //Generates an NPC box whenever there is a room selected and the option to show npcs is active.
   GenerateNPCBox() {
     if (this.state.selectedRoom !== "" && this.state.showNpcs) {
       let npcList = []
       let room = this.state.mapOfRoomsInArea.get(this.state.selectedArea + this.state.selectedRoom)
-      for( let npc of room.npcs ){
-        let npcs = this.state.mapOfNpcs.get(npc)
-       npcList.push(
-        <div className="card">
-          <div className="card-header" id={npcs.uuid}>
-            <button className="btn btn-link" type="button" data-toggle="collapse" data-target={"#"+npcs.id} aria-expanded="true" aria-controls={npcs.id}>
-              {npcs.id}
-            </button>
-          </div>
-          <div id = {npcs.id} className="collapse show" aria-labelledby={npcs.uuid} data-parent="#npcAccordion">
-              <Editor
-              value={npcs}
-              onChange={this.HandleJsonChange}
-              />
-          </div>
-        </div>
-       )
+      for (let npcIdentifier of room.npcs) {
+        let npcData = this.state.mapOfNpcs.get(npcIdentifier)
+        if (npcData) {
+          npcList.push(
+            <div className="card">
+              <div className="card-header" id={npcData.uuid}>
+                <button className="btn btn-link" type="button" data-toggle="collapse" data-target={"#" + npcData.id} aria-expanded="true" aria-controls={npcData.id}>
+                  {npcData.id}
+                </button>
+              </div>
+              <div id={npcData.id} className="collapse show" aria-labelledby={npcData.uuid} data-parent="#npcAccordion">
+                <Editor
+                  value={npcData}
+                  onChange={this.HandleJsonChange}
+                />
+              </div>
+            </div>
+          )
+        }
       }
-      return(
+      return (
         <Draggable>
           <div id="npcDiv">
             <div className="accordion" id="npcAccordion">
@@ -423,11 +439,11 @@ class App extends Component {
               <button id="npcBtn" onClick={() => this.HandleBtnToggleClick("npcBtn")} type="button" className={"topdashbtn btn " + npcBtnClass}>NPC</button>
               <p id="title">{this.state.selectedArea}</p>
               <ul className="navbar-nav ml-auto">
-                <select id={"areaDropdown"} className="custom-select" onChange={(areaDropdownEvent) => this.HandleAreaDropdownChange(areaDropdownEvent)}>
+                <select id="areaDropdown" className="custom-select" onChange={(areaDropdownEvent) => this.HandleAreaDropdownChange(areaDropdownEvent)}>
                   <option>Select Area</option>
                   {this.state.listOfAreas}
                 </select>
-                <select id={"floorDropdown"} className="custom-select" onChange={(floorDropdownEvent) => this.HandleFloorDropdownChange(floorDropdownEvent)}>
+                <select id="floorDropdown" className="custom-select" onChange={(floorDropdownEvent) => this.HandleFloorDropdownChange(floorDropdownEvent)}>
                   {this.state.listOfFloorsInArea}
                 </select>
               </ul>
@@ -436,28 +452,17 @@ class App extends Component {
           </div>
         </div>
         <div id="reactgrid" className="row">
-          <div className="col-xl" onClick={this.HandleClickNode}>
-            <ReactGridLayout layout={this.state.layout} onLayoutChange={this.LayoutChange} id="areaGrid" className="layout" cols={gridWidth} rowHeight={30} width={1200} {...this.props}>
+          <div className="col-xl">
               {this.GenerateAreaGraph()}
-            </ReactGridLayout>
           </div>
         </div>
-        <Draggable cancel="textarea">
-          {this.GenerateDescriptionBox()}
-        </Draggable>
-
-          {this.GenerateNPCBox()}
-
+        {this.GenerateDescriptionBox()}
+        {this.GenerateNPCBox()}
         <div className="d-flex flex-row align-items-end justify-content-between" id="dashboard">
           <div />
           <div id="roomButtons" className="tab-content">
             <button id="deleteRoomButton" className="btn btn-light dashbutton" onClick={(clickEvent) => this.HandleDeleteRoomEvent(clickEvent)}>Delete Room</button>
             <button id="addRoomButton" className="btn btn-light dashbutton" onClick={(clickEvent) => this.HandleAddRoomEvent(clickEvent)}>Add Room</button>
-            {/* <div id="itemDiv" className="tab-pane fade show active"></div>
-              <div id="descriptionDiv" className="tab-pane fade">
-                <textarea id="roomDescription" type="text" readOnly={false} onChange={this.HandleChangeDescriptionEvent} value={this.state.description || ''} />
-              </div>
-              <div id="npcDiv" className="tab-pane fade"></div> */}
           </div>
         </div>
       </div>
