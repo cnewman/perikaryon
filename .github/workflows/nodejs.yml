@@ -22,6 +22,6 @@ jobs:
         cd perikaryon-view
         npm install
         npm run build --if-present
-        npm test
+        npm test -- --transformIgnorePatterns "node_modules/(?!(jsoneditor-react|jsoneditor)/)"
       env:
         CI: false
