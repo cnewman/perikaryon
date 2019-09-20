@@ -43,7 +43,14 @@ exports[`Test snapshot of component Snapshot has not changed 1`] = `
         <p
           id="title"
         >
-          
+          <span
+            className=""
+            onClick={[Function]}
+            onFocus={[Function]}
+            tabIndex="0"
+          >
+            
+          </span>
         </p>
         <ul
           className="navbar-nav ml-auto"
@@ -52,8 +59,13 @@ exports[`Test snapshot of component Snapshot has not changed 1`] = `
             className="custom-select"
             id="areaDropdown"
             onChange={[Function]}
+            value=""
           >
-            <option>
+            <option
+              disabled={true}
+              hidden={true}
+              value=""
+            >
               Select Area
             </option>
           </select>

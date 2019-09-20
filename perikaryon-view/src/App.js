@@ -45,7 +45,7 @@ class App extends Component {
       selectedArea: "",
       selectedRoom: "",
       selectedFloor: 0,
-      listOfAreas: List(),
+      listOfAreaNames: List(),
       listOfFloorsInArea: List(),
       mapOfRoomsInArea: Map(),
       mapOfNpcs: Map(),
@@ -88,6 +88,27 @@ class App extends Component {
     this.setState((prevState) => ({
       mapOfRoomsInArea: prevState.mapOfRoomsInArea.set(room.area + room.title, room)
     }))
+  }
+  HandleChangeAreaNameEvent = (newAreaName) => {
+    const newAreaKey = Object.keys(newAreaName);
+    let newAreaMap = Map();
+    let uniquelistOfFloorsInArea = Set()
+    for(let [, room] of this.state.mapOfRoomsInArea){
+      if(room.area == newAreaKey){
+        room.area = newAreaName[newAreaKey]
+      }
+      uniquelistOfFloorsInArea = uniquelistOfFloorsInArea.add(room.coordinates.z)
+      newAreaMap = newAreaMap.set(newAreaName[newAreaKey]+room.title, room);
+    }
+
+    let newAreaNameList = this.state.listOfAreaNames.filter(name => name != newAreaKey)
+    newAreaNameList = newAreaNameList.push(newAreaName[newAreaKey])
+    this.setState({
+      mapOfRoomsInArea: newAreaMap,
+      selectedArea: newAreaName[newAreaKey],
+      listOfFloorsInArea: uniquelistOfFloorsInArea,
+      listOfAreaNames: newAreaNameList
+    })
   }
   /*
    * When a new area is selected in the dropdown, change the value so React can re-render.
@@ -231,7 +252,7 @@ class App extends Component {
       .then(res => res.json())
       .then(res => {
 
-        this.setState({ ranvierAPIResponse: res }, this.InitializeRoomMap);
+        this.setState({ ranvierAPIResponse: res }, this.InitializeView);
         this.GenerateAreaDropdown();
       })
       .catch(err => err);
@@ -242,9 +263,9 @@ class App extends Component {
   }
   //#endregion 
   /*
-   *When we first mount the component, grab data from Ranvier.
+   *When we first mount the component, grab data from Ranvier and generate the initial view.
    */
-  InitializeRoomMap() {
+  InitializeView() {
     let areaMap = Map()
     let npcMap = Map()
     let itemMap = Map()
@@ -259,6 +280,11 @@ class App extends Component {
       let itemResponseMap = new Map(Object.entries(item))
       itemMap = itemMap.set(itemResponseMap.get('area').name+':'+itemResponseMap.get('id'), item)
     }
+    
+    /*
+    * Scan 'areas' twice because we need to adjust the ranvier coordinates to fit react-grid-layout's coordinate system.
+    * The first scan below this comment finds the smallest value in ranvier's coordinate map.
+    */
     for (let area of this.state.ranvierAPIResponse['areas']) {
       let APIResponseMap = new Map(Object.entries(area))
       for (let room of APIResponseMap.get('roomList')) {
@@ -268,20 +294,34 @@ class App extends Component {
         }
       }
     }
+
+    /*
+     * Scan area for a second time, now knowing the smallest (x,y) coordinate values from the ranvier response. Use this
+     * data to properly position nodes for react-grid-layout.
+     */
+    let uniquelistOfFloorsInArea = Set()
+    let areaList = List()
     for (let area of this.state.ranvierAPIResponse['areas']) {
       let APIResponseMap = new Map(Object.entries(area))
+      areaList = areaList.push(area.name)
       for (let room of APIResponseMap.get('roomList')) {
         if (room.coordinates) {
           const coordinates = this.TranslateRanvierToReactGridCoordinates(room.coordinates, minX, minY)
           areaMap = areaMap.set(area.name + room.title,
             new Room(area.name, room.title, room.description, coordinates, room.id, area.bundle, room.doors, room.exits, room.defaultNpcs, room.defaultItems))
+          uniquelistOfFloorsInArea = uniquelistOfFloorsInArea.add(room.coordinates.z)
+        }else {
+          console.log("Coordinates property is null. Areabuilder currently requires coordinates to work.");
         }
       }
     }
+
     this.setState({
       mapOfRoomsInArea: areaMap,
       mapOfNpcs: npcMap,
-      mapOfItems: itemMap
+      mapOfItems: itemMap,
+      listOfAreaNames: areaList,
+      listOfFloorsInArea: uniquelistOfFloorsInArea
     })
   }
   /*
@@ -332,43 +372,33 @@ class App extends Component {
   }
 
   /*
-  * Take Area data from Ranvier API response and make a dropdown.
-  * User can select an area from the dropdown and the area's rooms will be displayed.
-  * This function maps over the API response object from Ranvier and just pulls each area name.
+  * Take area names from the listOfAreaNames state variable and generate option elements
   */
   GenerateAreaDropdown() {
-    for (let area of this.state.ranvierAPIResponse['areas']) {
-      this.setState((prevState) => ({
-        listOfAreas: prevState.listOfAreas.push(<option key={area.name} value={area.name}>{area.name}</option>),
-      }))
+    let areaDropdownList = List()
+    for (let areaName of this.state.listOfAreaNames) {
+      areaDropdownList = areaDropdownList.push(<option key={areaName} value={areaName}>{areaName}</option>)
     }
+    return(
+      <select id="areaDropdown" value={this.state.selectedArea || ""} className="custom-select" onChange={(areaDropdownEvent) => this.HandleAreaDropdownChange(areaDropdownEvent)}>
+        <option value="" disabled hidden>Select Area</option>
+        {areaDropdownList}
+      </select>
+    );
   }
   /*
-  * Take Area data from Ranvier API response and make a dropdown.
-  * User can select an floor from the dropdown and the area's rooms that are on that floor will
-  * be displayed. This function maps over the API response object from Ranvier and just pulls 
-  * unique floor numbers to populate the dropdown.
+  *Take floor numbers from the listOfFloorsInArea state variable and generate option elements
   */
   GenerateFloorDropdown() {
-    let uniquelistOfFloorsInArea = Set()
-    for (let area of this.state.ranvierAPIResponse['areas']) {
-      if (area.name == this.state.selectedArea) {
-        for (let room of area.roomList) {
-          if (room.coordinates != null) {
-            uniquelistOfFloorsInArea = uniquelistOfFloorsInArea.add(room.coordinates.z)
-          } else {
-            console.log("Coordinates property is null. Areabuilder currently requires coordinates to work.");
-          }
-        }
-      }
+    let floorDropdownList = List()
+    for(let floor of this.state.listOfFloorsInArea){
+      floorDropdownList = floorDropdownList.push(<option key={floor} value={floor}>{floor}</option>)
     }
-    let uniqueFloorDropdownElements = List()
-    for (let floor of uniquelistOfFloorsInArea) {
-      uniqueFloorDropdownElements = uniqueFloorDropdownElements.push(<option key={floor} value={floor}>{floor}</option>)
-    }
-    this.setState({
-      listOfFloorsInArea: uniqueFloorDropdownElements
-    });
+    return(
+      <select id="floorDropdown" className="custom-select" onChange={(floorDropdownEvent) => this.HandleFloorDropdownChange(floorDropdownEvent)}>
+        {floorDropdownList}
+      </select>
+    )
 
   }
   //Generates a room description box whenever there is a room selected and the option to show descriptions is active.
@@ -437,15 +467,16 @@ class App extends Component {
               <button id="descBtn" onClick={() => this.HandleBtnToggleClick("descBtn")} type="button" className={"topdashbtn btn " + descBtnClass} >Description</button>
               <button id="itemBtn" onClick={() => this.HandleBtnToggleClick("itemBtn")} type="button" className={"topdashbtn btn " + itemBtnClass}>Items</button>
               <button id="npcBtn" onClick={() => this.HandleBtnToggleClick("npcBtn")} type="button" className={"topdashbtn btn " + npcBtnClass}>NPC</button>
-              <p id="title">{this.state.selectedArea}</p>
+              <p id="title">
+                <RIEInput
+                  value={this.state.selectedArea}
+                  propName={this.state.selectedArea || "area"}
+                  change={this.HandleChangeAreaNameEvent}
+                />
+              </p>
               <ul className="navbar-nav ml-auto">
-                <select id="areaDropdown" className="custom-select" onChange={(areaDropdownEvent) => this.HandleAreaDropdownChange(areaDropdownEvent)}>
-                  <option>Select Area</option>
-                  {this.state.listOfAreas}
-                </select>
-                <select id="floorDropdown" className="custom-select" onChange={(floorDropdownEvent) => this.HandleFloorDropdownChange(floorDropdownEvent)}>
-                  {this.state.listOfFloorsInArea}
-                </select>
+                {this.GenerateAreaDropdown()}
+                {this.GenerateFloorDropdown()}
               </ul>
               <button id="saveButton" className="btn btn-light dashbutton" onClick={(clickEvent) => this.HandleSaveArea(clickEvent)}>Save Area</button>
             </nav>

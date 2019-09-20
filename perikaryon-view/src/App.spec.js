@@ -24,7 +24,7 @@ describe('When a room is added to the grid, it', () => {
         instance.setState({ranvierAPIResponse:json})
         instance.setState({selectedArea:'mapped'})
         instance.setState({selectedFloor:0})
-        instance.InitializeRoomMap()
+        instance.InitializeView()
 
         const addButton = component.find('button#addRoomButton');
         addButton.simulate('click')
@@ -38,7 +38,7 @@ describe('When a room is added to the grid, it', () => {
         instance.setState({ranvierAPIResponse:json})
         instance.setState({selectedArea:'mapped'})
         instance.setState({selectedFloor:0})
-        instance.InitializeRoomMap()
+        instance.InitializeView()
 
         const addButton = component.find('button#addRoomButton');
         addButton.simulate('click')
@@ -54,7 +54,7 @@ describe('When a room is added to the grid, it', () => {
         instance.setState({ranvierAPIResponse:json})
         instance.setState({selectedArea:'mapped'})
         instance.setState({selectedFloor:0})
-        instance.InitializeRoomMap()
+        instance.InitializeView()
 
         const addButton = component.find('button#addRoomButton');
         addButton.simulate('click')
@@ -72,6 +72,7 @@ describe('After loading the test data, the component', () => {
 
         instance.setState({ranvierAPIResponse:json})
         instance.setState({selectedArea:'mapped'})
+        instance.InitializeView()
         instance.GenerateFloorDropdown()
         
         const floorDropDown = component.find('select#floorDropdown');
@@ -86,6 +87,7 @@ describe('After loading the test data, the component', () => {
         const instance = component.instance();
         instance.setState({ranvierAPIResponse:json})
         instance.setState({selectedArea:'mapped'})
+        instance.InitializeView()
         instance.GenerateFloorDropdown()
 
         const floorDropDown = component.find('select#floorDropdown');
@@ -93,9 +95,6 @@ describe('After loading the test data, the component', () => {
         expect(floorDropDown.childAt(0).props()).toHaveProperty('value', 0)
         expect(floorDropDown.childAt(1).props()).toHaveProperty('value', -1)
         expect(floorDropDown.childAt(2).props()).toHaveProperty('value', 1)
-        expect(instance.state.listOfFloorsInArea
-            .every(option => [0, -1, 1].includes(option.props.value)))
-            .toBe(true);
     });
     
     it('should contain 3 areas', () => {
@@ -105,30 +104,26 @@ describe('After loading the test data, the component', () => {
         const NUMBER_OF_BLANKS_IN_OPTIONS = 1;
 
         instance.setState({ranvierAPIResponse:json})
+        instance.InitializeView()
         instance.GenerateAreaDropdown()
         
         const areaDropDown = component.find('select#areaDropdown');
 
         expect(areaDropDown.children()).toHaveLength(NUMBER_OF_AREAS_IN_TEST_DATA + NUMBER_OF_BLANKS_IN_OPTIONS)
-        expect(instance.state.listOfAreas.count())
-            .toBe(NUMBER_OF_AREAS_IN_TEST_DATA);
     });
     it('should contain the mapped, craft, and limbo areas', () => {
         const component = shallow(<App />);
         const instance = component.instance();
 
         instance.setState({ranvierAPIResponse:json})
+        instance.InitializeView()
         instance.GenerateAreaDropdown()
 
         const areaDropDown = component.find('select#areaDropdown');
 
-        expect(areaDropDown.childAt(0).props()).toHaveProperty('children', 'Select Area')
         expect(areaDropDown.childAt(1).props()).toHaveProperty('value', 'limbo')
         expect(areaDropDown.childAt(2).props()).toHaveProperty('value', 'mapped')
         expect(areaDropDown.childAt(3).props()).toHaveProperty('value', 'craft')
-        expect(instance.state.listOfAreas
-            .every(option => ['mapped','craft','limbo'].includes(option.props.value)))
-            .toBe(true);
     });
 
     it('should contain 8 rooms', () => {
@@ -139,7 +134,7 @@ describe('After loading the test data, the component', () => {
         instance.setState({ranvierAPIResponse:json})
         instance.setState({selectedArea:'mapped'})
         instance.setState({selectedFloor:0})
-        instance.InitializeRoomMap()
+        instance.InitializeView()
 
         const areaGraph = component.find('div#reactgrid');
 
@@ -154,7 +149,7 @@ describe('After clicking a node on the graph', () => {
         instance.setState({ranvierAPIResponse:json})
         instance.setState({selectedArea:'mapped'})
         instance.setState({selectedFloor:0})
-        instance.InitializeRoomMap()
+        instance.InitializeView()
 
         const areaGraph = component.find('div#reactgrid');
         areaGraph.childAt(0).childAt(0).children().at(0).simulate('click',{'target':{'id':'Hallway South 1'}})
@@ -168,7 +163,7 @@ describe('After clicking a node on the graph', () => {
         instance.setState({ranvierAPIResponse:json})
         instance.setState({selectedArea:'mapped'})
         instance.setState({selectedFloor:0})
-        instance.InitializeRoomMap()
+        instance.InitializeView()
 
         const descButton = component.find('button#descBtn');
         descButton.simulate('click');
@@ -192,7 +187,7 @@ describe('After clicking a node on the graph', () => {
         instance.setState({ranvierAPIResponse:json})
         instance.setState({selectedArea:'mapped'})
         instance.setState({selectedFloor:0})
-        instance.InitializeRoomMap()
+        instance.InitializeView()
 
         const areaGraph = component.find('div#reactgrid');
         areaGraph.childAt(0).childAt(0).children().at(0).simulate('click',{'target':{'id':'Hallway South 1'}})
