@@ -116,7 +116,7 @@ class App extends Component {
   HandleAreaDropdownChange = (e) => {
     this.setState({
       selectedArea: e.target.value,
-    }, this.GenerateFloorDropdown);
+    });
   }
   /*
    * Once changes have been made, determine exit directions and upload the new area back to Ranvier for saving.
@@ -253,7 +253,6 @@ class App extends Component {
       .then(res => {
 
         this.setState({ ranvierAPIResponse: res }, this.InitializeView);
-        this.GenerateAreaDropdown();
       })
       .catch(err => err);
 
