@@ -135,7 +135,7 @@ class App extends Component {
       selectedFloor: e.target.value
     });
   }
-  HandleBtnToggleClick = (buttonId) => {
+  HandleClickEditWindowToggleButtons = (buttonId) => {
     if (buttonId === 'descBtn') {
       this.state.showDesc === true ? this.setState({ showDesc: false }) : this.setState({ showDesc: true })
     } else if (buttonId === 'itemBtn') {
@@ -146,7 +146,7 @@ class App extends Component {
   }
   /*
    * These functions allow for room descriptions to be displayed in the editor as well as modified.
-   * The HandleClicknode function receives a click and updates the selectedRoom id. GenerateDescriptionBox
+   * The HandleClickRoomnode function receives a click and updates the selectedRoom id. GenerateDescriptionBox
    * is then used to open a text box with the room's description. Finally, changes made in the textarea
    * are reflected in the room's description via the HandleChangeDescriptionEvent function.
    */
@@ -156,7 +156,7 @@ class App extends Component {
       description: e.target.value
     })
   }
-  HandleClickNode = (e) => {
+  HandleClickRoomNode = (e) => {
     if (e.target.id) {
       this.setState({
         selectedRoom: e.target.id,
@@ -333,7 +333,7 @@ class App extends Component {
         id={title}
         coordinate_values={coordinates}
         key={area + title}
-        onClick={this.HandleClickNode}
+        onClick={this.HandleClickRoomNode}
         data-grid={{ x: coordinates.x, y: coordinates.y, w: 1, h: this.state.nodeHeight }}
       >
         <RIEInput
@@ -463,9 +463,9 @@ class App extends Component {
         <div className="row" id="topdash">
           <div id="buttondiv" className="col-xl">
             <nav id="topNavBar" className="navbar navbar-expand-lg navbar-light bg-light">
-              <button id="descBtn" onClick={() => this.HandleBtnToggleClick("descBtn")} type="button" className={"topdashbtn btn " + descBtnClass} >Description</button>
-              <button id="itemBtn" onClick={() => this.HandleBtnToggleClick("itemBtn")} type="button" className={"topdashbtn btn " + itemBtnClass}>Items</button>
-              <button id="npcBtn" onClick={() => this.HandleBtnToggleClick("npcBtn")} type="button" className={"topdashbtn btn " + npcBtnClass}>NPC</button>
+              <button id="descBtn" onClick={() => this.HandleClickEditWindowToggleButtons("descBtn")} type="button" className={"topdashbtn btn " + descBtnClass} >Description</button>
+              <button id="itemBtn" onClick={() => this.HandleClickEditWindowToggleButtons("itemBtn")} type="button" className={"topdashbtn btn " + itemBtnClass}>Items</button>
+              <button id="npcBtn" onClick={() => this.HandleClickEditWindowToggleButtons("npcBtn")} type="button" className={"topdashbtn btn " + npcBtnClass}>NPC</button>
               <p id="title">
                 <RIEInput
                   value={this.state.selectedArea}

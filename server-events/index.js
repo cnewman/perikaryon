@@ -41,13 +41,6 @@ module.exports = {
         res.json(getAreasInfo(state));
       });
       app.put('/savearea', (req, res) => {
-        //const config = yaml.safeLoad(fs.readFileSync('/home/wottbox/Desktop/ranviermud/bundles/bundle-example-areas/areas/mapped/rooms.yml', 'utf-8'))
-        //fs.rename('/home/wottbox/Desktop/ranviermud/bundles/bundle-example-areas/areas/mapped/rooms.yml', '/home/wottbox/Desktop/ranviermudbackup/rooms.yml')
-        //const indentedJson = JSON.stringify(config)
-        //let area = JSON.parse(indentedJson)
-        // for(let key of Object.keys(req.body)){
-        //   console.log(req.body[key])
-        // }
         let area = []
         let currBundle = ""
         for(let key of Object.keys(req.body)){
@@ -83,7 +76,7 @@ function getAreasInfo(state) {
     const rooms = area.rooms.size;
     const npcs = area.npcs.size;
     let roomList = [];
-    for(const [name, room] of area.rooms){
+    for(const [, room] of area.rooms){
       roomList.push(room);
     }
     areas.push({name, title, rooms, npcs, metadata, bundle, roomList});
