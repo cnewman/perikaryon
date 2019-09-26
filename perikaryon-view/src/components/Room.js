@@ -3,16 +3,18 @@ import { RoomContext } from '../contexts/RoomContext';
 
 const Room = () => {
 
-  const { activeArea, changeActiveRoom } = useContext(RoomContext);
+  const { activeArea, changeActiveRoom, activeRoom } = useContext(RoomContext);
 
   const listRooms = () => {
 
     if (!activeArea || !activeArea.roomList) {
       return null;
     }
-    return activeArea.roomList.map(room => (
-      <p key={room.id} onClick={() => changeActiveRoom(room)}>{room.id} - {room.title}</p>
-    ));
+    return activeArea.roomList.map(room =>  {
+      const styles = `entityList ${room.id === activeRoom.id ? 'selected-edit': ''}`;
+      return (
+      <p className={styles} key={room.id} onClick={() => changeActiveRoom(room)}>{room.id} - {room.title}</p>
+    )});
   }
 
   return (

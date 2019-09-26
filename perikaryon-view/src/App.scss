@@ -173,3 +173,32 @@ div.room:hover {
   border: 3px solid $ranvier-dark-green;
   display: block;
 }
+
+.form-row {
+  margin: 0;
+}
+
+div.form-group {
+  margin-right: 15px;
+}
+
+div.col {
+  padding: 0;
+}
+
+.entityList {
+  padding: 0 10px;
+  margin: 5px 10px;
+  border: $ranvier-dark-green 3px solid;
+  &:hover {
+    cursor: pointer;
+    background: $ranvier-light-green;
+    // background: $ranvier-dark-green;
+  }
+}
+
+.selected-edit{
+  background: $ranvier-selected-orange;
+}
+
+ 

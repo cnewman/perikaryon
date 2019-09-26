@@ -10,7 +10,7 @@ import AreaGrid from "./components/AreaGrid";
 import Header from "./components/Header";
 import Room from "./components/Room";
 import Toolbar from "./components/Toolbar";
-import EditEntity from "./components/EditEntity";
+import EditEntity from "./components/editing/EditEntity";
 import RoomContextProvider from "./contexts/RoomContext";
 import Tabs from 'react-bootstrap/Tabs';
 import Tab from 'react-bootstrap/Tab';
@@ -26,7 +26,7 @@ const App = () => {
       <RoomContextProvider>
         <Toolbar />
         <Row>
-          <Col>
+          <Col lg={3}>
             <Tabs id="" activeKey={leftKey} onSelect={k => setLeftKey(k)}>
               <Tab eventKey="rooms" title="Rooms">
                 <Room />
@@ -40,7 +40,7 @@ const App = () => {
           <Col>
             <Tabs id="" activeKey={rightkey} onSelect={k => setRightKey(k)}>
               <Tab eventKey="edit" title="Edit">
-                <EditEntity/>
+                <EditEntity />
               </Tab>
               <Tab eventKey="map" title="Map">
                 <AreaGrid />
