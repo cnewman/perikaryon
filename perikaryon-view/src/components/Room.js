@@ -7,10 +7,10 @@ const Room = () => {
 
   const listRooms = () => {
 
-    if (!activeArea || !activeArea.roomList) {
+    if (!activeArea || !activeArea.rooms) {
       return null;
     }
-    return activeArea.roomList.map(room =>  {
+    return activeArea.rooms.map(room =>  {
       const styles = `entityList ${room.id === activeRoom.id ? 'selected-edit': ''}`;
       return (
       <p className={styles} key={room.id} onClick={() => changeActiveRoom(room)}>{room.id} - {room.title}</p>

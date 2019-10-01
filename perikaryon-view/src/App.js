@@ -24,32 +24,34 @@ const App = () => {
     <div>
       <Header />
       <RoomContextProvider>
-        <Toolbar />
-        <Row>
-          <Col lg={3}>
-            <Tabs id="" activeKey={leftKey} onSelect={k => setLeftKey(k)}>
-              <Tab eventKey="rooms" title="Rooms">
-                <Room />
-              </Tab>
-              <Tab eventKey="npcs" title="Npcs" disabled>
-              </Tab>
-              <Tab eventKey="items" title="Items" disabled>
-              </Tab>
-            </Tabs>
-          </Col>
-          <Col>
-            <Tabs id="" activeKey={rightkey} onSelect={k => setRightKey(k)}>
-              <Tab eventKey="edit" title="Edit">
-                <EditEntity />
-              </Tab>
-              <Tab eventKey="map" title="Map">
-                <AreaGrid />
-              </Tab>
-              <Tab eventKey="tbd" title="TBD" disabled>
-              </Tab>
-            </Tabs>
-          </Col>
-        </Row>
+        <div className="container">
+          <Toolbar />
+          <Row>
+            <Col lg={4}>
+              <Tabs id="" activeKey={leftKey} onSelect={k => setLeftKey(k)}>
+                <Tab eventKey="rooms" title="Rooms">
+                  <Room />
+                </Tab>
+                <Tab eventKey="npcs" title="Npcs" disabled>
+                </Tab>
+                <Tab eventKey="items" title="Items" disabled>
+                </Tab>
+              </Tabs>
+            </Col>
+            <Col>
+              <Tabs id="" activeKey={rightkey} onSelect={k => setRightKey(k)}>
+                <Tab eventKey="edit" title="Edit">
+                  <EditEntity />
+                </Tab>
+                <Tab eventKey="map" title="Map">
+                  {/* <AreaGrid /> */}
+                </Tab>
+                <Tab eventKey="tbd" title="TBD" disabled>
+                </Tab>
+              </Tabs>
+            </Col>
+          </Row>
+        </div>
       </RoomContextProvider>
     </div>
   );
