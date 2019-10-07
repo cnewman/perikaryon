@@ -1,5 +1,6 @@
 import React, { createContext, useState, useEffect } from 'react';
 import axios from 'axios';
+import uuid from 'uuid/v1';
 
 export const RoomContext = createContext();
 
@@ -14,9 +15,6 @@ const RoomContextProvider = (props) => {
   const [activeItem, setActiveItem] = useState({});
   const [activeMob, setActiveMob] = useState({});
   const [activeEntity, setActiveEntity] = useState(null);
-
-
-
 
   useEffect(() => {
     getAreas();
@@ -47,6 +45,20 @@ const RoomContextProvider = (props) => {
   const changeActiveItem = (newItemName) => {
 
 
+  }
+
+  const createRoom = () => {
+    const room = {
+      id: `${uuid().substring(0,7)}`,
+      title: `New Room in ${activeArea.manifest.title}`,
+      description: 'You see....',
+      exits: [],
+    }
+    
+    setActiveEntity('ROOM');
+    activeArea.rooms.push(room);
+    setActiveArea(activeArea);
+    setActiveRoom(room);
   }
 
   const saveArea = () => {
@@ -113,7 +125,7 @@ const RoomContextProvider = (props) => {
         activeItem, setActiveItem,
         activeMob, changeActiveMob,
         activeEntity, changeActiveItem,
-        updateRoom,
+        updateRoom, createRoom,
         saveArea,
       }
     }>

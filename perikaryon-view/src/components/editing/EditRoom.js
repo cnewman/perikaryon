@@ -13,12 +13,14 @@ const EditRoom = () => {
   const [id, setId] = useState(activeRoom.id);
   const [title, setTitle] = useState(activeRoom.title);
   const [description, setDescription] = useState(activeRoom.description);
+  const [exits, setExits] = useState(activeRoom.exits);
 
   // If you click on a different room to edit, update the form
   useEffect(() => {
     setId(activeRoom.id);
     setTitle(activeRoom.title);
     setDescription(activeRoom.description);
+    setExits(activeRoom.exits);
     ;
   }, [activeRoom, activeArea]);
 
@@ -28,8 +30,45 @@ const EditRoom = () => {
     updatedRoom.id = id;
     updatedRoom.title = title;
     updatedRoom.description = description;
+    updatedRoom.exits = exits;
 
     updateRoom(updatedRoom);
+  }
+
+  const handleExitChange = (e, dir, exitDir) => {
+    if (exitDir) {
+      exitDir.roomId = e.target.value;
+      const index = exits.indexOf(exit => exit.direction === exitDir.direction);
+      exits[index] = exitDir;
+      setExits([...exits]);
+      return;
+    }
+
+    const newExit = { roomId: e.target.value, direction: dir }
+    setExits([...exits, newExit]);
+
+  };
+
+  const showExits = () => {
+
+    const dirs = ['north', 'east', 'south', 'west', 'up', 'down'];
+    return dirs.map(dir => {
+      const exitDir = exits.find(exit => exit.direction === dir);
+      console.log(dir, exitDir)
+      // if (exitDir) {
+      return (
+        <Form.Group key={dir} as={Row} controlId={`editRoom.${dir}`}>
+          <Form.Label column>{dir}:</Form.Label>
+          <Col lg={10}>
+            <Form.Control
+              type="text"
+              value={exitDir && exitDir.roomId || 'none'}
+              onChange={(e) => handleExitChange(e, dir, exitDir)}
+            />
+          </Col>
+        </Form.Group>
+      );
+    });
   }
 
 
@@ -72,10 +111,12 @@ const EditRoom = () => {
           </Col>
         </Form.Group>
 
+        {showExits()}
+
         <Button variant="primary" type="submit">
           Save Room to Area
         </Button>
-
+        {console.log(exits)}
       </Form>
     </div >
   );
