@@ -1,6 +1,7 @@
 'use strict'
 const express = require('express');
 const fs = require('fs');
+const path = require('path')
 const fsPath = require('fs-path');
 const { Data } = require('ranvier');
 const app = express();
@@ -113,8 +114,21 @@ module.exports = {
   }
 };
 
+function FindBundles(){
+  let currentDirectory = path.dirname(__dirname)
+  while(path.basename(currentDirectory) !== 'bundles' && currentDirectory !== '/'){
+    currentDirectory = path.resolve(currentDirectory, '..')
+  }
+  if(path.basename(currentDirectory) === 'bundles') {
+    console.log("Found bundles directory: "+ currentDirectory)
+    return currentDirectory+'/'
+  }
+  console.log("Error: Could not find bundles directory. Is it installed?")
+
+}
+
 function getAreaDefinitions(state) {
-  const bundlesPath = __dirname + '../../../';
+  const bundlesPath = FindBundles()
   const bundles = fs.readdirSync(bundlesPath);
   const areas = [];
   for (const bundle of bundles) {
