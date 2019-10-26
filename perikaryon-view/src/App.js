@@ -6,7 +6,7 @@ import { RIEInput } from 'riek'
 import Draggable from 'react-draggable'
 import { JsonEditor as Editor } from 'jsoneditor-react'
 import React, { useState } from 'react'
-import AreaGrid from "./components/AreaGrid";
+import AreaMap from "./components/AreaMap";
 import Header from "./components/Header";
 import Room from "./components/Room";
 import Toolbar from "./components/Toolbar";
@@ -21,40 +21,49 @@ const App = () => {
   const [leftKey, setLeftKey] = useState('rooms');
   const [rightkey, setRightKey] = useState('edit');
   return (
-    <div>
-      <Header />
+    <div className="container-fluid">
       <RoomContextProvider>
-        <div className="container">
-          <Toolbar />
-          <Row>
-            <Col lg={4}>
-              <Tabs id="" activeKey={leftKey} onSelect={k => setLeftKey(k)}>
-                <Tab eventKey="rooms" title="Rooms">
-                  <Room />
-                </Tab>
-                <Tab eventKey="npcs" title="Npcs" disabled>
-                </Tab>
-                <Tab eventKey="items" title="Items" disabled>
-                </Tab>
-              </Tabs>
-            </Col>
-            <Col>
-              <Tabs id="" activeKey={rightkey} onSelect={k => setRightKey(k)}>
-                <Tab eventKey="edit" title="Edit">
-                  <EditEntity />
-                </Tab>
-                <Tab eventKey="map" title="Map">
-                  {/* <AreaGrid /> */}
-                </Tab>
-                <Tab eventKey="tbd" title="TBD" disabled>
-                </Tab>
-              </Tabs>
-            </Col>
-          </Row>
+      <div className="row" id="topdash">
+        <div id="buttondiv" className="col-xl">
+          <nav id="topNavBar" className="navbar navbar-expand-lg navbar-light bg-light">
+            {/* <button id="descBtn" onClick={() => this.HandleClickEditWindowToggleButtons("descBtn")} type="button" className={"topdashbtn btn " + descBtnClass} >Description</button>
+            <button id="itemBtn" onClick={() => this.HandleClickEditWindowToggleButtons("itemBtn")} type="button" className={"topdashbtn btn " + itemBtnClass}>Items</button>
+            <button id="npcBtn" onClick={() => this.HandleClickEditWindowToggleButtons("npcBtn")} type="button" className={"topdashbtn btn " + npcBtnClass}>NPC</button> */}
+            <Toolbar />
+            <p id="title">
+              {/* <RIEInput
+                value={this.state.selectedArea}
+                propName={this.state.selectedArea || "area"}
+                change={this.HandleChangeAreaNameEvent}
+              /> */}
+            </p>
+            <ul className="navbar-nav ml-auto">
+              {/* {this.GenerateAreaDropdown()}
+              {this.GenerateFloorDropdown()} */}
+            </ul>
+            {/* <button id="saveButton" className="btn btn-light dashbutton" onClick={(clickEvent) => this.HandleSaveArea(clickEvent)}>Save Area</button> */}
+          </nav>
         </div>
+      </div>
+      <div id="reactgrid" className="row">
+        <div className="col-xl">
+          <AreaMap />    
+        </div>
+      </div>
+      
+      <div className="d-flex flex-row align-items-end justify-content-between" id="dashboard">
+        <div />
+        <div id="roomButtons" className="tab-content">
+          {/* <button id="deleteRoomButton" className="btn btn-light dashbutton" onClick={(clickEvent) => this.HandleDeleteRoomEvent(clickEvent)}>Delete Room</button>
+          <button id="addRoomButton" className="btn btn-light dashbutton" onClick={(clickEvent) => this.HandleAddRoomEvent(clickEvent)}>Add Room</button> */}
+        </div>
+      </div>
       </RoomContextProvider>
     </div>
   );
 }
 
 export default App;
+
+
+{/*  */}
