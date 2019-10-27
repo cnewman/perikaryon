@@ -9,7 +9,8 @@ const RoomContextProvider = (props) => {
   const [areaManager, setAreaManager] = useState([]);
   const [mobManager, setMobManager] = useState([]);
   const [itemManager, setItemManager] = useState([]);
-
+  const [activeFloor, setActiveFloor] = useState(0);
+  const [areaFloors, setAreaFloors] = useState([]);
   const [activeArea, setActiveArea] = useState(null);
   const [activeRoom, setActiveRoom] = useState({});
   const [activeItem, setActiveItem] = useState({});
@@ -20,8 +21,16 @@ const RoomContextProvider = (props) => {
     getAreas();
   }, [])
 
+  const changeActiveFloor = (newFloor) => {
+    setActiveFloor(newFloor);
+  }
   const changeActiveArea = (newAreaName) => {
     const foundArea = areaManager.find((area) => area.manifest.title === newAreaName);
+    const setOfFloorsInArea = new Set()
+    for (let room of foundArea.rooms) {
+      setOfFloorsInArea.add(room.coordinates[2])
+    }
+    setAreaFloors(Array.from(setOfFloorsInArea));
     setActiveArea(foundArea);
     setActiveRoom({});
     setActiveItem({});
@@ -126,7 +135,8 @@ const RoomContextProvider = (props) => {
         activeMob, changeActiveMob,
         activeEntity, changeActiveItem,
         updateRoom, createRoom,
-        saveArea,
+        saveArea, areaFloors,
+        changeActiveFloor, activeFloor
       }
     }>
       {props.children}

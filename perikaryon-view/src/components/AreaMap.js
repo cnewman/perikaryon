@@ -9,7 +9,7 @@ const gridWidth = 12;
 const centerOfGrid = gridWidth / 2;
 
 const AreaMap = (props) => {
-  const { activeArea } = useContext(RoomContext);
+  const { activeArea, activeFloor } = useContext(RoomContext);
   const CreateElementContainer = (area, title, coordinates) => {
     return (
       <div className={'room'}
@@ -39,13 +39,13 @@ const AreaMap = (props) => {
     if (minY < 0) {
       return ({
         x: (coordinates[0] + Math.max(centerOfGrid, Math.abs(minX))),
-        y: (((-coordinates[1]) + Math.abs(minY)) * 2),
+        y: (((-coordinates[1]) + Math.abs(minY)))*2,
         z: coordinates[2]
       })
     } else {
       return ({
         x: (coordinates[0] + Math.max(centerOfGrid, Math.abs(minX))),
-        y: (coordinates[1] * 2),
+        y: (coordinates[1]*2),
         z: coordinates[2]
       })
     }
@@ -63,6 +63,7 @@ const AreaMap = (props) => {
       z: coordinates.z,
     })
   }
+
   /*
    * Take Area data from Ranvier API response and make the graph using react-grid-layout API
    * This function maps over the API response object from Ranvier and checks to figure out which rooms
@@ -84,7 +85,7 @@ const AreaMap = (props) => {
       }
       for (let room of activeArea.rooms) {
         const coordinates = TranslateRanvierToReactGridCoordinates(room.coordinates, minX, minY)
-        if (coordinates != null) {
+        if (coordinates != null && coordinates.z == activeFloor) {
           visibleRoomList.push(CreateElementContainer("test", room.title, coordinates))
         } else {
           console.log("Coordinates is null. Perikaryon map currently requires coordinates to work.");
