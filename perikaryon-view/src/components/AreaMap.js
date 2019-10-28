@@ -11,6 +11,7 @@ const centerOfGrid = gridWidth / 2;
 const AreaMap = (props) => {
   const { activeArea, activeFloor } = useContext(RoomContext);
   const CreateElementContainer = (area, title, coordinates) => {
+    const ranvierCoords = TranslateReactGridToRanvierCoordinates(coordinates);
     return (
       <div className={'room'}
         id={title}
@@ -23,7 +24,7 @@ const AreaMap = (props) => {
           propName={title}
           change={() => { }}
         />
-        <br /> ({coordinates.x},{coordinates.y},{coordinates.z})
+        <br /> ({ranvierCoords.x},{ranvierCoords.y},{ranvierCoords.z})
       </div>
     )
   }
@@ -59,7 +60,7 @@ const AreaMap = (props) => {
   const TranslateReactGridToRanvierCoordinates = (coordinates) => {
     return ({
       x: coordinates.x - centerOfGrid,
-      y: coordinates.y / this.state.nodeHeight,
+      y: coordinates.y / 2,
       z: coordinates.z,
     })
   }
@@ -75,7 +76,7 @@ const AreaMap = (props) => {
     let visibleRoomList = []
     let minX = 0
     let minY = 0
-    if (activeArea) {
+    if (activeArea && activeArea.rooms) {
       for (let room of activeArea.rooms) {
         if (room.coordinates) {
           console.log(room.coordinates)
@@ -84,11 +85,13 @@ const AreaMap = (props) => {
         }
       }
       for (let room of activeArea.rooms) {
-        const coordinates = TranslateRanvierToReactGridCoordinates(room.coordinates, minX, minY)
-        if (coordinates != null && coordinates.z == activeFloor) {
-          visibleRoomList.push(CreateElementContainer("test", room.title, coordinates))
-        } else {
-          console.log("Coordinates is null. Perikaryon map currently requires coordinates to work.");
+        if(room.coordinates){
+          const coordinates = TranslateRanvierToReactGridCoordinates(room.coordinates, minX, minY)
+          if (coordinates.z == activeFloor) {
+            visibleRoomList.push(CreateElementContainer("test", room.title, coordinates))
+          } else {
+            console.log("Coordinates is null. Perikaryon map currently requires coordinates to work.");
+          }
         }
       }
     }

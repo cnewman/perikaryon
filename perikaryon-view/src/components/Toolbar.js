@@ -39,7 +39,7 @@ const Toolbar = () => {
       <select
         id="areaDropdown"
         className="custom-select"
-        value={activeArea && activeArea.name || ""}
+        value={(activeArea) ? activeArea.name : ""}
         onChange={(e) => changeActiveArea(e.target.value)}
       >
         <option value="" disabled hidden>Select Area</option>

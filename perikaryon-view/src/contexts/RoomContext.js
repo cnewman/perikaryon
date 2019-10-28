@@ -27,8 +27,12 @@ const RoomContextProvider = (props) => {
   const changeActiveArea = (newAreaName) => {
     const foundArea = areaManager.find((area) => area.manifest.title === newAreaName);
     const setOfFloorsInArea = new Set()
-    for (let room of foundArea.rooms) {
-      setOfFloorsInArea.add(room.coordinates[2])
+    if(foundArea.rooms){
+      for (let room of foundArea.rooms) {
+        if(room.coordinates){
+          setOfFloorsInArea.add(room.coordinates[2])
+        }
+      }
     }
     setAreaFloors(Array.from(setOfFloorsInArea));
     setActiveArea(foundArea);

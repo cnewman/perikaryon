@@ -46,8 +46,11 @@ const App = () => {
         </div>
       </div>
       <div id="reactgrid" className="row">
+        <div id="roomlist" className="col-sm-2">
+          <Room />    
+        </div>
         <div className="col-xl">
-          <AreaMap />    
+          <AreaMap />
         </div>
       </div>
       
