@@ -95,6 +95,14 @@ const AreaMap = (props) => {
         }
       }
     }
+  /*
+   *Whenever the layout changes, update the mapOfRoomsInArea map coordinates
+   */
+  const LayoutChange = (roomLayoutList) => {
+    roomLayoutList.forEach((roomLayout) => {
+      console.log(roomLayout)
+    });
+  }
     // return (
     //     activeArea.rooms.map(room =>  {
     //     const styles = `entityList ${room.id === activeRoom.id ? 'selected-edit': ''}`;
@@ -104,7 +112,7 @@ const AreaMap = (props) => {
     console.log("visibleRoomList")
     console.log(visibleRoomList)
     return (
-      <ReactGridLayout margin={[20, 20]} verticalCompact={false} preventCollision={true} isResizable={false} id="areaGrid" className="layout" cols={gridWidth} rowHeight={30} width={1200} {...props}>
+      <ReactGridLayout onLayoutChange={LayoutChange} margin={[20, 20]} verticalCompact={false} preventCollision={true} isResizable={false} id="areaGrid" className="layout" cols={gridWidth} rowHeight={30} width={1200} {...props}>
         {visibleRoomList}
       </ReactGridLayout>
     )
