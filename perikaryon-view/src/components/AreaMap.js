@@ -10,14 +10,14 @@ const centerOfGrid = gridWidth / 2;
 
 const AreaMap = (props) => {
   const { activeArea, activeFloor } = useContext(RoomContext);
-  const CreateElementContainer = (area, title, coordinates) => {
+  const CreateElementContainer = (area, roomid, title, coordinates) => {
     const ranvierCoords = TranslateReactGridToRanvierCoordinates(coordinates);
     return (
       <div className={'room'}
-        id={title}
+        id={roomid}
         coordinate_values={coordinates}
-        key={area + title}
-        data-grid={{ x: coordinates.x, y: coordinates.y, w: 1, h: 2 }}
+        key={roomid}
+        data-grid={{x: coordinates.x, y: coordinates.y, w: 1, h: 2 }}
       >
         <RIEInput
           value={title}
@@ -88,7 +88,7 @@ const AreaMap = (props) => {
         if(room.coordinates){
           const coordinates = TranslateRanvierToReactGridCoordinates(room.coordinates, minX, minY)
           if (coordinates.z == activeFloor) {
-            visibleRoomList.push(CreateElementContainer("test", room.title, coordinates))
+            visibleRoomList.push(CreateElementContainer("",room.id, room.title, coordinates))
           } else {
             console.log("Coordinates is null. Perikaryon map currently requires coordinates to work.");
           }
@@ -99,9 +99,19 @@ const AreaMap = (props) => {
    *Whenever the layout changes, update the mapOfRoomsInArea map coordinates
    */
   const LayoutChange = (roomLayoutList) => {
+    if (activeArea && activeArea.rooms) {
     roomLayoutList.forEach((roomLayout) => {
-      console.log(roomLayout)
+      const indexOfRoom = activeArea.rooms.findIndex((room) => {
+        return room.id == roomLayout.i
+      })
+      if(activeArea.rooms[indexOfRoom]){
+        console.log(roomLayout)
+        const newCoords = TranslateReactGridToRanvierCoordinates({x: roomLayout.x, y: roomLayout.y, z:activeFloor});
+        activeArea.rooms[indexOfRoom].coordinates[0] = newCoords.x;
+        activeArea.rooms[indexOfRoom].coordinates[1] = newCoords.y;
+      }
     });
+  }
   }
     // return (
     //     activeArea.rooms.map(room =>  {
