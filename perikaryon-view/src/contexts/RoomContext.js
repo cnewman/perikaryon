@@ -48,6 +48,7 @@ const RoomContextProvider = (props) => {
     // const foundRoom = activeArea.rooms.find((room) => room.id === newRoomId);
     setActiveRoom(newRoom);
     setActiveEntity('ROOM');
+    console.log(activeRoom.title, activeEntity)
   }
 
   const changeActiveMob = (newMobName) => {

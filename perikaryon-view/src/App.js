@@ -20,6 +20,45 @@ import Col from 'react-bootstrap/Col';
 const App = () => {
   const [leftKey, setLeftKey] = useState('rooms');
   const [rightkey, setRightKey] = useState('edit');
+
+  const getEntityList = () => {
+    let entity = null;
+    switch (leftKey) {
+      case 'rooms':
+          entity = <Room /> 
+      break;
+      case 'npcs':
+
+      break;
+      case 'items':
+
+      break;
+    }
+    return entity;
+  }
+
+  const getWorkArea = () => {
+    let workArea = null;
+    switch (rightkey) {
+      case 'map':
+        workArea = <AreaMap />
+      break;
+      case 'edit':
+        workArea = <EditEntity />
+      break;
+    }
+    return workArea;
+  }
+
+
+  const isLActive = (entity) => {
+    return entity === leftKey ? 'active' : '';
+  }
+
+  const isRActive = (option) => {
+    return option === rightkey ? 'active' : '';
+  }
+
   return (
     <div className="container-fluid">
       <RoomContextProvider>
@@ -46,11 +85,31 @@ const App = () => {
         </div>
       </div>
       <div id="reactgrid" className="row">
-        <div id="roomlist" className="col-sm-2">
-          <Room />    
+        <div id="roomlist" className="col-sm-3">
+          <ul className="nav nav-tabs">
+            <li className="nav-item">
+              <a className={`nav-link ${isLActive('rooms')}`} onClick={() => setLeftKey('rooms')}>Rooms</a>
+            </li>
+            <li className="nav-item">
+              <a className={`nav-link ${isLActive('npcs')}`} onClick={() => setLeftKey('npcs')}>Npcs</a>
+            </li>
+            <li className="nav-item">
+              <a className={`nav-link ${isLActive('items')}`} onClick={() => setLeftKey('items')}>Items</a>
+            </li>
+          </ul>
+          {getEntityList()}
+   
         </div>
         <div className="col-xl">
-          <AreaMap />
+          <ul className="nav nav-tabs">
+            <li className="nav-item">
+              <a className={`nav-link ${isRActive('map')}`} onClick={() => setRightKey('map')}>AreaMap</a>
+            </li>
+            <li className="nav-item">
+              <a className={`nav-link ${isRActive('edit')}`} onClick={() => setRightKey('edit')}>Edit</a>
+            </li>
+          </ul>
+          {getWorkArea()}
         </div>
       </div>
       
@@ -64,6 +123,8 @@ const App = () => {
       </RoomContextProvider>
     </div>
   );
+
+
 }
 
 export default App;
