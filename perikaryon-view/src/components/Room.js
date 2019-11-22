@@ -7,14 +7,16 @@ const Room = () => {
 
   const listRooms = () => {
 
-    if (!activeArea || !activeArea.rooms) {
+    if (!activeArea || !activeArea.get("rooms")) {
       return null;
     }
+    console.log("TesT")
+    console.log(activeArea.get("rooms"))
     return (
-      activeArea.rooms.map(room =>  {
-      const styles = `entityList ${room.id === activeRoom.id ? 'selected-edit': ''}`;
+      activeArea.get("rooms").map(room =>  {
+      const styles = `entityList ${room.get("id") === activeRoom.id ? 'selected-edit': ''}`;
       return (
-      <p className={styles} key={room.id} onClick={() => changeActiveRoom(room)}>{room.id} - {room.title}</p>
+      <p className={styles} key={room.get("id")} onClick={() => changeActiveRoom(room)}>{room.get("id")} - {room.get("title")}</p>
     )}));
   }
 
@@ -29,7 +31,7 @@ const Room = () => {
   }
 
   const heading = () => {
-    if (!activeArea || !activeArea.rooms) {
+    if (!activeArea || !activeArea.get("rooms")) {
       return <p>Select an area to see rooms</p>;
     }
     return <h2>Rooms</h2>

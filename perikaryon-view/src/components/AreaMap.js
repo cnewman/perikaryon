@@ -73,12 +73,16 @@ const AreaMap = (props) => {
    */
   const GenerateAreaGraph = () => {
 
-    console.log(activeArea)
+    console.log("TEST")
+    console.log(activeArea.rooms)
+
     let visibleRoomList = []
     let minX = 0
     let minY = 0
     if (activeArea && activeArea.rooms) {
       for (let room of activeArea.rooms) {
+        console.log(room.coordinates)
+        console.log("PTEST")
         if (room.coordinates) {
           console.log(room.coordinates)
           minX = Math.min(minX, room.coordinates[0])
@@ -106,7 +110,7 @@ const AreaMap = (props) => {
             return room.id == roomLayout.i
           })
           if (activeArea.rooms[indexOfRoom]) {
-            console.log(roomLayout)
+            //console.log(roomLayout)
             const newCoords = TranslateReactGridToRanvierCoordinates({ x: roomLayout.x, y: roomLayout.y, z: activeFloor });
             activeArea.rooms[indexOfRoom].coordinates[0] = newCoords.x;
             activeArea.rooms[indexOfRoom].coordinates[1] = newCoords.y;
@@ -120,8 +124,8 @@ const AreaMap = (props) => {
     //     return (
     //     <p className={styles} key={room.id} onClick={() => changeActiveRoom(room)}>{room.id} - {room.title}</p>
     //   )}));
-    console.log("visibleRoomList")
-    console.log(visibleRoomList)
+    //console.log("visibleRoomList")
+    //console.log(visibleRoomList)
     return (
       <ReactGridLayout onLayoutChange={LayoutChange} margin={[20, 20]} verticalCompact={false} preventCollision={true} isResizable={false} id="areaGrid" className="layout" cols={gridWidth} rowHeight={30} width={1200} {...props}>
         {visibleRoomList}

@@ -31,9 +31,9 @@ const Toolbar = () => {
   */
   const generateAreaDropdown = () => {
     let areaDropdownList = [];
-    const areaList = areaManager.map(area => area.manifest.title);
-    for (let areaName of areaList) {
-      areaDropdownList.push(<option key={areaName} value={areaName}>{areaName}</option>)
+    console.log(areaManager)
+    for (let area of areaManager) {
+       areaDropdownList.push(<option key={area.get("manifest").get("title")} value={area.get("manifest").get("title")}>{area.get("manifest").get("title")}</option>)
     }
     return (
       <select
@@ -49,7 +49,9 @@ const Toolbar = () => {
   }
 
   const currentArea = () => {
-    return <h3>{activeArea ? `Current Area: ${activeArea.manifest.title}` : ''}</h3>
+    if (activeArea.size > 0) {
+      return <h3>{activeArea ? `Current Area: ${activeArea.get("manifest").get("title")}` : ''}</h3>
+    }
   }
 
   const saveAreaButton = () => {

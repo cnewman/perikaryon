@@ -1,20 +1,21 @@
 import React, { createContext, useState, useEffect } from 'react';
 import axios from 'axios';
 import uuid from 'uuid/v1';
+import {List, Record, fromJS, isKeyed, Map} from 'immutable'
 
 export const RoomContext = createContext();
 
 const RoomContextProvider = (props) => {
 
-  const [areaManager, setAreaManager] = useState([]);
-  const [mobManager, setMobManager] = useState([]);
-  const [itemManager, setItemManager] = useState([]);
+  const [areaManager, setAreaManager] = useState(List());
+  const [mobManager, setMobManager] = useState(List());
+  const [itemManager, setItemManager] = useState(List());
   const [activeFloor, setActiveFloor] = useState(0);
-  const [areaFloors, setAreaFloors] = useState([]);
-  const [activeArea, setActiveArea] = useState(null);
-  const [activeRoom, setActiveRoom] = useState({});
-  const [activeItem, setActiveItem] = useState({});
-  const [activeMob, setActiveMob] = useState({});
+  const [areaFloors, setAreaFloors] = useState(List());
+  const [activeArea, setActiveArea] = useState(Record({}));
+  const [activeRoom, setActiveRoom] = useState(Record({}));
+  const [activeItem, setActiveItem] = useState(Record({}));
+  const [activeMob, setActiveMob] = useState(Record({}));
   const [activeEntity, setActiveEntity] = useState(null);
 
   useEffect(() => {
@@ -25,12 +26,14 @@ const RoomContextProvider = (props) => {
     setActiveFloor(newFloor);
   }
   const changeActiveArea = (newAreaName) => {
-    const foundArea = areaManager.find((area) => area.manifest.title === newAreaName);
+    const foundArea = areaManager.find((area) => area.get("manifest").get("title") === newAreaName);
+    
     const setOfFloorsInArea = new Set()
-    if(foundArea.rooms){
-      for (let room of foundArea.rooms) {
-        if(room.coordinates){
-          setOfFloorsInArea.add(room.coordinates[2])
+    if(foundArea.get("rooms")){
+      for (let room of foundArea.get("rooms")) {
+        if(room.get("coordinates")){
+          console.log(room.get("coordinates").get("2"))
+          setOfFloorsInArea.add(room.get("coordinates").get("2"))
         }
       }
     }
@@ -41,14 +44,17 @@ const RoomContextProvider = (props) => {
     setActiveMob({});
     setActiveEntity(null);
     // setActiveRooms
-    console.log(newAreaName, foundArea)
+    //console.log(newAreaName, foundArea)
   };
 
   const changeActiveRoom = (newRoom) => {
     // const foundRoom = activeArea.rooms.find((room) => room.id === newRoomId);
-    setActiveRoom(newRoom);
+    
+    console.log("TEST")
+    console.log(newRoom)
+    setActiveRoom(fromJS(newRoom));
     setActiveEntity('ROOM');
-    console.log(activeRoom.title, activeEntity)
+    //console.log(activeRoom.title, activeEntity)
   }
 
   const changeActiveMob = (newMobName) => {
@@ -62,17 +68,17 @@ const RoomContextProvider = (props) => {
   }
 
   const createRoom = () => {
-    const room = {
+    const room = fromJS({
       id: `${uuid().substring(0,7)}`,
       title: `New Room in ${activeArea.manifest.title}`,
       description: 'You see....',
       exits: [],
-    }
+    })
     
     setActiveEntity('ROOM');
     activeArea.rooms.push(room);
     setActiveArea(activeArea);
-    setActiveRoom(room);
+    setActiveRoom(fromJS(room));
   }
 
   const saveArea = () => {
@@ -81,8 +87,8 @@ const RoomContextProvider = (props) => {
 
     axios.put(`http://localhost:3004/areas`, activeArea)
       .then(res => {
-        console.log(res);
-        console.log(res.data);
+        //console.log(res);
+        //console.log(res.data);
       })
       .catch(err => err);
 
@@ -94,7 +100,16 @@ const RoomContextProvider = (props) => {
       .then(res => res.json())
       .then(res => {
         console.log(res)
-        setAreaManager(res);
+        let newAreaManager = List();
+        for (let keyval of res) {
+          let mapthis = fromJS(
+            {"manifest":keyval.manifest,
+            "items":keyval.items,
+            "npcs":keyval.npcs,
+            "rooms":keyval.rooms})
+          newAreaManager = newAreaManager.push(mapthis)
+        }
+        setAreaManager(newAreaManager);
       })
       .catch(err => console.log(err));
   };
@@ -124,7 +139,7 @@ const RoomContextProvider = (props) => {
     updatedArea.rooms[index] = updatedRoom;
 
     setActiveArea(updatedArea);
-    setActiveRoom(updatedRoom);
+    setActiveRoom(fromJS(updatedRoom));
   }
 
 
