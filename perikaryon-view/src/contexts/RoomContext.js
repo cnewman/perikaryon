@@ -32,7 +32,6 @@ const RoomContextProvider = (props) => {
     if(foundArea.get("rooms")){
       for (let room of foundArea.get("rooms")) {
         if(room.get("coordinates")){
-          console.log(room.get("coordinates").get("2"))
           setOfFloorsInArea.add(room.get("coordinates").get("2"))
         }
       }
@@ -49,9 +48,6 @@ const RoomContextProvider = (props) => {
 
   const changeActiveRoom = (newRoom) => {
     // const foundRoom = activeArea.rooms.find((room) => room.id === newRoomId);
-    
-    console.log("TEST room")
-    console.log(newRoom)
     setActiveRoom(fromJS(newRoom));
     setActiveEntity('ROOM');
     //console.log(activeRoom.title, activeEntity)
@@ -99,7 +95,6 @@ const RoomContextProvider = (props) => {
     fetch('http://localhost:3004/areasFiles')
       .then(res => res.json())
       .then(res => {
-        console.log(res)
         let newAreaManager = List();
         for (let keyval of res) {
           let mapthis = fromJS(
@@ -127,9 +122,7 @@ const RoomContextProvider = (props) => {
   // }
 
   const updateArea = (updatedArea) => {
-    const index = areaManager.areas.map(area => area.id).indexOf(activeArea.id);
-    console.log(`Updated Area: ${activeArea.id}`)
-
+    setActiveArea(updatedArea)
   }
 
   const updateRoom = (updatedRoom) => {
@@ -149,7 +142,7 @@ const RoomContextProvider = (props) => {
         areaManager,
         itemManager,
         mobManager,
-        activeArea, changeActiveArea,
+        activeArea, changeActiveArea, updateArea,
         activeRoom, changeActiveRoom,
         activeItem, setActiveItem,
         activeMob, changeActiveMob,

@@ -10,8 +10,6 @@ const Room = () => {
     if (!activeArea || !activeArea.get("rooms")) {
       return null;
     }
-    console.log("TesT")
-    console.log(activeArea.get("rooms"))
     return (
       activeArea.get("rooms").map(room =>  {
       const styles = `entityList ${room.get("id") === activeRoom.id ? 'selected-edit': ''}`;

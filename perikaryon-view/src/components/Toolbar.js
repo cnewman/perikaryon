@@ -31,7 +31,6 @@ const Toolbar = () => {
   */
   const generateAreaDropdown = () => {
     let areaDropdownList = [];
-    console.log(areaManager)
     for (let area of areaManager) {
        areaDropdownList.push(<option key={area.get("manifest").get("title")} value={area.get("manifest").get("title")}>{area.get("manifest").get("title")}</option>)
     }
