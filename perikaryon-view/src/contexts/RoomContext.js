@@ -39,9 +39,9 @@ const RoomContextProvider = (props) => {
     }
     setAreaFloors(Array.from(setOfFloorsInArea));
     setActiveArea(foundArea);
-    setActiveRoom({});
-    setActiveItem({});
-    setActiveMob({});
+    setActiveRoom(Record({}));
+    setActiveItem(Record({}));
+    setActiveMob(Record({}));
     setActiveEntity(null);
     // setActiveRooms
     //console.log(newAreaName, foundArea)
@@ -50,7 +50,7 @@ const RoomContextProvider = (props) => {
   const changeActiveRoom = (newRoom) => {
     // const foundRoom = activeArea.rooms.find((room) => room.id === newRoomId);
     
-    console.log("TEST")
+    console.log("TEST room")
     console.log(newRoom)
     setActiveRoom(fromJS(newRoom));
     setActiveEntity('ROOM');

@@ -109,6 +109,7 @@ const App = () => {
               <a className={`nav-link ${isRActive('edit')}`} onClick={() => setRightKey('edit')}>Edit</a>
             </li>
           </ul>
+          {console.log("MAPMAPMA")}
           {getWorkArea()}
         </div>
       </div>

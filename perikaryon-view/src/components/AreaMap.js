@@ -3,7 +3,7 @@ import { RoomContext } from '../contexts/RoomContext';
 
 import { RIEInput } from 'riek'
 import RGL, { WidthProvider } from 'react-grid-layout'
-
+import {set, setIn} from 'immutable'
 const ReactGridLayout = WidthProvider(RGL)
 const gridWidth = 12;
 const centerOfGrid = gridWidth / 2;
@@ -38,17 +38,19 @@ const AreaMap = (props) => {
    * not overlap.
    */
   const TranslateRanvierToReactGridCoordinates = (coordinates, minX, minY) => {
+    console.log("bleh")
+    console.log(coordinates)
     if (minY < 0) {
       return ({
-        x: (coordinates[0] + Math.max(centerOfGrid, Math.abs(minX))),
-        y: (((-coordinates[1]) + Math.abs(minY))) * 2,
-        z: coordinates[2]
+        x: (coordinates.get(0) + Math.max(centerOfGrid, Math.abs(minX))),
+        y: (((-coordinates.get(1)) + Math.abs(minY))) * 2,
+        z: coordinates.get(2)
       })
     } else {
       return ({
-        x: (coordinates[0] + Math.max(centerOfGrid, Math.abs(minX))),
-        y: (coordinates[1] * 2),
-        z: coordinates[2]
+        x: (coordinates.get(0) + Math.max(centerOfGrid, Math.abs(minX))),
+        y: (coordinates.get(1) * 2),
+        z: coordinates.get(2)
       })
     }
 
@@ -74,24 +76,26 @@ const AreaMap = (props) => {
   const GenerateAreaGraph = () => {
 
     console.log("TEST")
-    console.log(activeArea.rooms)
+    console.log(activeArea.get("rooms"))
 
     let visibleRoomList = []
     let minX = 0
     let minY = 0
-    if (activeArea && activeArea.rooms) {
-      for (let room of activeArea.rooms) {
-        console.log(room.coordinates)
+    if (activeArea && activeArea.get("rooms")) {
+      for (let room of activeArea.get("rooms")) {
+        console.log(room.get("coordinates"))
         console.log("PTEST")
-        if (room.coordinates) {
-          console.log(room.coordinates)
-          minX = Math.min(minX, room.coordinates[0])
-          minY = Math.min(minY, room.coordinates[1])
+        if (room.get("coordinates")) {
+          console.log(room.get("coordinates").get(0))
+          minX = Math.min(minX, room.get("coordinates").get(0))
+          minY = Math.min(minY, room.get("coordinates").get(1))
         }
       }
-      for (let room of activeArea.rooms) {
-        if (room.coordinates) {
-          const coordinates = TranslateRanvierToReactGridCoordinates(room.coordinates, minX, minY)
+      for (let room of activeArea.get("rooms")) {
+        if (room.get("coordinates")) {
+          const coordinates = TranslateRanvierToReactGridCoordinates(room.get("coordinates"), minX, minY)
+          console.log("coord")
+          console.log(coordinates)
           if (coordinates.z == activeFloor) {
             visibleRoomList.push(CreateElementContainer("", room.id, room.title, coordinates))
           } else {
@@ -104,28 +108,27 @@ const AreaMap = (props) => {
      *Whenever the layout changes, update the mapOfRoomsInArea map coordinates
      */
     const LayoutChange = (roomLayoutList) => {
-      if (activeArea && activeArea.rooms) {
+      let updatedActiveArea = null
+      if (activeArea && activeArea.get("rooms")) {
         roomLayoutList.forEach((roomLayout) => {
-          const indexOfRoom = activeArea.rooms.findIndex((room) => {
+          const indexOfRoom = activeArea.get("rooms").findIndex((room) => {
             return room.id == roomLayout.i
           })
-          if (activeArea.rooms[indexOfRoom]) {
-            //console.log(roomLayout)
+          if (activeArea.get("rooms").get(indexOfRoom)) {
             const newCoords = TranslateReactGridToRanvierCoordinates({ x: roomLayout.x, y: roomLayout.y, z: activeFloor });
-            activeArea.rooms[indexOfRoom].coordinates[0] = newCoords.x;
-            activeArea.rooms[indexOfRoom].coordinates[1] = newCoords.y;
+            updatedActiveArea = setIn(activeArea, ['rooms', indexOfRoom, 'coordinates', 0],newCoords.x)
           }
         });
       }
     }
     // return (
-    //     activeArea.rooms.map(room =>  {
+    //   updatedActiveArea.get("rooms").map(room =>  {
     //     const styles = `entityList ${room.id === activeRoom.id ? 'selected-edit': ''}`;
     //     return (
     //     <p className={styles} key={room.id} onClick={() => changeActiveRoom(room)}>{room.id} - {room.title}</p>
     //   )}));
-    //console.log("visibleRoomList")
-    //console.log(visibleRoomList)
+    console.log("visibleRoomList")
+    console.log(visibleRoomList)
     return (
       <ReactGridLayout onLayoutChange={LayoutChange} margin={[20, 20]} verticalCompact={false} preventCollision={true} isResizable={false} id="areaGrid" className="layout" cols={gridWidth} rowHeight={30} width={1200} {...props}>
         {visibleRoomList}
