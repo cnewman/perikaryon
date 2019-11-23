@@ -17,7 +17,7 @@ const AreaMap = (props) => {
       <div className={'room'}
         id={roomid}
         coordinate_values={coordinates}
-        key={roomid}
+        key={area+roomid}
         data-grid={{ x: coordinates.x, y: coordinates.y, w: 1, h: 2 }}
       >
         <RIEInput
@@ -95,9 +95,9 @@ const AreaMap = (props) => {
         if (room.get("coordinates")) {
           const coordinates = TranslateRanvierToReactGridCoordinates(room.get("coordinates"), minX, minY)
           console.log("coord")
-          console.log(coordinates)
+          console.log(room)
           if (coordinates.z == activeFloor) {
-            visibleRoomList.push(CreateElementContainer("", room.id, room.title, coordinates))
+            visibleRoomList.push(CreateElementContainer(activeArea.get("manifest").get("title"), room.get("id"), room.get("title"), coordinates))
           } else {
             console.log("Coordinates is null. Perikaryon map currently requires coordinates to work.");
           }
