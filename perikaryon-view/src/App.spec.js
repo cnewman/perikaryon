@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import Renderer from 'react-test-renderer';
-import {shallow, configure} from 'enzyme';
+import {mount, shallow,configure} from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16'
 import App from "./App"
-const {List, Set} = require('immutable');
+const {List, Set, Record, fromJS} = require('immutable');
+import { getAreas } from './contexts/RoomContext';
 
 var json = require('./TestData.json')
 
@@ -16,74 +17,69 @@ describe('Test snapshot of component', () => {
         expect(tree).toMatchSnapshot();
     });
 });
-describe('When a room is added to the grid, it', () => {
-    it('should be created', () => {
-        const component = shallow(<App />);
-        const instance = component.instance();
+// describe('When a room is added to the grid, it', () => {
+//     it('should be created', () => {
+//         const component = mount(<App />);
+//         const instance = component.instance();
 
-        instance.setState({ranvierAPIResponse:json})
-        instance.setState({selectedArea:'mapped'})
-        instance.setState({selectedFloor:0})
-        instance.InitializeView()
+//         instance.setState({ranvierAPIResponse:json})
+//         instance.setState({selectedArea:'mapped'})
+//         instance.setState({selectedFloor:0})
+//         instance.InitializeView()
 
-        const addButton = component.find('button#addRoomButton');
-        addButton.simulate('click')
-        expect(component.exists('#'+instance.state.selectedRoom)).toBe(true)
-    });
-    it('should have coordinates 0,0,0', () => {
-        const component = shallow(<App />);
-        const instance = component.instance();
-        const DEFAULT_NEW_ROOM_COORDINATES = {x:10, y:10, z:0}
+//         const addButton = component.find('button#addRoomButton');
+//         addButton.simulate('click')
+//         expect(component.exists('#'+instance.state.selectedRoom)).toBe(true)
+//     });
+//     it('should have coordinates 0,0,0', () => {
+//         const component = mount(<App />);
+//         const instance = component.instance();
+//         const DEFAULT_NEW_ROOM_COORDINATES = {x:10, y:10, z:0}
 
-        instance.setState({ranvierAPIResponse:json})
-        instance.setState({selectedArea:'mapped'})
-        instance.setState({selectedFloor:0})
-        instance.InitializeView()
+//         instance.setState({ranvierAPIResponse:json})
+//         instance.setState({selectedArea:'mapped'})
+//         instance.setState({selectedFloor:0})
+//         instance.InitializeView()
 
-        const addButton = component.find('button#addRoomButton');
-        addButton.simulate('click')
+//         const addButton = component.find('button#addRoomButton');
+//         addButton.simulate('click')
 
-        const coord = component.find('div#'+instance.state.selectedRoom);
+//         const coord = component.find('div#'+instance.state.selectedRoom);
 
-        expect(coord.props()).toHaveProperty('coordinate_values', DEFAULT_NEW_ROOM_COORDINATES)
-    });
-    it('should have the name given to it in the associated field', () => {
-        const component = shallow(<App />);
-        const instance = component.instance();
+//         expect(coord.props()).toHaveProperty('coordinate_values', DEFAULT_NEW_ROOM_COORDINATES)
+//     });
+//     it('should have the name given to it in the associated field', () => {
+//         const component = mount(<App />);
+//         const instance = component.instance();
 
-        instance.setState({ranvierAPIResponse:json})
-        instance.setState({selectedArea:'mapped'})
-        instance.setState({selectedFloor:0})
-        instance.InitializeView()
+//         instance.setState({ranvierAPIResponse:json})
+//         instance.setState({selectedArea:'mapped'})
+//         instance.setState({selectedFloor:0})
+//         instance.InitializeView()
 
-        const addButton = component.find('button#addRoomButton');
-        addButton.simulate('click')
+//         const addButton = component.find('button#addRoomButton');
+//         addButton.simulate('click')
 
-        const addedRoom = component.find('div#'+instance.state.selectedRoom);
-        expect(addedRoom.text()).toBe('<RIEInput /> (4,5,0)')
-        expect(addedRoom.childAt(0).props()).toHaveProperty('value', instance.state.selectedRoom)
-    });
-});
+//         const addedRoom = component.find('div#'+instance.state.selectedRoom);
+//         expect(addedRoom.text()).toBe('<RIEInput /> (4,5,0)')
+//         expect(addedRoom.childAt(0).props()).toHaveProperty('value', instance.state.selectedRoom)
+//     });
+// });
 describe('After loading the test data, the component', () => {
     it('should contain 3 floors', () => {
         const component = shallow(<App />);
         const instance = component.instance();
         const NUMBER_OF_FLOORS_IN_TEST_DATA = 3;
-
-        instance.setState({ranvierAPIResponse:json})
-        instance.setState({selectedArea:'mapped'})
-        instance.InitializeView()
-        instance.GenerateFloorDropdown()
-        
+        instance.getAreas()
+        const areaDropDown = component.find('select#areaDropdown').prop('onChange')({target:{value:'Map Test'}});
         const floorDropDown = component.find('select#floorDropdown');
 
         expect(floorDropDown.children()).toHaveLength(NUMBER_OF_FLOORS_IN_TEST_DATA)
-        expect(instance.state.listOfFloorsInArea.count())
-            .toBe(NUMBER_OF_FLOORS_IN_TEST_DATA)
+
     });
 
     it('should contain floors -1, 0, and 1', () => {
-        const component = shallow(<App />);
+        const component = mount(<App />);
         const instance = component.instance();
         instance.setState({ranvierAPIResponse:json})
         instance.setState({selectedArea:'mapped'})
@@ -98,7 +94,7 @@ describe('After loading the test data, the component', () => {
     });
     
     it('should contain 3 areas', () => {
-        const component = shallow(<App />);
+        const component = mount(<App />);
         const instance = component.instance();
         const NUMBER_OF_AREAS_IN_TEST_DATA = 3;
         const NUMBER_OF_BLANKS_IN_OPTIONS = 1;
@@ -112,7 +108,7 @@ describe('After loading the test data, the component', () => {
         expect(areaDropDown.children()).toHaveLength(NUMBER_OF_AREAS_IN_TEST_DATA + NUMBER_OF_BLANKS_IN_OPTIONS)
     });
     it('should contain the mapped, craft, and limbo areas', () => {
-        const component = shallow(<App />);
+        const component = mount(<App />);
         const instance = component.instance();
 
         instance.setState({ranvierAPIResponse:json})
@@ -127,7 +123,7 @@ describe('After loading the test data, the component', () => {
     });
 
     it('should contain 8 rooms', () => {
-        const component = shallow(<App />);
+        const component = mount(<App />);
         const instance = component.instance();
         const NUMBER_OF_ROOMS_IN_TEST_DATA = 9;
 
@@ -143,7 +139,7 @@ describe('After loading the test data, the component', () => {
 });
 describe('After clicking a node on the graph', () => {
     it('the node should be selected', () => {
-        const component = shallow(<App />);
+        const component = mount(<App />);
         const instance = component.instance();
 
         instance.setState({ranvierAPIResponse:json})
@@ -157,7 +153,7 @@ describe('After clicking a node on the graph', () => {
         expect(instance.state.selectedRoom).toBe('Hallway South 1')
     });
     it('the text area should populate with a description', () => {
-        const component = shallow(<App />);
+        const component = mount(<App />);
         const instance = component.instance();
 
         instance.setState({ranvierAPIResponse:json})
@@ -181,7 +177,7 @@ describe('After clicking a node on the graph', () => {
         expect(eastTextArea.props()).toHaveProperty('value', 'You are in the east hallway.')
     });
     it('we should be able to delete using the delete button', () => {
-        const component = shallow(<App />);
+        const component = mount(<App />);
         const instance = component.instance();
 
         instance.setState({ranvierAPIResponse:json})

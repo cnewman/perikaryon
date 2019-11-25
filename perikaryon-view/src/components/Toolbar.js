@@ -48,8 +48,11 @@ const Toolbar = () => {
   }
 
   const currentArea = () => {
-    if (activeArea.size > 0) {
-      return <h3>{activeArea ? `Current Area: ${activeArea.get("manifest").get("title")}` : ''}</h3>
+    if (activeArea) {
+      if(activeArea.size > 0){
+        console.log(activeArea)
+        return <h3>{activeArea ? `Current Area: ${activeArea.get("manifest").get("title")}` : ''}</h3>
+      }
     }
   }
 

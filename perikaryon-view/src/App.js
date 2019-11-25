@@ -1,10 +1,10 @@
 import "./App.scss";
 
 
-import axios from 'axios'
-import { RIEInput } from 'riek'
-import Draggable from 'react-draggable'
-import { JsonEditor as Editor } from 'jsoneditor-react'
+// import axios from 'axios'
+// import { RIEInput } from 'riek'
+// import Draggable from 'react-draggable'
+// import { JsonEditor as Editor } from 'jsoneditor-react'
 import React, { useState } from 'react'
 import AreaMap from "./components/AreaMap";
 import Header from "./components/Header";
@@ -12,10 +12,6 @@ import Room from "./components/Room";
 import Toolbar from "./components/Toolbar";
 import EditEntity from "./components/editing/EditEntity";
 import RoomContextProvider from "./contexts/RoomContext";
-import Tabs from 'react-bootstrap/Tabs';
-import Tab from 'react-bootstrap/Tab';
-import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
 
 const App = () => {
   const [leftKey, setLeftKey] = useState('rooms');

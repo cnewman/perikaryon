@@ -16,72 +16,57 @@ exports[`Test snapshot of component Snapshot has not changed 1`] = `
         className="navbar navbar-expand-lg navbar-light bg-light"
         id="topNavBar"
       >
-        <button
-          className="topdashbtn btn btn-secondary"
-          id="descBtn"
-          onClick={[Function]}
-          type="button"
+        <div
+          className="container py-2"
         >
-          Description
-        </button>
-        <button
-          className="topdashbtn btn btn-secondary"
-          id="itemBtn"
-          onClick={[Function]}
-          type="button"
-        >
-          Items
-        </button>
-        <button
-          className="topdashbtn btn btn-secondary"
-          id="npcBtn"
-          onClick={[Function]}
-          type="button"
-        >
-          NPC
-        </button>
+          <div
+            className="row"
+          >
+            <div
+              className="col"
+            >
+              <select
+                className="custom-select"
+                id="areaDropdown"
+                onChange={[Function]}
+              >
+                <option
+                  disabled={true}
+                  hidden={true}
+                  value=""
+                >
+                  Select Area
+                </option>
+              </select>
+              <select
+                className="custom-select"
+                id="floorDropdown"
+                onChange={[Function]}
+                value={0}
+              />
+            </div>
+            <div
+              className="col"
+            />
+            <button
+              className="btn btn-primary"
+              disabled={false}
+              onClick={[Function]}
+              type="button"
+            >
+              Save Area
+            </button>
+            <div
+              className="col"
+            />
+          </div>
+        </div>
         <p
           id="title"
-        >
-          <span
-            className=""
-            onClick={[Function]}
-            onFocus={[Function]}
-            tabIndex="0"
-          >
-            
-          </span>
-        </p>
+        />
         <ul
           className="navbar-nav ml-auto"
-        >
-          <select
-            className="custom-select"
-            id="areaDropdown"
-            onChange={[Function]}
-            value=""
-          >
-            <option
-              disabled={true}
-              hidden={true}
-              value=""
-            >
-              Select Area
-            </option>
-          </select>
-          <select
-            className="custom-select"
-            id="floorDropdown"
-            onChange={[Function]}
-          />
-        </ul>
-        <button
-          className="btn btn-light dashbutton"
-          id="saveButton"
-          onClick={[Function]}
-        >
-          Save Area
-        </button>
+        />
       </nav>
     </div>
   </div>
@@ -90,20 +75,79 @@ exports[`Test snapshot of component Snapshot has not changed 1`] = `
     id="reactgrid"
   >
     <div
+      className="col-sm-3"
+      id="roomlist"
+    >
+      <ul
+        className="nav nav-tabs"
+      >
+        <li
+          className="nav-item"
+        >
+          <a
+            className="nav-link active"
+            onClick={[Function]}
+          >
+            Rooms
+          </a>
+        </li>
+        <li
+          className="nav-item"
+        >
+          <a
+            className="nav-link "
+            onClick={[Function]}
+          >
+            Npcs
+          </a>
+        </li>
+        <li
+          className="nav-item"
+        >
+          <a
+            className="nav-link "
+            onClick={[Function]}
+          >
+            Items
+          </a>
+        </li>
+      </ul>
+      <div>
+        <p>
+          Select an area to see rooms
+        </p>
+      </div>
+    </div>
+    <div
       className="col-xl"
     >
-      <div
-        className="react-grid-layout layout"
-        style={
-          Object {
-            "height": "20px",
-          }
-        }
-      />
+      <ul
+        className="nav nav-tabs"
+      >
+        <li
+          className="nav-item"
+        >
+          <a
+            className="nav-link "
+            onClick={[Function]}
+          >
+            AreaMap
+          </a>
+        </li>
+        <li
+          className="nav-item"
+        >
+          <a
+            className="nav-link active"
+            onClick={[Function]}
+          >
+            Edit
+          </a>
+        </li>
+      </ul>
+      <div />
     </div>
   </div>
-  <div />
-  <div />
   <div
     className="d-flex flex-row align-items-end justify-content-between"
     id="dashboard"
@@ -112,22 +156,7 @@ exports[`Test snapshot of component Snapshot has not changed 1`] = `
     <div
       className="tab-content"
       id="roomButtons"
-    >
-      <button
-        className="btn btn-light dashbutton"
-        id="deleteRoomButton"
-        onClick={[Function]}
-      >
-        Delete Room
-      </button>
-      <button
-        className="btn btn-light dashbutton"
-        id="addRoomButton"
-        onClick={[Function]}
-      >
-        Add Room
-      </button>
-    </div>
+    />
   </div>
 </div>
 `;
