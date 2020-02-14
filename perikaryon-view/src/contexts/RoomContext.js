@@ -4,7 +4,22 @@ import uuid from 'uuid/v1';
 import {List, Record, fromJS, isKeyed, Map} from 'immutable'
 
 export const RoomContext = createContext();
-
+export const getAreas = async () => {
+  const response = await fetch('http://localhost:3004/areasFiles')
+  const ranvierDataInJson = await response.json()
+  let newAreaManager = List();
+  for (let keyval of ranvierDataInJson) {
+    let mapthis = fromJS(
+      {
+        "manifest": keyval.manifest,
+        "items": keyval.items,
+        "npcs": keyval.npcs,
+        "rooms": keyval.rooms
+      })
+    newAreaManager = newAreaManager.push(mapthis)
+  }
+  return newAreaManager;
+};
 const RoomContextProvider = (props) => {
 
   const [areaManager, setAreaManager] = useState(List());
@@ -19,7 +34,7 @@ const RoomContextProvider = (props) => {
   const [activeEntity, setActiveEntity] = useState(null);
 
   useEffect(() => {
-    getAreas();
+     getAreas().then(res => setAreaManager(res))
   }, [])
 
   const changeActiveFloor = (newFloor) => {
@@ -89,25 +104,6 @@ const RoomContextProvider = (props) => {
       .catch(err => err);
 
   }
-
-
-  const getAreas = () => {
-    fetch('http://localhost:3004/areasFiles')
-      .then(res => res.json())
-      .then(res => {
-        let newAreaManager = List();
-        for (let keyval of res) {
-          let mapthis = fromJS(
-            {"manifest":keyval.manifest,
-            "items":keyval.items,
-            "npcs":keyval.npcs,
-            "rooms":keyval.rooms})
-          newAreaManager = newAreaManager.push(mapthis)
-        }
-        setAreaManager(newAreaManager);
-      })
-      .catch(err => console.log(err));
-  };
 
   // const getAreas = () => {
   //   fetch("http://localhost:3004/areas")

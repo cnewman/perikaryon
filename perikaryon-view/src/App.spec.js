@@ -1,200 +1,36 @@
-import React, { useContext, useEffect, useState } from 'react';
-import Renderer from 'react-test-renderer';
-import {mount, shallow,configure} from 'enzyme';
-import Adapter from 'enzyme-adapter-react-16'
-import App from "./App"
-const {List, Set, Record, fromJS} = require('immutable');
-import { getAreas } from './contexts/RoomContext';
+import React from 'react';
+import Toolbar from './components/Toolbar'
+import RoomContextProvider, {RoomContext, getAreas} from './contexts/RoomContext'
+import "whatwg-fetch";
+import {renderHook} from "@testing-library/react-hooks"
+import fetchMock from "fetch-mock"
+import {act} from "react-test-renderer"
+import {List, Record, fromJS, isKeyed, Map} from 'immutable'
 
-var json = require('./TestData.json')
+describe("useDataApi", () => {
+ beforeAll(() => {
+     global.fetch = fetch;
+ })
+ afterAll(() => {
+     fetchMock.restore()
+ })
 
-configure({adapter: new Adapter()})
-
-describe('Test snapshot of component', () => {
-    it('Snapshot has not changed', () => {
-        const component = Renderer.create(<App />);
-        let tree = component.toJSON();
-        expect(tree).toMatchSnapshot();
-    });
-});
-// describe('When a room is added to the grid, it', () => {
-//     it('should be created', () => {
-//         const component = mount(<App />);
-//         const instance = component.instance();
-
-//         instance.setState({ranvierAPIResponse:json})
-//         instance.setState({selectedArea:'mapped'})
-//         instance.setState({selectedFloor:0})
-//         instance.InitializeView()
-
-//         const addButton = component.find('button#addRoomButton');
-//         addButton.simulate('click')
-//         expect(component.exists('#'+instance.state.selectedRoom)).toBe(true)
-//     });
-//     it('should have coordinates 0,0,0', () => {
-//         const component = mount(<App />);
-//         const instance = component.instance();
-//         const DEFAULT_NEW_ROOM_COORDINATES = {x:10, y:10, z:0}
-
-//         instance.setState({ranvierAPIResponse:json})
-//         instance.setState({selectedArea:'mapped'})
-//         instance.setState({selectedFloor:0})
-//         instance.InitializeView()
-
-//         const addButton = component.find('button#addRoomButton');
-//         addButton.simulate('click')
-
-//         const coord = component.find('div#'+instance.state.selectedRoom);
-
-//         expect(coord.props()).toHaveProperty('coordinate_values', DEFAULT_NEW_ROOM_COORDINATES)
-//     });
-//     it('should have the name given to it in the associated field', () => {
-//         const component = mount(<App />);
-//         const instance = component.instance();
-
-//         instance.setState({ranvierAPIResponse:json})
-//         instance.setState({selectedArea:'mapped'})
-//         instance.setState({selectedFloor:0})
-//         instance.InitializeView()
-
-//         const addButton = component.find('button#addRoomButton');
-//         addButton.simulate('click')
-
-//         const addedRoom = component.find('div#'+instance.state.selectedRoom);
-//         expect(addedRoom.text()).toBe('<RIEInput /> (4,5,0)')
-//         expect(addedRoom.childAt(0).props()).toHaveProperty('value', instance.state.selectedRoom)
-//     });
-// });
-describe('After loading the test data, the component', () => {
-    it('should contain 3 floors', () => {
-        const component = shallow(<App />);
-        const instance = component.instance();
-        const NUMBER_OF_FLOORS_IN_TEST_DATA = 3;
-        instance.getAreas()
-        const areaDropDown = component.find('select#areaDropdown').prop('onChange')({target:{value:'Map Test'}});
-        const floorDropDown = component.find('select#floorDropdown');
-
-        expect(floorDropDown.children()).toHaveLength(NUMBER_OF_FLOORS_IN_TEST_DATA)
-
-    });
-
-    it('should contain floors -1, 0, and 1', () => {
-        const component = mount(<App />);
-        const instance = component.instance();
-        instance.setState({ranvierAPIResponse:json})
-        instance.setState({selectedArea:'mapped'})
-        instance.InitializeView()
-        instance.GenerateFloorDropdown()
-
-        const floorDropDown = component.find('select#floorDropdown');
-
-        expect(floorDropDown.childAt(0).props()).toHaveProperty('value', 0)
-        expect(floorDropDown.childAt(1).props()).toHaveProperty('value', -1)
-        expect(floorDropDown.childAt(2).props()).toHaveProperty('value', 1)
-    });
+ it('should return data with successful request', async () => {
+    const wrapper = ({children}) => <RoomContextProvider>{children}</RoomContextProvider>
+    const { result } = renderHook(() => Toolbar(), {wrapper});
+    fetchMock.mock('http://localhost:3004/areasFiles', [
+        {"manifest":{"title":"Map Test","info":{"respawnInterval":60},"instanced":"player","bundlePath":"/home/wotterbox/ranviermud/bundles/bundle-example-areas/areas/mapped"},"npcs":[{"id":"squirrel","keywords":["squirrel"],"name":"A Squirrel","level":2,"description":"A furry little squirrel","behaviors":{"ranvier-wander":{"interval":30,"areaRestricted":true}}}],"rooms":[{"id":"start","title":"Begin","coordinates":[0,0,0],"description":"You are in the start of this area. There are hallways to the north and south.","npcs":["mapped:squirrel"]},{"id":"hallway-north-1","title":"Hallway North 1","coordinates":[0,1,0],"description":"You are in the north hallway."},{"id":"hallway-north-2","title":"Hallway North 2","coordinates":[0,2,0],"description":"You are in the north hallway."},{"id":"basement-north","title":"Basement","coordinates":[0,2,-1],"description":"You are in the basement.","doors":{"mapped:hallway-north-2":{"closed":true}}},{"id":"hallway-south-1","title":"Hallway South 1","coordinates":[0,-1,0],"description":"You are in the south hallway."},{"id":"hallway-south-2","title":"Hallway South 2","coordinates":[0,-2,0],"description":"You are in the south hallway."},{"id":"attic-south","title":"Attic","coordinates":[0,-2,1],"description":"You are in the attic.","exits":[{"direction":"east","roomId":"limbo:white"}]},{"id":"hallway-east-1","title":"Hallway East 1","coordinates":[1,0,0],"description":"You are in the east hallway."},{"id":"hallway-east-2","title":"Hallway East 2","coordinates":[2,0,0],"description":"You are in the east hallway."},{"id":"hallway-east-3","title":"Hallway East 3","coordinates":[2,-1,0],"description":"You are in the east hallway."}]}
+    ]);
     
-    it('should contain 3 areas', () => {
-        const component = mount(<App />);
-        const instance = component.instance();
-        const NUMBER_OF_AREAS_IN_TEST_DATA = 3;
-        const NUMBER_OF_BLANKS_IN_OPTIONS = 1;
-
-        instance.setState({ranvierAPIResponse:json})
-        instance.InitializeView()
-        instance.GenerateAreaDropdown()
-        
-        const areaDropDown = component.find('select#areaDropdown');
-
-        expect(areaDropDown.children()).toHaveLength(NUMBER_OF_AREAS_IN_TEST_DATA + NUMBER_OF_BLANKS_IN_OPTIONS)
+    await act (async () => {
+        const response = await getAreas()
+        for (let area of response) {
+            console.log(area.get("manifest").get("title"))
+        }
+        //result.current.callApi('http://localhost:3004/areasFiles')
     });
-    it('should contain the mapped, craft, and limbo areas', () => {
-        const component = mount(<App />);
-        const instance = component.instance();
-
-        instance.setState({ranvierAPIResponse:json})
-        instance.InitializeView()
-        instance.GenerateAreaDropdown()
-
-        const areaDropDown = component.find('select#areaDropdown');
-
-        expect(areaDropDown.childAt(1).props()).toHaveProperty('value', 'limbo')
-        expect(areaDropDown.childAt(2).props()).toHaveProperty('value', 'mapped')
-        expect(areaDropDown.childAt(3).props()).toHaveProperty('value', 'craft')
-    });
-
-    it('should contain 8 rooms', () => {
-        const component = mount(<App />);
-        const instance = component.instance();
-        const NUMBER_OF_ROOMS_IN_TEST_DATA = 9;
-
-        instance.setState({ranvierAPIResponse:json})
-        instance.setState({selectedArea:'mapped'})
-        instance.setState({selectedFloor:0})
-        instance.InitializeView()
-
-        const areaGraph = component.find('div#reactgrid');
-
-        expect(areaGraph.childAt(0).childAt(0).children()).toHaveLength(NUMBER_OF_ROOMS_IN_TEST_DATA)
-    });
-});
-describe('After clicking a node on the graph', () => {
-    it('the node should be selected', () => {
-        const component = mount(<App />);
-        const instance = component.instance();
-
-        instance.setState({ranvierAPIResponse:json})
-        instance.setState({selectedArea:'mapped'})
-        instance.setState({selectedFloor:0})
-        instance.InitializeView()
-
-        const areaGraph = component.find('div#reactgrid');
-        areaGraph.childAt(0).childAt(0).children().at(0).simulate('click',{'target':{'id':'Hallway South 1'}})
-
-        expect(instance.state.selectedRoom).toBe('Hallway South 1')
-    });
-    it('the text area should populate with a description', () => {
-        const component = mount(<App />);
-        const instance = component.instance();
-
-        instance.setState({ranvierAPIResponse:json})
-        instance.setState({selectedArea:'mapped'})
-        instance.setState({selectedFloor:0})
-        instance.InitializeView()
-
-        const descButton = component.find('button#descBtn');
-        descButton.simulate('click');
-        
-        const areaGraph = component.find('div#reactgrid');
-        areaGraph.childAt(0).childAt(0).children().at(0).simulate('click',{'target':{'id':'Hallway South 1'}})
-
-        const southTextArea = component.find('textarea#roomDescription');
-        expect(southTextArea.props()).toHaveProperty('value', 'You are in the south hallway.')
-
-        
-        areaGraph.childAt(0).childAt(0).children().at(2).simulate('click',{'target':{'id':'Hallway East 1'}})
-        const eastTextArea = component.find('textarea#roomDescription');
-
-        expect(eastTextArea.props()).toHaveProperty('value', 'You are in the east hallway.')
-    });
-    it('we should be able to delete using the delete button', () => {
-        const component = mount(<App />);
-        const instance = component.instance();
-
-        instance.setState({ranvierAPIResponse:json})
-        instance.setState({selectedArea:'mapped'})
-        instance.setState({selectedFloor:0})
-        instance.InitializeView()
-
-        const areaGraph = component.find('div#reactgrid');
-        areaGraph.childAt(0).childAt(0).children().at(0).simulate('click',{'target':{'id':'Hallway South 1'}})
-        
-        //Make sure it does actually exist
-        expect(instance.state.mapOfRoomsInArea.has('mappedHallway South 1')).toBe(true); 
-        
-        const deleteButton = component.find('button#deleteRoomButton');
-        deleteButton.simulate('click')
-
-        //Make sure it now does not exist
-        expect(instance.state.mapOfRoomsInArea.has('mappedHallway South 1')).toBe(false);
-    });
-});
+    // expect(result.current.data).toBe({
+    //     returnedData: "foo"
+    // });
+ })
+})
