@@ -1,12 +1,10 @@
 import React, { createContext, useState, useEffect } from 'react';
 import axios from 'axios';
 import uuid from 'uuid/v1';
-import {List, Record, fromJS, isKeyed, Map} from 'immutable'
+import {List, Record, fromJS, isKeyed, Map, isCollection} from 'immutable'
 
 export const RoomContext = createContext();
-export const getAreas = async () => {
-  const response = await fetch('http://localhost:3004/areasFiles')
-  const ranvierDataInJson = await response.json()
+export const getAreasStatic = (ranvierDataInJson) => {
   let newAreaManager = List();
   for (let keyval of ranvierDataInJson) {
     let mapthis = fromJS(
@@ -34,7 +32,14 @@ const RoomContextProvider = (props) => {
   const [activeEntity, setActiveEntity] = useState(null);
 
   useEffect(() => {
-     getAreas().then(res => setAreaManager(res))
+    if(isCollection(props.data)){
+      setAreaManager(props.data)
+    }else{
+      const loadData = async () => {
+        setAreaManager(await props.data)
+      }
+      loadData();
+    }
   }, [])
 
   const changeActiveFloor = (newFloor) => {

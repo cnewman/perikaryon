@@ -66,7 +66,7 @@ const Toolbar = () => {
   }
 
   return (
-    <div className="container py-2">
+    <div data-testid="blabla" className="container py-2">
       <Row>
         <Col>
           {generateAreaDropdown()}

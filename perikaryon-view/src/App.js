@@ -12,6 +12,24 @@ import Room from "./components/Room";
 import Toolbar from "./components/Toolbar";
 import EditEntity from "./components/editing/EditEntity";
 import RoomContextProvider from "./contexts/RoomContext";
+import {List, Record, fromJS, isKeyed, Map} from 'immutable'
+
+export const getAreas = async () => {
+  const response = await fetch('http://localhost:3004/areasFiles')
+  const ranvierDataInJson = await response.json()
+  let newAreaManager = List();
+  for (let keyval of ranvierDataInJson) {
+    let mapthis = fromJS(
+      {
+        "manifest": keyval.manifest,
+        "items": keyval.items,
+        "npcs": keyval.npcs,
+        "rooms": keyval.rooms
+      })
+    newAreaManager = newAreaManager.push(mapthis)
+  }
+  return newAreaManager;
+};
 
 const App = () => {
   const [leftKey, setLeftKey] = useState('rooms');
@@ -57,7 +75,7 @@ const App = () => {
 
   return (
     <div className="container-fluid">
-      <RoomContextProvider>
+      <RoomContextProvider data={getAreas()}>
       <div className="row" id="topdash">
         <div id="buttondiv" className="col-xl">
           <nav id="topNavBar" className="navbar navbar-expand-lg navbar-light bg-light">
